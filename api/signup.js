@@ -1,12 +1,9 @@
-// Signup API - writes to Google Sheets
 const SHEET_ID = '16TL2Bqa4gl8H5R8nQe0JvhQa2IwajeuzLvlcka8l3dI';
-const SHEET_NAME = 'Signups';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -16,61 +13,51 @@ export default async function handler(req, res) {
   const rowData = [timestamp || new Date().toISOString(), email, name || '', (roles || []).join(', '), comment || ''];
 
   try {
-    const clientId = process.env.GCLIENT_ID;
-    const clientSecret = process.env.GCLIENT_SECRET;
-    const refreshToken = process.env.GREFRESH_TOKEN;
-
-    console.log('Env check:', { hasId: !!clientId, hasSecret: !!clientSecret, hasRefresh: !!refreshToken });
-
-    if (!clientId || !clientSecret || !refreshToken) {
-      console.error('Missing env vars - cannot write to sheet');
-      console.log('SIGNUP:', JSON.stringify(rowData));
-      return res.status(200).json({ success: true, message: "Welcome to the village." });
-    }
-
-    // Refresh Google OAuth token
-    const params = new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: refreshToken,
-      grant_type: 'refresh_token',
-    });
-
+    // Step 1: Refresh token
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
+      body: new URLSearchParams({
+        client_id: process.env.GCLIENT_ID,
+        client_secret: process.env.GCLIENT_SECRET,
+        refresh_token: process.env.GREFRESH_TOKEN,
+        grant_type: 'refresh_token',
+      }).toString(),
     });
+
+    if (!tokenRes.ok) {
+      const errText = await tokenRes.text();
+      console.error('Token refresh HTTP error:', tokenRes.status, errText.substring(0, 200));
+      return res.status(200).json({ success: true });
+    }
 
     const tokenData = await tokenRes.json();
     if (!tokenData.access_token) {
-      console.error('Token refresh failed:', JSON.stringify(tokenData).substring(0, 200));
-      return res.status(200).json({ success: true, message: "Welcome to the village." });
+      console.error('No access_token in response:', JSON.stringify(tokenData).substring(0, 200));
+      return res.status(200).json({ success: true });
     }
 
-    // Write to Google Sheet
-    const sheetRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME + '!A:E')}:append?valueInputOption=RAW`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ values: [rowData] }),
-      }
-    );
+    // Step 2: Write to sheet
+    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AE:append?valueInputOption=RAW`;
+    const sheetRes = await fetch(sheetUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ values: [rowData] }),
+    });
 
     if (!sheetRes.ok) {
       const errText = await sheetRes.text();
-      console.error('Sheet write failed:', sheetRes.status, errText.substring(0, 300));
+      console.error('Sheet write error:', sheetRes.status, errText.substring(0, 300));
     } else {
-      console.log('Sheet write SUCCESS for:', email);
+      console.log('Sheet write OK for:', email);
     }
 
     return res.status(200).json({ success: true, message: "Welcome to the village." });
   } catch (err) {
-    console.error('Signup error:', err.message);
+    console.error('Error:', err.message, err.stack?.substring(0, 200));
     return res.status(200).json({ success: true, message: "Welcome to the village." });
   }
 }
