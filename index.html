@@ -8,7 +8,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=Lato:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -35,7 +35,7 @@
             min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
             text-align:center; padding:2rem; position:relative;
             background: linear-gradient(180deg, rgba(26,18,8,0.25) 0%, rgba(26,18,8,0.55) 40%, rgba(26,18,8,0.88) 100%),
-                        url('images/hero-bg.jpg');
+                        url('images/hero-bg.png');
             background-size:cover; background-position:center; color:var(--light-text);
         }
         .hero::before {
@@ -43,10 +43,10 @@
             background:radial-gradient(ellipse at center top, transparent 0%, rgba(26,18,8,0.3) 100%);
         }
         .hero * { position:relative; z-index:1; }
-        .hero-presented { font-weight:300; font-size:0.85rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--sage); margin-bottom:2rem; }
-        .hero-title { font-family:'DM Serif Display',serif; font-size:clamp(3.5rem,10vw,7rem); line-height:1.05; margin-bottom:1.5rem; font-weight:400; }
-        .hero-subtitle { font-family:'Cormorant Garamond',serif; font-size:clamp(1.2rem,3vw,1.6rem); font-weight:300; font-style:italic; max-width:520px; margin-bottom:3rem; line-height:1.6; color:var(--sand); }
-        .hero-date { font-weight:300; font-size:1rem; letter-spacing:0.15em; margin-bottom:2.5rem; color:var(--fern); }
+        .hero-presented { font-family:'Lato',sans-serif; font-weight:300; font-size:0.85rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--sage); margin-bottom:2rem; }
+        .hero-title { font-family:'Fraunces',serif; font-size:clamp(3.5rem,10vw,7rem); line-height:1.0; margin-bottom:1.5rem; font-weight:900; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
+        .hero-subtitle { font-family:'Lato',sans-serif; font-size:clamp(1rem,2.5vw,1.25rem); font-weight:300; letter-spacing:0.05em; max-width:520px; margin-bottom:3rem; line-height:1.6; color:var(--sand); }
+        .hero-date { font-family:'Lato',sans-serif; font-weight:300; font-size:1rem; letter-spacing:0.15em; margin-bottom:2.5rem; color:var(--fern); }
         .hero-cta { display:inline-block; background:var(--moss); color:var(--cream); padding:1rem 2.5rem; border-radius:50px; text-decoration:none; font-weight:400; font-size:0.95rem; letter-spacing:0.05em; transition:all 0.3s ease; border:1px solid rgba(255,255,255,0.1); }
         .hero-cta:hover { background:var(--sage); transform:translateY(-2px); box-shadow:0 8px 30px rgba(74,103,65,0.3); }
         .scroll-hint { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); animation:float 3s ease-in-out infinite; opacity:0.5; font-size:1.5rem; }
@@ -54,14 +54,14 @@
 
         /* Sections */
         section { padding:6rem 2rem; }
-        .section-title { font-family:'DM Serif Display',serif; font-size:clamp(2rem,5vw,3.2rem); margin-bottom:1rem; line-height:1.2; }
-        .section-intro { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:300; font-style:italic; color:var(--bark); max-width:650px; margin-bottom:3rem; line-height:1.7; }
+        .section-title { font-family:'Fraunces',serif; font-size:clamp(2rem,5vw,3.2rem); margin-bottom:1rem; line-height:1.2; font-weight:800; }
+        .section-intro { font-family:'Lato',sans-serif; font-size:1.05rem; font-weight:300; color:var(--bark); max-width:650px; margin-bottom:3rem; line-height:1.8; }
         .container { max-width:1100px; margin:0 auto; }
 
         /* Manifesto */
         .manifesto { background:var(--deep); color:var(--light-text); text-align:center; }
         .manifesto .section-title { color:var(--cream); margin-bottom:2rem; font-size:clamp(1.8rem,4vw,2.8rem); max-width:700px; margin-left:auto; margin-right:auto; line-height:1.4; }
-        .manifesto-text { font-family:'Cormorant Garamond',serif; font-size:1.2rem; max-width:600px; margin:0 auto; line-height:1.9; color:var(--sand); }
+        .manifesto-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:600px; margin:0 auto; line-height:1.9; color:var(--sand); font-weight:300; }
 
         /* About / Gathering */
         .about { background:var(--cream); }
@@ -78,7 +78,7 @@
         /* Pollination */
         .pollination { background:var(--moss); color:var(--light-text); text-align:center; }
         .pollination .section-title { color:var(--cream); }
-        .pollination-text { font-family:'Cormorant Garamond',serif; font-size:1.15rem; max-width:650px; margin:0 auto; line-height:1.9; color:var(--sand); }
+        .pollination-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:650px; margin:0 auto; line-height:1.9; color:var(--sand); font-weight:300; }
 
         /* Roles */
         .roles { background:var(--warm); }
@@ -87,7 +87,7 @@
         .role-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(61,43,31,0.08); border-color:var(--sage); }
         .role-art { width:100%; height:200px; object-fit:cover; display:block; }
         .role-body { padding:1.5rem 2rem 2rem; }
-        .role-name { font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:0.25rem; color:var(--earth); }
+        .role-name { font-family:'Fraunces',serif; font-size:1.4rem; margin-bottom:0.25rem; color:var(--earth); font-weight:800; }
         .role-tagline { font-size:0.75rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--moss); margin-bottom:1rem; }
         .role-description { font-size:0.92rem; line-height:1.7; color:var(--bark); margin-bottom:1rem; }
         .role-for-you { font-size:0.85rem; color:var(--muted-text); font-style:italic; padding-top:0.75rem; border-top:1px solid var(--sand); }
@@ -95,7 +95,7 @@
         /* Reciprocity */
         .reciprocity { background:var(--deep); color:var(--light-text); text-align:center; }
         .reciprocity .section-title { color:var(--cream); max-width:700px; margin:0 auto 1rem; line-height:1.35; font-size:clamp(1.6rem,4vw,2.6rem); }
-        .reciprocity-text { font-family:'Cormorant Garamond',serif; font-size:1.15rem; max-width:600px; margin:0 auto 2rem; line-height:1.9; color:var(--sand); }
+        .reciprocity-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:600px; margin:0 auto 2rem; line-height:1.9; color:var(--sand); font-weight:300; }
 
         /* Involved */
         .involved { background:var(--cream); }
@@ -131,7 +131,7 @@
         /* Closing */
         .closing { background:var(--deep); color:var(--light-text); text-align:center; padding:6rem 2rem; }
         .closing .section-title { color:var(--cream); max-width:700px; margin:0 auto 1.5rem; line-height:1.35; font-size:clamp(1.6rem,4vw,2.6rem); }
-        .closing-tagline { font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:var(--fern); max-width:400px; margin:0 auto; line-height:1.7; }
+        .closing-tagline { font-family:'Lato',sans-serif; font-size:1rem; color:var(--fern); max-width:400px; margin:0 auto; line-height:1.8; font-weight:300; }
 
         /* Footer */
         footer { background:var(--deep); color:var(--muted-text); text-align:center; padding:2rem; border-top:1px solid rgba(255,255,255,0.05); }
