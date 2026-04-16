@@ -4,520 +4,1047 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Living Village — August 15–16, 2026</title>
-    <meta name="description" content="A two-day gathering for land-based living. Not a festival you attend — a village you help create.">
-    
+    <meta name="description" content="A Journeyland gathering for land-based living. Two days to convene, learn, and help seed a local ecovillage in the London region.">
+    <meta property="og:title" content="The Living Village">
+    <meta property="og:description" content="A two-day gathering for land-based living. August 15–16, 2026 · The Living Centre, London ON.">
+    <meta property="og:image" content="/images/hero-bg.png">
+    <meta property="og:type" content="website">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=Lato:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --earth: #3D2B1F;
-            --bark: #5C4033;
-            --moss: #4A6741;
+            --earth: #2A1D10;
+            --bark: #4A3425;
+            --moss: #3D5540;
             --sage: #7A9E7E;
-            --fern: #8DB48E;
-            --cream: #FAF3E0;
-            --warm: #F5EDE0;
-            --sand: #E8DCC8;
+            --fern: #A6C1A3;
+            --cream: #F6EDD9;
+            --warm: #EFE3C8;
+            --sand: #DCC9A3;
             --terracotta: #C4704B;
-            --gold: #C9A84C;
-            --deep: #1A1208;
-            --light-text: #F5EDE0;
-            --muted-text: #8B7D6B;
+            --gold: #D9A441;
+            --deep: #14100A;
+            --ink: #1A1208;
+            --light-text: #F6EDD9;
+            --muted-text: #9A8A73;
+            --hairline: rgba(246, 237, 217, 0.22);
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-        body { font-family:'Inter',sans-serif; color:var(--earth); background:var(--cream); line-height:1.7; overflow-x:hidden; }
 
-        /* Hero */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--earth);
+            background: var(--cream);
+            line-height: 1.65;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            * { animation: none !important; transition: none !important; }
+        }
+        img { max-width: 100%; display: block; }
+        a { color: inherit; }
+        :focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+            border-radius: 2px;
+        }
+        .skip-link {
+            position: absolute; top: -60px; left: 1rem; padding: 0.6rem 1rem;
+            background: var(--earth); color: var(--cream); border-radius: 6px;
+            text-decoration: none; z-index: 100;
+        }
+        .skip-link:focus { top: 1rem; }
+
+        /* Typography */
+        .display {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+        .eyebrow {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.78rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .container.narrow { max-width: 780px; }
+        section { padding: clamp(4.5rem, 9vw, 8rem) 0; position: relative; }
+
+        /* Slide showpiece — 16:9 image with thin frame */
+        .slide {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 18px 50px rgba(20, 16, 10, 0.18);
+            background: #111;
+        }
+        .slide img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* ---------- HERO ---------- */
         .hero {
-            min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
-            text-align:center; padding:2rem; position:relative;
-            background: linear-gradient(180deg, rgba(26,18,8,0.25) 0%, rgba(26,18,8,0.55) 40%, rgba(26,18,8,0.88) 100%),
-                        url('images/hero-bg.png');
-            background-size:cover; background-position:center; color:var(--light-text);
+            min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center;
+            color: var(--light-text);
+            position: relative; isolation: isolate;
+            padding: clamp(5rem, 10vh, 8rem) 1.5rem 3rem;
+            background:
+                linear-gradient(180deg, rgba(20,16,10,0.35) 0%, rgba(20,16,10,0.55) 55%, rgba(20,16,10,0.88) 100%),
+                url('images/hero-bg.png') center/cover no-repeat;
         }
-        .hero::before {
-            content:''; position:absolute; top:0; left:0; right:0; bottom:0;
-            background:radial-gradient(ellipse at center top, transparent 0%, rgba(26,18,8,0.3) 100%);
+        .hero::after {
+            content: '';
+            position: absolute; left: 0; right: 0; bottom: 0; height: 40%;
+            background: linear-gradient(180deg, transparent, var(--deep));
+            z-index: -1;
         }
-        .hero * { position:relative; z-index:1; }
-        .hero-presented { font-family:'Lato',sans-serif; font-weight:300; font-size:0.85rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--sage); margin-bottom:2rem; }
-        .hero-title { font-family:'Fraunces',serif; font-size:clamp(3.5rem,10vw,7rem); line-height:1.0; margin-bottom:1.5rem; font-weight:900; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
-        .hero-subtitle { font-family:'Lato',sans-serif; font-size:clamp(1rem,2.5vw,1.25rem); font-weight:300; letter-spacing:0.05em; max-width:520px; margin-bottom:3rem; line-height:1.6; color:var(--sand); }
-        .hero-date { font-family:'Lato',sans-serif; font-weight:300; font-size:1rem; letter-spacing:0.15em; margin-bottom:2.5rem; color:var(--fern); }
-        .hero-cta { display:inline-block; background:var(--moss); color:var(--cream); padding:1rem 2.5rem; border-radius:50px; text-decoration:none; font-weight:400; font-size:0.95rem; letter-spacing:0.05em; transition:all 0.3s ease; border:1px solid rgba(255,255,255,0.1); }
-        .hero-cta:hover { background:var(--sage); transform:translateY(-2px); box-shadow:0 8px 30px rgba(74,103,65,0.3); }
-        .scroll-hint { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); animation:float 3s ease-in-out infinite; opacity:0.5; font-size:1.5rem; }
-        @keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-10px)} }
-
-        /* Sections */
-        section { padding:6rem 2rem; }
-        .section-title { font-family:'Fraunces',serif; font-size:clamp(2rem,5vw,3.2rem); margin-bottom:1rem; line-height:1.2; font-weight:800; }
-        .section-intro { font-family:'Lato',sans-serif; font-size:1.05rem; font-weight:300; color:var(--bark); max-width:650px; margin-bottom:3rem; line-height:1.8; }
-        .container { max-width:1100px; margin:0 auto; }
-
-        /* Manifesto */
-        .manifesto { background:var(--deep); color:var(--light-text); text-align:center; }
-        .manifesto .section-title { color:var(--cream); margin-bottom:2rem; font-size:clamp(1.8rem,4vw,2.8rem); max-width:700px; margin-left:auto; margin-right:auto; line-height:1.4; }
-        .manifesto-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:600px; margin:0 auto; line-height:1.9; color:var(--sand); font-weight:300; }
-
-        /* About / Gathering */
-        .about { background:var(--cream); }
-        .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:2rem; }
-        .about-text p { margin-bottom:1.5rem; font-size:0.95rem; line-height:1.8; color:var(--bark); }
-
-        /* Topics */
-        .topics { background:var(--warm); }
-        .topics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-top:2rem; }
-        .topic-item { background:white; padding:1.2rem 1.5rem; border-radius:12px; border:1px solid var(--sand); font-size:0.9rem; color:var(--bark); transition:all 0.2s; text-align:center; }
-        .topic-item:hover { border-color:var(--sage); transform:translateY(-2px); }
-        .topic-label { font-size:0.7rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--moss); margin-bottom:0.3rem; }
-
-        /* Pollination */
-        .pollination { background:var(--moss); color:var(--light-text); text-align:center; }
-        .pollination .section-title { color:var(--cream); }
-        .pollination-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:650px; margin:0 auto; line-height:1.9; color:var(--sand); font-weight:300; }
-
-        /* Roles */
-        .roles { background:var(--warm); }
-        .roles-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:2rem; margin-top:1rem; }
-        .role-card { background:white; border-radius:16px; overflow:hidden; border:1px solid var(--sand); transition:all 0.3s ease; }
-        .role-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(61,43,31,0.08); border-color:var(--sage); }
-        .role-art { width:100%; height:200px; object-fit:cover; display:block; }
-        .role-body { padding:1.5rem 2rem 2rem; }
-        .role-name { font-family:'Fraunces',serif; font-size:1.4rem; margin-bottom:0.25rem; color:var(--earth); font-weight:800; }
-        .role-tagline { font-size:0.75rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--moss); margin-bottom:1rem; }
-        .role-description { font-size:0.92rem; line-height:1.7; color:var(--bark); margin-bottom:1rem; }
-        .role-for-you { font-size:0.85rem; color:var(--muted-text); font-style:italic; padding-top:0.75rem; border-top:1px solid var(--sand); }
-
-        /* Reciprocity */
-        .reciprocity { background:var(--deep); color:var(--light-text); text-align:center; }
-        .reciprocity .section-title { color:var(--cream); max-width:700px; margin:0 auto 1rem; line-height:1.35; font-size:clamp(1.6rem,4vw,2.6rem); }
-        .reciprocity-text { font-family:'Lato',sans-serif; font-size:1rem; max-width:600px; margin:0 auto 2rem; line-height:1.9; color:var(--sand); font-weight:300; }
-
-        /* Involved */
-        .involved { background:var(--cream); }
-        .involved-text { font-size:1rem; line-height:1.8; color:var(--bark); max-width:700px; margin-bottom:2rem; }
-
-        /* Form */
-        .signup { background:var(--sand); }
-        .signup .container { max-width:600px; }
-        .form-group { margin-bottom:1.25rem; }
-        .form-group label { display:block; font-size:0.8rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; color:var(--bark); margin-bottom:0.4rem; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group textarea {
-            width:100%; padding:0.85rem 1rem; border:1.5px solid var(--sand); border-radius:10px;
-            font-family:'Inter',sans-serif; font-size:0.95rem; background:white; color:var(--earth); transition:border-color 0.2s;
+        .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
+        .hero-eyebrow { color: var(--fern); margin-bottom: 2rem; }
+        .hero-title {
+            font-size: clamp(3.5rem, 12vw, 10rem);
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 40px rgba(0,0,0,0.35);
         }
-        .form-group input:focus, .form-group textarea:focus { outline:none; border-color:var(--moss); box-shadow:0 0 0 3px rgba(74,103,65,0.1); }
-        .form-group textarea { min-height:100px; resize:vertical; }
-        .roles-checkboxes { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.4rem; }
-        .roles-checkboxes label { display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; text-transform:none; letter-spacing:0; cursor:pointer; color:var(--bark); font-weight:400; }
-        .roles-checkboxes input[type="checkbox"] { accent-color:var(--moss); width:16px; height:16px; }
-        .submit-btn { width:100%; padding:1rem; background:var(--earth); color:var(--cream); border:none; border-radius:50px; font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:500; letter-spacing:0.05em; cursor:pointer; transition:all 0.3s ease; margin-top:0.5rem; }
-        .submit-btn:hover { background:var(--bark); transform:translateY(-2px); box-shadow:0 8px 25px rgba(61,43,31,0.2); }
-        .submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-        .form-message { text-align:center; padding:1rem; border-radius:10px; margin-top:1rem; font-size:0.9rem; display:none; }
-        .form-message.success { display:block; background:rgba(74,103,65,0.1); color:var(--moss); border:1px solid var(--sage); }
-        .form-message.error { display:block; background:rgba(196,112,75,0.1); color:var(--terracotta); border:1px solid var(--terracotta); }
+        .hero-title .row { display: block; }
+        .hero-title .village { padding-left: clamp(2rem, 8vw, 8rem); }
+        .hero-sub {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+            color: var(--cream);
+            opacity: 0.92;
+            max-width: 560px;
+            margin-bottom: 2.5rem;
+        }
+        .hero-meta {
+            display: flex; flex-wrap: wrap; gap: 1rem 2rem;
+            font-size: 0.95rem; color: var(--fern);
+            margin-bottom: 3rem;
+            align-items: center;
+        }
+        .hero-meta .dot { opacity: 0.5; }
+        .hero-ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.65rem;
+            padding: 1rem 2rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-family: inherit;
+        }
+        .btn-primary { background: var(--cream); color: var(--earth); }
+        .btn-primary:hover { transform: translateY(-2px); background: #fff; }
+        .btn-ghost { background: transparent; color: var(--cream); border-color: rgba(246, 237, 217, 0.4); }
+        .btn-ghost:hover { border-color: var(--cream); transform: translateY(-2px); }
+        .btn-dark { background: var(--earth); color: var(--cream); }
+        .btn-dark:hover { background: var(--bark); transform: translateY(-2px); }
+        .btn svg { width: 16px; height: 16px; }
+        .scroll-hint {
+            position: absolute; left: 50%; bottom: 2rem; transform: translateX(-50%);
+            font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase;
+            color: var(--sage); opacity: 0.7;
+            display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+        }
+        .scroll-hint::after {
+            content: ''; width: 1px; height: 40px; background: var(--sage); opacity: 0.6;
+            animation: pulse 2.2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scaleY(1); opacity: 0.3; } 50% { transform: scaleY(1.3); opacity: 0.9; } }
 
-        /* Calendar */
-        .calendar-section { text-align:center; padding:3rem 2rem; background:var(--cream); }
-        .calendar-btn { display:inline-flex; align-items:center; gap:0.5rem; background:white; color:var(--earth); padding:0.85rem 2rem; border-radius:50px; text-decoration:none; font-weight:500; font-size:0.9rem; border:1.5px solid var(--sand); transition:all 0.3s ease; }
-        .calendar-btn:hover { border-color:var(--moss); background:var(--warm); }
-        .calendar-btn svg { width:18px; height:18px; }
+        /* ---------- SECTION HEADING ---------- */
+        .section-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+        .section-head .eyebrow { display: inline-block; margin-bottom: 1rem; }
+        .section-head h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .section-head p {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+            line-height: 1.55;
+            max-width: 640px;
+            opacity: 0.88;
+        }
 
-        /* Closing */
-        .closing { background:var(--deep); color:var(--light-text); text-align:center; padding:6rem 2rem; }
-        .closing .section-title { color:var(--cream); max-width:700px; margin:0 auto 1.5rem; line-height:1.35; font-size:clamp(1.6rem,4vw,2.6rem); }
-        .closing-tagline { font-family:'Lato',sans-serif; font-size:1rem; color:var(--fern); max-width:400px; margin:0 auto; line-height:1.8; font-weight:300; }
+        /* ---------- SECTION BACKGROUNDS ---------- */
+        .bg-cream { background: var(--cream); color: var(--earth); }
+        .bg-warm { background: var(--warm); color: var(--earth); }
+        .bg-deep { background: var(--deep); color: var(--light-text); }
+        .bg-moss { background: var(--moss); color: var(--cream); }
+        .bg-ink { background: var(--ink); color: var(--light-text); }
+        .bg-sand { background: var(--sand); color: var(--earth); }
 
-        /* Footer */
-        footer { background:var(--deep); color:var(--muted-text); text-align:center; padding:2rem; border-top:1px solid rgba(255,255,255,0.05); }
-        footer a { color:var(--sage); text-decoration:none; }
-        footer a:hover { color:var(--fern); }
+        .bg-deep .section-head h2,
+        .bg-moss .section-head h2,
+        .bg-ink .section-head h2 { color: var(--cream); }
+        .bg-deep .section-head .eyebrow,
+        .bg-ink .section-head .eyebrow { color: var(--fern); }
+        .bg-moss .section-head .eyebrow { color: var(--fern); }
+        .bg-warm .section-head .eyebrow,
+        .bg-cream .section-head .eyebrow,
+        .bg-sand .section-head .eyebrow { color: var(--moss); }
 
-        @media(max-width:640px) {
-            .roles-checkboxes { grid-template-columns:1fr; }
-            .roles-grid { grid-template-columns:1fr; }
-            .about-grid { grid-template-columns:1fr; }
-            .topics-grid { grid-template-columns:1fr 1fr; }
-            section { padding:4rem 1.5rem; }
+        /* ---------- TWO-COL LAYOUT ---------- */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: clamp(2rem, 5vw, 4rem);
+            align-items: center;
+        }
+        .two-col.flip { grid-template-columns: 1.2fr 1fr; }
+        .two-col.flip .col-text { order: 2; }
+        .two-col.flip .col-media { order: 1; }
+        .col-text p {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            opacity: 0.88;
+            margin-bottom: 1.25rem;
+        }
+        .bg-deep .col-text p,
+        .bg-ink .col-text p,
+        .bg-moss .col-text p { opacity: 0.82; color: rgba(246, 237, 217, 0.9); }
+
+        /* ---------- PURPOSE LIST ---------- */
+        .purpose-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            counter-reset: purpose;
+            margin-top: 2.5rem;
+        }
+        .purpose-list li {
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--bark);
+            counter-increment: purpose;
+        }
+        .purpose-list li::before {
+            content: counter(purpose, decimal-leading-zero);
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--moss);
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ---------- DUAL-SLIDE ROW ---------- */
+        .dual-slides {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* ---------- CONNECTIONS LIST ---------- */
+        .connections-lists {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+        .conn-col h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+            color: inherit;
+            margin-bottom: 1.25rem;
+        }
+        .conn-col ul { list-style: none; }
+        .conn-col li {
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(246, 237, 217, 0.15);
+            font-size: 0.98rem;
+            display: flex; align-items: center; gap: 0.75rem;
+            color: rgba(246, 237, 217, 0.88);
+        }
+        .conn-col li:last-child { border-bottom: 0; }
+        .conn-col li::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--fern); flex-shrink: 0;
+        }
+        .bg-cream .conn-col li,
+        .bg-warm .conn-col li { color: var(--bark); border-bottom-color: var(--sand); }
+        .bg-cream .conn-col li::before,
+        .bg-warm .conn-col li::before { background: var(--moss); }
+
+        /* ---------- VILLAGE QUOTE ---------- */
+        .village-quote {
+            color: var(--cream);
+            text-align: center;
+            min-height: 80vh;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: clamp(5rem, 10vw, 9rem) 1.5rem;
+            background:
+                linear-gradient(180deg, rgba(20,16,10,0.55), rgba(20,16,10,0.75)),
+                url('images/hero-bg.png') center/cover no-repeat;
+            background-attachment: fixed;
+        }
+        @media (max-width: 900px) {
+            .village-quote { background-attachment: scroll; }
+        }
+        .village-quote h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: clamp(2.4rem, 7vw, 5.5rem);
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            max-width: 1000px; margin: 0 auto 2rem;
+        }
+        .village-quote p {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--sand);
+            max-width: 680px; margin: 0 auto 0.75rem;
+            line-height: 1.55;
+        }
+
+        /* ---------- ROLES ---------- */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem 1.75rem;
+        }
+        .role-card {
+            background: transparent;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .role-card:hover { transform: translateY(-6px); }
+        .role-card .slide {
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 14px 40px rgba(20, 16, 10, 0.18);
+            transition: box-shadow 0.3s ease;
+        }
+        .role-card:hover .slide { box-shadow: 0 22px 60px rgba(20, 16, 10, 0.28); }
+        .role-card .caption {
+            padding: 1.25rem 0.25rem 0;
+        }
+        .role-caption-name {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: var(--earth);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        .role-lead {
+            font-size: 0.96rem;
+            line-height: 1.6;
+            color: var(--bark);
+            margin-bottom: 0.85rem;
+        }
+        .role-does {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--bark);
+            opacity: 0.78;
+            margin-bottom: 1rem;
+        }
+        .role-caption-for {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 0.96rem;
+            color: var(--moss);
+            line-height: 1.55;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--sand);
+        }
+        /* Featured wide card — last row, spans all columns, horizontal layout */
+        .role-card--wide {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        .role-card--wide .slide {
+            aspect-ratio: 16 / 9;
+        }
+        .role-card--wide .caption {
+            padding: 0.5rem 0;
+        }
+        .role-card--wide .role-caption-name {
+            font-size: 1.9rem;
+            margin-bottom: 0.75rem;
+        }
+        .role-card--wide .role-lead {
+            font-size: 1.05rem;
+        }
+        .role-card--wide .role-does {
+            font-size: 1rem;
+        }
+        .role-card--wide .role-caption-for {
+            font-size: 1.02rem;
+        }
+        @media (max-width: 880px) {
+            .roles-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+            .role-card--wide { grid-template-columns: 1fr; gap: 1.25rem; }
+        }
+        @media (min-width: 881px) and (max-width: 1080px) {
+            .roles-grid { grid-template-columns: 1fr 1fr; }
+            /* with 2 cols, last row would have just the wide card alone, which is fine */
+        }
+
+        /* ---------- INVOLVED / STEPS ---------- */
+        .steps {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            counter-reset: step;
+        }
+        .steps li {
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            border-radius: 16px;
+            padding: 1.6rem 1.4rem;
+            counter-increment: step;
+            font-size: 0.96rem;
+            line-height: 1.55;
+            color: var(--bark);
+        }
+        .steps li::before {
+            content: counter(step);
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--moss);
+            line-height: 1;
+            display: block;
+            margin-bottom: 0.6rem;
+        }
+        .steps li strong {
+            display: block;
+            color: var(--earth);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+        .involved-footnote {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: var(--bark);
+            max-width: 640px;
+            margin-top: 1rem;
+        }
+
+        /* ---------- SIGNUP ---------- */
+        .signup-inner { max-width: 620px; margin: 0 auto; }
+        .signup-inner h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .signup-lead {
+            font-size: 1.02rem;
+            line-height: 1.75;
+            color: var(--bark);
+            margin-bottom: 2rem;
+        }
+        .signup-calendar {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.92rem;
+            color: var(--moss);
+            text-decoration: none;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 2px;
+            margin-bottom: 2.5rem;
+        }
+        .signup-calendar:hover { color: var(--earth); }
+        .signup-calendar svg { width: 16px; height: 16px; }
+        form { display: flex; flex-direction: column; gap: 1.25rem; }
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--bark);
+            margin-bottom: 0.45rem;
+        }
+        .field input[type="email"],
+        .field input[type="text"],
+        .field textarea {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border: 1.5px solid rgba(74, 52, 37, 0.18);
+            border-radius: 10px;
+            background: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--earth);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--moss);
+            box-shadow: 0 0 0 4px rgba(61, 85, 64, 0.12);
+        }
+        .field textarea { min-height: 110px; resize: vertical; }
+        .roles-checkboxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 1rem;
+            margin-top: 0.6rem;
+        }
+        .roles-checkboxes label {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-size: 0.93rem;
+            text-transform: none;
+            letter-spacing: 0;
+            cursor: pointer;
+            color: var(--bark);
+            font-weight: 400;
+            padding: 0.5rem 0.25rem;
+        }
+        .roles-checkboxes input[type="checkbox"] {
+            accent-color: var(--moss);
+            width: 18px; height: 18px;
+            flex-shrink: 0;
+        }
+        .hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; height: 0; width: 0; overflow: hidden; }
+        .submit-btn {
+            padding: 1.1rem;
+            background: var(--earth);
+            color: var(--cream);
+            border: none;
+            border-radius: 999px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .submit-btn:not(:disabled):hover {
+            background: var(--bark);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(42, 29, 16, 0.22);
+        }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-message {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            display: none;
+            margin-top: 0.5rem;
+        }
+        .form-message.success { display: block; background: rgba(61, 85, 64, 0.1); color: var(--moss); border: 1px solid var(--sage); }
+        .form-message.error { display: block; background: rgba(196, 112, 75, 0.1); color: var(--terracotta); border: 1px solid var(--terracotta); }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: var(--deep);
+            color: var(--muted-text);
+            padding: 5rem 1.5rem 3rem;
+            text-align: center;
+        }
+        footer .mark {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 2rem;
+            color: var(--cream);
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.01em;
+        }
+        footer .tag { font-style: italic; color: var(--fern); font-family: 'Fraunces', serif; font-size: 0.98rem; margin-bottom: 1.25rem; }
+        footer .meta { font-size: 0.92rem; color: var(--fern); margin-bottom: 0.5rem; }
+        footer .links {
+            margin-top: 1.75rem;
+            display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: var(--sage);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        footer a:hover { border-bottom-color: currentColor; color: var(--fern); }
+        footer .fine { margin-top: 2.5rem; font-size: 0.78rem; opacity: 0.6; }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 880px) {
+            .two-col,
+            .two-col.flip,
+            .dual-slides,
+            .connections-lists { grid-template-columns: 1fr; }
+            .two-col.flip .col-text { order: 1; }
+            .two-col.flip .col-media { order: 2; }
+            .hero-title .village { padding-left: 0; }
+        }
+        @media (max-width: 520px) {
+            .roles-checkboxes { grid-template-columns: 1fr; }
+            .hero-meta { gap: 0.4rem; flex-direction: column; align-items: flex-start; }
+            .hero-meta .dot { display: none; }
         }
     </style>
 </head>
 <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
 
-    <!-- HERO -->
-    <section class="hero">
-        <p class="hero-presented">Journeyland presents</p>
-        <h1 class="hero-title">The Living<br>Village</h1>
-        <p class="hero-subtitle">A two-day gathering for land-based living</p>
-        <p class="hero-date">August 15 &ndash; 16, 2026 &nbsp;|&nbsp; The Living Centre, London ON</p>
-        <a href="#signup" class="hero-cta">Save Your Place</a>
-        <div class="scroll-hint">&darr;</div>
-    </section>
+    <main id="main">
 
-    <!-- MANIFESTO -->
-    <section class="manifesto">
-        <div class="container">
-            <h2 class="section-title">This isn't a festival you attend.<br>It's a village you help create.</h2>
-            <p class="manifesto-text">
-                Everyone who comes holds a piece of what makes this place alive. 
-                We're calling them roles &mdash; but really they're ways of belonging.
-                <br><br>
-                We all have a role to play in participating, bringing practical skills, 
-                sharing cultural knowledge, and offering lived experience, so we may learn together.
-            </p>
+    <!-- ========== HERO ========== -->
+    <section class="hero" aria-label="The Living Village">
+        <div class="hero-inner">
+            <p class="eyebrow hero-eyebrow">Journeyland presents</p>
+            <h1 class="display hero-title">
+                <span class="row">The Living</span>
+                <span class="row village">Village</span>
+            </h1>
+            <p class="hero-sub">A two-day gathering for land-based living.</p>
+            <div class="hero-meta">
+                <span>August 15–16, 2026</span>
+                <span class="dot" aria-hidden="true">·</span>
+                <span>The Living Centre</span>
+                <span class="dot" aria-hidden="true">·</span>
+                <span>London, Ontario</span>
+            </div>
+            <div class="hero-ctas">
+                <a href="#signup" class="btn btn-primary">Save your place</a>
+                <a href="/event.ics" class="btn btn-ghost" download="the-living-village.ics">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Add to calendar
+                </a>
+            </div>
         </div>
+        <div class="scroll-hint" aria-hidden="true">Scroll</div>
     </section>
 
-    <!-- ABOUT THE GATHERING -->
-    <section class="about">
+    <!-- ========== CONNECTED LIVING (slide 2) ========== -->
+    <section class="bg-cream">
         <div class="container">
-            <h2 class="section-title">A two-day gathering</h2>
-            <p class="section-intro">
-                A gathering to convene and explore the practical, cultural, and ecological foundations 
-                of building a local ecovillage in the London region.
-            </p>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>
-                        The program blends workshops, storytelling, hands-on learning, and community dialogue. 
-                        The event will attract people interested in living closer to the land, local leaders, 
-                        community organizers, growers, builders, creatives, and others who value cooperation 
-                        and shared stewardship.
-                    </p>
-                    <p>
-                        A participatory immersion that blends connecting with the land and each other, 
-                        storytelling, and practical skill-building. Hear from ecovillage leaders, 
-                        join workshops on ecovillage design, and participate in hands-on demos 
-                        like natural building and permaculture.
-                    </p>
+            <div class="two-col">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">The invitation</span>
+                        <h2>A more connected way of living.</h2>
+                    </div>
+                    <p>The Living Village aspires to bring together people who are ready to co-create healthier, more connected ways of living.</p>
+                    <p>Our gathering is rooted in self-responsibility, mutual care, ecological awareness, and a shared commitment to stewarding land and community.</p>
                 </div>
-                <div class="about-text">
-                    <p>
-                        There will be opportunities to join leadership circles, so we can take our learnings 
-                        and start to take action towards our collective vision.
-                    </p>
-                    <p>
-                        Trauma can be experienced at any age and across generations. A healing-centred approach 
-                        offers a more holistic path to fostering well-being. Our goal is to bring together 
-                        collective healing practices found throughout history and across the land.
-                    </p>
-                    <p style="font-style:italic; color:var(--moss); font-size:0.9rem;">
-                        Inspired by and in service to nature. Land as a teacher has many layers: language, 
-                        geography of stories, cosmologies, relationality, and a connection to reconciliation.
-                    </p>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s02.webp" alt="A more connected way of living — forest sunbeams with a hand-drawn ecovillage illustration" loading="lazy"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- TOPICS / EXPERIENCES -->
-    <section class="topics">
+    <!-- ========== PURPOSE (slide 3) ========== -->
+    <section class="bg-warm">
         <div class="container">
-            <h2 class="section-title">What emerges</h2>
-            <p class="section-intro">
-                A living experience. Workshops, circles, and hands-on learning woven throughout two days.
-            </p>
-            <div class="topics-grid">
-                <div class="topic-item"><div class="topic-label">Learning</div>Community Leadership &amp; Governance</div>
-                <div class="topic-item"><div class="topic-label">Design</div>Permaculture Design</div>
-                <div class="topic-item"><div class="topic-label">Building</div>Natural Building &amp; Construction</div>
-                <div class="topic-item"><div class="topic-label">Stewardship</div>Land Stewardship</div>
-                <div class="topic-item"><div class="topic-label">Economics</div>Business Models</div>
-                <div class="topic-item"><div class="topic-label">Culture</div>Cultural Integration</div>
-                <div class="topic-item"><div class="topic-label">Planning</div>Zoning &amp; Regulations</div>
-                <div class="topic-item"><div class="topic-label">Practice</div>Workshops</div>
-                <div class="topic-item"><div class="topic-label">Sharing</div>Circles &amp; Storytelling</div>
-                <div class="topic-item"><div class="topic-label">Family</div>Multigenerational Families</div>
-                <div class="topic-item"><div class="topic-label">Joy</div>Music &amp; Dance</div>
-                <div class="topic-item"><div class="topic-label">Nature</div>Connections to the Elements</div>
-                <div class="topic-item"><div class="topic-label">Stay</div>Overnight Camping &amp; Cabins</div>
-                <div class="topic-item"><div class="topic-label">Explore</div>Forest Walks &amp; Campfires</div>
-                <div class="topic-item"><div class="topic-label">Together</div>Community Gathering</div>
+            <div class="two-col flip">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">Our living purpose</span>
+                        <h2>Why we’re gathering.</h2>
+                    </div>
+                    <ul class="purpose-list">
+                        <li>Inspire and mobilize a local ecovillage initiative.</li>
+                        <li>Share practical knowledge on zoning, design, governance, construction and more.</li>
+                        <li>Build relationships among aligned individuals and organizations.</li>
+                        <li>Strengthen Journeyland’s vision and community.</li>
+                        <li>Gather input and identify potential stewards for the next phase.</li>
+                    </ul>
+                </div>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s03.webp" alt="Hand-painted ‘Welcome to the Ecovillage’ sign" loading="lazy"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- POLLINATION -->
-    <section class="pollination">
+    <!-- ========== TWO-DAY GATHERING (slide 4) ========== -->
+    <section class="bg-deep">
         <div class="container">
-            <h2 class="section-title">Pollinating the future</h2>
-            <div class="pollination-text">
-                Pollination is one of the most important ecological services. Bees, butterflies, birds, 
-                and bats help plants reproduce, supporting the food supply and plant diversity.
-                <br><br>
-                Let us learn from our relatives, and join in the natural cycles of life.
-                By planting our collective vision, we can ensure that the land and our community 
-                continues to bloom.
-                <br><br>
-                A delicate dance of nature.
+            <div class="two-col">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">Two days · The Living Centre</span>
+                        <h2>A two-day gathering.</h2>
+                    </div>
+                    <p>A gathering to convene and explore the practical, cultural, and ecological foundations of building a local ecovillage in the London region.</p>
+                    <p>The program blends workshops, storytelling, hands-on learning, and community dialogue.</p>
+                    <p>The event will attract people interested in living closer to the land — local leaders, community organizers, growers, builders, creatives, and others who value cooperation and shared stewardship.</p>
+                </div>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s04.webp" alt="Aerial view of gardens and a secluded forest path" loading="lazy"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ROLES -->
-    <section class="roles">
+    <!-- ========== A LIVING EXPERIENCE (slide 5) ========== -->
+    <section class="bg-ink">
         <div class="container">
-            <h2 class="section-title">Seven ways to belong</h2>
-            <p class="section-intro">
-                Every village needs people who tend different parts of the whole. 
-                These seven roles are the bones of The Living Village. 
-                Each one carries a specific kind of care. Together, they hold the container 
-                for everything else that wants to emerge.
-            </p>
+            <div class="two-col flip">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">What you’ll live</span>
+                        <h2>A living experience.</h2>
+                    </div>
+                    <p>A participatory immersion that blends connecting with the land and each other, storytelling, and practical skill-building.</p>
+                    <p>Hear from ecovillage leaders, join workshops on ecovillage design, and participate in hands-on demos like natural building and permaculture.</p>
+                </div>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s05.webp" alt="A fire bowl, hands cradling greenery, and silhouetted people raising arms at sunset" loading="lazy"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CONNECTIONS (slide 6) ========== -->
+    <section class="bg-moss">
+        <div class="container">
+            <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
+                <span class="eyebrow">Workshops + community gathering</span>
+                <h2 style="max-width:820px;margin:0 auto 1rem;">Connections.</h2>
+            </div>
+            <div class="slide" style="margin-bottom:2.5rem;"><img src="images/slides/s06.webp" alt="People gathering around a campfire and workshop tables outdoors" loading="lazy"></div>
+            <div class="connections-lists">
+                <div class="conn-col">
+                    <h3>Workshops</h3>
+                    <ul>
+                        <li>Community Leadership &amp; Governance</li>
+                        <li>Permaculture Design</li>
+                        <li>Natural Building &amp; Construction</li>
+                        <li>Land Stewardship</li>
+                        <li>Business Models</li>
+                        <li>Cultural Integration</li>
+                        <li>Zoning &amp; Regulations</li>
+                    </ul>
+                </div>
+                <div class="conn-col">
+                    <h3>Community gathering</h3>
+                    <ul>
+                        <li>Circles &amp; Storytelling</li>
+                        <li>Multigenerational Families</li>
+                        <li>Music &amp; Dance</li>
+                        <li>Connections to the Elements</li>
+                        <li>Overnight Camping &amp; Cabins</li>
+                        <li>Forest Walks &amp; Campfires</li>
+                        <li>Community Gathering</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== POLLINATION (slide 7) ========== -->
+    <section class="bg-cream">
+        <div class="container">
+            <div class="two-col">
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s07.webp" alt="Yellow dandelions on moss — pollinating the future" loading="lazy"></div>
+                </div>
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">Pollinating the future</span>
+                        <h2>A delicate dance of nature.</h2>
+                    </div>
+                    <p>Pollination is one of the most important ecological services. Bees, butterflies, birds, and bats help plants reproduce, supporting the food supply and plant diversity.</p>
+                    <p>Let us learn from our relatives, and join in the natural cycles of life. By planting our collective vision, we can ensure that the land and our community continues to bloom.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RECIPROCITY (slide 8) ========== -->
+    <section class="bg-ink">
+        <div class="container">
+            <div class="two-col flip">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">A collective effort</span>
+                        <h2>Honouring reciprocity.</h2>
+                    </div>
+                    <p>Our current economy treats money and time as the main units of exchange. Nature works differently — exchange is reciprocal, seasonal, and woven into place.</p>
+                    <p><em style="font-family:'Fraunces',serif; color:var(--gold);">Let’s work together, like nature does.</em></p>
+                    <p>At registration, people choose a pathway contribution — time, skills, goods, or currency — and state what they’ll give and what they’d like back. Contributions flow into a shared Reciprocity Pool that first covers essential overhead, then supports land stewardship, and finally redistributes value back to community.</p>
+                </div>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s08.webp" alt="Honouring reciprocity — illustration of hands exchanging seeds, books, and harvest over a forest background" loading="lazy"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== VILLAGE QUOTE (slide 9) ========== -->
+    <section class="village-quote" aria-label="This isn't a festival">
+        <h2>This isn’t a festival you attend. <br>It’s a village you help create.</h2>
+        <p>Everyone who comes holds a piece of what makes this village come alive.</p>
+        <p>We’re calling them roles — and really they’re ways of belonging.</p>
+    </section>
+
+    <!-- ========== ROLES (slides 10–16) ========== -->
+    <section class="bg-cream" id="roles">
+        <div class="container">
+            <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
+                <span class="eyebrow">Seven ways to belong</span>
+                <h2 style="max-width:760px;margin:0 auto 1rem;">Claim your role.</h2>
+                <p style="font-style:normal; font-family:'Inter', sans-serif; color:var(--bark); margin:0 auto; max-width:620px; font-size:1.05rem;">You can hold more than one. You can swap. The point is that you’re in.</p>
+            </div>
             <div class="roles-grid">
-
-                <div class="role-card">
-                    <img src="images/fire-keeper.jpg" alt="Fire Keeper" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Fire Keeper</h3>
-                        <p class="role-tagline">Ceremony + Sacred Space</p>
-                        <p class="role-description">
-                            Tends to what is sacred &mdash; the energy of ritual, transition, and intentional 
-                            coming together. Opens and closes spaces. Holds the threshold between ordinary 
-                            time and village time.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You've held space before. You're comfortable with silence. You trust timing.
-                        </p>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s10.webp" alt="Bonfire at night with sparks rising into a dark forest" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Fire Keeper</h3>
+                        <p class="role-lead">Tends to what is sacred. The energy of ritual, transition, and intentional coming together.</p>
+                        <p class="role-does">Opens and closes spaces. Holds the threshold between ordinary time and village time.</p>
+                        <p class="role-caption-for">For you if: you’ve held space before. You’re comfortable with silence. You trust timing.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/story-weaver.jpg" alt="Story Weaver" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Story Weaver</h3>
-                        <p class="role-tagline">Memory + Documentation</p>
-                        <p class="role-description">
-                            The village memory &mdash; capturing moments, voices, fragments that would otherwise 
-                            disappear. Not as a journalist, but as a witness. Builds the Memory Wall. 
-                            Collects quotes and reflections.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You notice things others miss. You carry a notebook everywhere.
-                        </p>
+                </article>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s11.webp" alt="Spider web covered in dewdrops at dawn" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Story Weaver</h3>
+                        <p class="role-lead">The village memory. Capturing moments, voices, fragments that would otherwise disappear.</p>
+                        <p class="role-does">Supports the media team. Invites reflection.</p>
+                        <p class="role-caption-for">For you if: you notice things others miss. You love documenting experiences and storytelling.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/nourishment-steward.jpg" alt="Nourishment Steward" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Nourishment Steward</h3>
-                        <p class="role-tagline">Food + Body Care</p>
-                        <p class="role-description">
-                            Makes sure no one goes hungry. Mealtime feels like communion, not logistics. 
-                            Coordinates meals, labels food, facilitates communal kitchen moments.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You find joy in feeding people. Food is the most concrete form of love.
-                        </p>
+                </article>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s12.webp" alt="Communal table laden with shared bowls of food" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Nourishment Steward</h3>
+                        <p class="role-lead">Makes sure no one goes hungry. Mealtime feels like communion, not logistics.</p>
+                        <p class="role-does">Coordinates meals, labels food, facilitates communal kitchen moments.</p>
+                        <p class="role-caption-for">For you if: you find joy in feeding people. Food is the most concrete form of love.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/root-system.jpg" alt="Root System" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Root System</h3>
-                        <p class="role-tagline">Infrastructure + Land Care</p>
-                        <p class="role-description">
-                            The invisible work that makes everything visible. Someone set up those chairs. 
-                            Someone kept the compost sorted. Someone found the extension cord. 
-                            Sets up, breaks down, trouble-shoots, tends the grounds.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You see what needs doing before anyone asks. Tending the container 
-                            IS tending the community.
-                        </p>
+                </article>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s13.webp" alt="Rugged stone outcrop framed by trees and grass" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Basecamp Steward</h3>
+                        <p class="role-lead">Keeps the foundation steady. The unseen hands that make everything work — from the chairs to the compost.</p>
+                        <p class="role-does">Prepares and resets spaces. Tends the land, the tools, and the flow when things shift in real time.</p>
+                        <p class="role-caption-for">For you if: you act before asked. You move with purpose. You care for the whole.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/threshold-keeper.jpg" alt="Threshold Keeper" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Threshold Keeper</h3>
-                        <p class="role-tagline">Welcome + Wayfinding</p>
-                        <p class="role-description">
-                            Holds the portal. The first face someone sees. The last energy they carry home. 
-                            Welcomes arrivals, orients newcomers, holds departure check-ins.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You're warm without being overbearing. How someone arrives shapes 
-                            everything that follows.
-                        </p>
+                </article>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s14.webp" alt="Mossy stone archway leading into a forest tunnel" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Threshold Keeper</h3>
+                        <p class="role-lead">Holds the portal. The first face someone sees. The last energy they carry home.</p>
+                        <p class="role-does">Welcomes arrivals, orients newcomers, holds departure check-ins.</p>
+                        <p class="role-caption-for">For you if: you’re warm without being overbearing. How someone arrives shapes everything.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/living-ledger.jpg" alt="Living Ledger" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Living Ledger</h3>
-                        <p class="role-tagline">Coordination + Wayfinding</p>
-                        <p class="role-description">
-                            The bridge between concept and humans &mdash; making sure everyone knows 
-                            what's happening, when, and where. Handles logistics, answers questions, 
-                            and helps people find their way through the gathering.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: You're the person who knows how things work. You explain clearly. 
-                            You like holding the threads.
-                        </p>
+                </article>
+                <article class="role-card">
+                    <div class="slide"><img src="images/slides/s15.webp" alt="Many hands cupped together holding a young seedling" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Exchange Guide</h3>
+                        <p class="role-lead">Bridges concept and people. Helps everyone understand and trust the shared stewardship model.</p>
+                        <p class="role-does">Guides folks through how it works. Supports exchanges. Tracks roles and answers questions.</p>
+                        <p class="role-caption-for">For you if: you’re curious about new economies. You explain things simply. You like knowing how things work.</p>
                     </div>
-                </div>
-
-                <div class="role-card">
-                    <img src="images/weave-maker.jpg" alt="Weave Maker" class="role-art">
-                    <div class="role-body">
-                        <h3 class="role-name">Weave Maker</h3>
-                        <p class="role-tagline">Connection + Integration</p>
-                        <p class="role-description">
-                            Bridges people, notices who's isolated, holds space for the awkward 
-                            and the emergent. Introduces strangers, checks in mid-festival, 
-                            creates skill/need boards.
-                        </p>
-                        <p class="role-for-you">
-                            For you if: Who meets whom matters more than what's on the schedule.
-                        </p>
+                </article>
+                <article class="role-card role-card--wide">
+                    <div class="slide"><img src="images/slides/s16.webp" alt="Person bursting through a cloud of brightly coloured powder, arms wide" loading="lazy"></div>
+                    <div class="caption">
+                        <h3 class="role-caption-name">Flow Facilitator</h3>
+                        <p class="role-lead">Herds the people, notices who’s isolated, holds space for the emergent.</p>
+                        <p class="role-does">Introduces strangers, supports facilitators, and keeps a schedule.</p>
+                        <p class="role-caption-for">For you if: you value collective learning, shared experiences, and the thrill of making magic happen.</p>
                     </div>
-                </div>
-
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- RECIPROCITY -->
-    <section class="reciprocity">
+    <!-- ========== INVOLVED (slide 17) ========== -->
+    <section class="bg-warm">
         <div class="container">
-            <h2 class="section-title">A collective effort</h2>
-            <div class="reciprocity-text">
-                Our current economy treats money and time as the main units of exchange. 
-                Nature works differently: exchange is reciprocal, seasonal, and woven into place.
-                <br><br>
-                Let's work together, like nature does. Honouring reciprocity.
-                <br><br>
-                We all have a role to play in participating, bringing practical skills, 
-                sharing cultural knowledge, and offering lived experience, so we may learn together.
+            <div class="two-col flip">
+                <div class="col-text">
+                    <div class="section-head">
+                        <span class="eyebrow">How to get involved</span>
+                        <h2>We all have a role to play.</h2>
+                    </div>
+                    <p>Participating, bringing practical skills, sharing cultural knowledge, and offering lived experience — so we may learn together. There will be opportunities to join leadership circles, so we can take our learnings and start to take action towards our collective vision.</p>
+                    <ol class="steps">
+                        <li><strong>Claim your role.</strong> Tell us which one calls to you.</li>
+                        <li><strong>Briefing + training.</strong> Meet the team.</li>
+                        <li><strong>Work-bee.</strong> Meet, build, prototype.</li>
+                        <li><strong>August 15–16.</strong> The village comes alive.</li>
+                    </ol>
+                    <p class="involved-footnote">You can hold more than one role. You can swap. The point is that you’re in.</p>
+                </div>
+                <div class="col-media">
+                    <div class="slide"><img src="images/slides/s17.webp" alt="How to get involved — moss-covered forest floor" loading="lazy"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- CALENDAR -->
-    <section class="calendar-section">
-        <div class="container">
-            <p style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; margin-bottom:1rem; color:var(--bark);">
-                Save the date &mdash; add to your calendar
-            </p>
-            <a href="/event.ics" class="calendar-btn" download="the-living-village.ics">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <!-- ========== SIGNUP ========== -->
+    <section class="bg-sand" id="signup">
+        <div class="container signup-inner">
+            <h2>Save your place.</h2>
+            <p class="signup-lead">Leave your email and we’ll be in touch with next steps — briefings, work-bees, and the unfolding invitation.</p>
+            <a href="/event.ics" class="signup-calendar" download="the-living-village.ics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                Add to Calendar
+                Add August 15–16 to your calendar
             </a>
-        </div>
-    </section>
-
-    <!-- SIGNUP -->
-    <section class="signup" id="signup">
-        <div class="container">
-            <h2 class="section-title">Join the village</h2>
-            <p class="section-intro">
-                We're keeping this first wave small. The ones who say yes will shape 
-                what this becomes &mdash; not just for August, but for whatever comes after.
-            </p>
-            <form id="signup-form">
-                <div class="form-group">
+            <form id="signup-form" novalidate>
+                <div class="field">
                     <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@email.com">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Your name (optional)">
+                    <input type="text" id="name" name="name" autocomplete="name" placeholder="Optional">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label>Which role(s) call to you?</label>
-                    <div class="roles-checkboxes">
+                    <div class="roles-checkboxes" role="group" aria-label="Role interest">
                         <label><input type="checkbox" name="roles" value="Fire Keeper"> Fire Keeper</label>
                         <label><input type="checkbox" name="roles" value="Story Weaver"> Story Weaver</label>
                         <label><input type="checkbox" name="roles" value="Nourishment Steward"> Nourishment Steward</label>
-                        <label><input type="checkbox" name="roles" value="Root System"> Root System</label>
+                        <label><input type="checkbox" name="roles" value="Basecamp Steward"> Basecamp Steward</label>
                         <label><input type="checkbox" name="roles" value="Threshold Keeper"> Threshold Keeper</label>
-                        <label><input type="checkbox" name="roles" value="Living Ledger"> Living Ledger</label>
-                        <label><input type="checkbox" name="roles" value="Weave Maker"> Weave Maker</label>
+                        <label><input type="checkbox" name="roles" value="Exchange Guide"> Exchange Guide</label>
+                        <label><input type="checkbox" name="roles" value="Flow Facilitator"> Flow Facilitator</label>
                         <label><input type="checkbox" name="roles" value="Not sure yet"> Not sure yet</label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="comment">Questions or comments</label>
-                    <textarea id="comment" name="comment" placeholder="Anything you'd like us to know..."></textarea>
+                <div class="field">
+                    <label for="comment">Questions or what you’d like to offer</label>
+                    <textarea id="comment" name="comment" placeholder="Optional — anything you’d like us to know."></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Save My Place</button>
-                <div id="form-message" class="form-message"></div>
+                <div class="hp" aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+                <button type="submit" class="submit-btn">Save my place</button>
+                <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
             </form>
         </div>
     </section>
 
-    <!-- CLOSING -->
-    <section class="closing">
-        <div class="container">
-            <h2 class="section-title">
-                What if every person felt they belonged to something &mdash;<br>
-                and that something belonged to them?
-            </h2>
-            <p class="closing-tagline">
-                Not charity. Not commerce. Belonging.<br>
-                That's what we're building.<br>
-                And it starts with you.
-            </p>
-        </div>
-    </section>
+    </main>
 
-    <!-- FOOTER -->
+    <!-- ========== FOOTER ========== -->
     <footer>
-        <p>
-            A <a href="https://journeyland.ca" target="_blank">Journeyland</a> gathering<br>
-            <span style="font-size:0.8rem; opacity:0.6;">The Living Centre, London ON | August 15&ndash;16, 2026</span>
-        </p>
+        <div class="mark">Journeyland<span style="color:var(--gold);">.</span></div>
+        <div class="tag">The Living Village · August 15–16, 2026</div>
+        <div class="meta">The Living Centre · London, Ontario</div>
+        <div class="links">
+            <a href="https://journeyland.ca" target="_blank" rel="noopener">journeyland.ca</a>
+            <a href="https://instagram.com/journeyland.ca" target="_blank" rel="noopener">@journeyland.ca</a>
+            <a href="#signup">Save your place</a>
+        </div>
+        <div class="fine">© 2026 Journeyland</div>
     </footer>
 
     <script>
-        document.getElementById('signup-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = this.querySelector('.submit-btn');
+        (function () {
+            const form = document.getElementById('signup-form');
+            const btn = form.querySelector('.submit-btn');
             const msg = document.getElementById('form-message');
-            btn.disabled = true;
-            btn.textContent = 'Saving...';
-            const formData = new FormData(this);
-            const data = {
-                email: formData.get('email'),
-                name: formData.get('name'),
-                roles: Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(c => c.value),
-                comment: formData.get('comment'),
-                timestamp: new Date().toISOString()
-            };
-            try {
-                const res = await fetch('/api/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    msg.className = 'form-message success';
-                    msg.textContent = "You're in. We'll be in touch soon.";
-                    this.reset();
-                } else { throw new Error('Server error'); }
-            } catch (err) {
-                msg.className = 'form-message error';
-                msg.textContent = 'Something went wrong. Try again or email us directly.';
+            const emailField = document.getElementById('email');
+            const honeypot = document.getElementById('website');
+
+            function setMessage(kind, text) {
+                msg.className = 'form-message ' + kind;
+                msg.textContent = text;
             }
-            btn.disabled = false;
-            btn.textContent = 'Save My Place';
-        });
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                if (honeypot.value) return;
+                if (!emailField.checkValidity()) {
+                    setMessage('error', 'Please enter a valid email address.');
+                    emailField.focus();
+                    return;
+                }
+                btn.disabled = true;
+                const originalLabel = btn.textContent;
+                btn.textContent = 'Saving…';
+                setMessage('', '');
+
+                const roles = Array.from(form.querySelectorAll('input[name="roles"]:checked')).map(c => c.value);
+                const data = {
+                    email: emailField.value.trim(),
+                    name: (form.name.value || '').trim(),
+                    roles: roles,
+                    comment: (form.comment.value || '').trim(),
+                    timestamp: new Date().toISOString()
+                };
+
+                try {
+                    const res = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) throw new Error('server');
+                    setMessage('success', 'You’re in. We’ll be in touch with next steps.');
+                    form.reset();
+                } catch (err) {
+                    setMessage('error', 'Something went wrong. Please try again, or email hello@journeyland.ca.');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalLabel;
+                }
+            });
+        })();
     </script>
 </body>
 </html>

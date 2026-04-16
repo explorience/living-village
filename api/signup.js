@@ -28,13 +28,13 @@ export default async function handler(req, res) {
     if (!tokenRes.ok) {
       const errText = await tokenRes.text();
       console.error('Token refresh HTTP error:', tokenRes.status, errText.substring(0, 200));
-      return res.status(200).json({ success: true });
+      return res.status(502).json({ error: 'auth_failed', stage: 'token_refresh' });
     }
 
     const tokenData = await tokenRes.json();
     if (!tokenData.access_token) {
       console.error('No access_token in response:', JSON.stringify(tokenData).substring(0, 200));
-      return res.status(200).json({ success: true });
+      return res.status(502).json({ error: 'auth_failed', stage: 'no_access_token' });
     }
 
     // Step 2: Write to sheet
@@ -51,13 +51,13 @@ export default async function handler(req, res) {
     if (!sheetRes.ok) {
       const errText = await sheetRes.text();
       console.error('Sheet write error:', sheetRes.status, errText.substring(0, 300));
-    } else {
-      console.log('Sheet write OK for:', email);
+      return res.status(502).json({ error: 'sheet_write_failed', status: sheetRes.status });
     }
 
+    console.log('Sheet write OK for:', email);
     return res.status(200).json({ success: true, message: "Welcome to the village." });
   } catch (err) {
     console.error('Error:', err.message, err.stack?.substring(0, 200));
-    return res.status(200).json({ success: true, message: "Welcome to the village." });
+    return res.status(500).json({ error: 'server_error', message: err.message });
   }
 }
