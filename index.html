@@ -948,39 +948,10 @@
                 </svg>
                 Add August 15–16 to your calendar
             </a>
-            <form id="signup-form" novalidate>
-                <div class="field">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@email.com">
-                </div>
-                <div class="field">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name" autocomplete="name" placeholder="Optional">
-                </div>
-                <div class="field">
-                    <label>Which role(s) call to you?</label>
-                    <div class="roles-checkboxes" role="group" aria-label="Role interest">
-                        <label><input type="checkbox" name="roles" value="Fire Keeper"> Fire Keeper</label>
-                        <label><input type="checkbox" name="roles" value="Story Weaver"> Story Weaver</label>
-                        <label><input type="checkbox" name="roles" value="Nourishment Steward"> Nourishment Steward</label>
-                        <label><input type="checkbox" name="roles" value="Basecamp Steward"> Basecamp Steward</label>
-                        <label><input type="checkbox" name="roles" value="Threshold Keeper"> Threshold Keeper</label>
-                        <label><input type="checkbox" name="roles" value="Exchange Guide"> Exchange Guide</label>
-                        <label><input type="checkbox" name="roles" value="Flow Facilitator"> Flow Facilitator</label>
-                        <label><input type="checkbox" name="roles" value="Not sure yet"> Not sure yet</label>
-                    </div>
-                </div>
-                <div class="field">
-                    <label for="comment">Questions or what you’d like to offer</label>
-                    <textarea id="comment" name="comment" placeholder="Optional — anything you’d like us to know."></textarea>
-                </div>
-                <div class="hp" aria-hidden="true">
-                    <label for="website">Website</label>
-                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-                </div>
-                <button type="submit" class="submit-btn">Save my place</button>
-                <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
-            </form>
+            <p class="signup-lead" style="margin-top:1.5rem;">Saying yes to The Living Village is more than a ticket. Pick the role that calls to you, shape your contribution, sign your name to a small promise. Take it at the pace it asks of you.</p>
+            <div style="margin-top:2rem; display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
+                <a href="/join/" class="btn btn-dark">Begin the journey →</a>
+            </div>
         </div>
     </section>
 
@@ -1002,6 +973,7 @@
     <script>
         (function () {
             const form = document.getElementById('signup-form');
+            if (!form) return; // form replaced by /join/ CTA on this page
             const btn = form.querySelector('.submit-btn');
             const msg = document.getElementById('form-message');
             const emailField = document.getElementById('email');
