@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join · The Living Village</title>
+    <meta name="description" content="A slower way of saying yes. Join The Living Village, August 15-16 2026, at The Living Centre near London, Ontario.">
+    <meta name="robots" content="noindex">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <style>
+        :root {
+            --earth: #2A1D10;
+            --bark: #4A3425;
+            --moss: #3D5540;
+            --sage: #7A9E7E;
+            --fern: #A6C1A3;
+            --cream: #F6EDD9;
+            --warm: #EFE3C8;
+            --sand: #DCC9A3;
+            --terracotta: #C4704B;
+            --gold: #D9A441;
+            --deep: #14100A;
+            --ink: #1A1208;
+            --hairline: rgba(74, 52, 37, 0.18);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--earth);
+            background: var(--cream);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            * { animation: none !important; transition: none !important; }
+        }
+        a { color: inherit; }
+        :focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+            border-radius: 2px;
+        }
+        button { font-family: inherit; cursor: pointer; }
+
+        .page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3.5rem 1.5rem 5rem;
+        }
+
+        .moment-name {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.78rem;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--moss);
+            margin-bottom: 3.5rem;
+            opacity: 0.85;
+        }
+
+        .moment {
+            display: none;
+            width: 100%;
+            max-width: 620px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        .moment.is-visible { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .display {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.015em;
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            margin-bottom: 2rem;
+            color: var(--earth);
+        }
+
+        .lede {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: clamp(1.15rem, 2vw, 1.4rem);
+            line-height: 1.55;
+            color: var(--bark);
+            margin-bottom: 2rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.4rem;
+            color: var(--earth);
+        }
+        p.quiet {
+            font-size: 0.92rem;
+            color: var(--bark);
+            opacity: 0.78;
+        }
+        p strong { font-weight: 600; }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.95rem 1.9rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+            border: 1px solid transparent;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            font-family: inherit;
+        }
+        .btn-primary { background: var(--earth); color: var(--cream); }
+        .btn-primary:hover:not(:disabled) { background: var(--bark); transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-ghost {
+            background: transparent;
+            color: var(--bark);
+            border-color: var(--hairline);
+        }
+        .btn-ghost:hover { border-color: var(--bark); }
+        .btn-link {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--bark);
+            text-decoration: underline;
+            text-decoration-color: var(--hairline);
+            text-underline-offset: 4px;
+            font-size: 0.92rem;
+            letter-spacing: 0;
+        }
+        .btn-link:hover { color: var(--earth); text-decoration-color: var(--bark); }
+
+        /* ---------- SLIDER ---------- */
+        .slider-wrap {
+            margin: 2.5rem 0 1rem;
+            text-align: center;
+        }
+        .slider-amount {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: clamp(4rem, 12vw, 6rem);
+            line-height: 1;
+            color: var(--earth);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+        .slider-amount .currency {
+            font-size: 0.5em;
+            vertical-align: top;
+            margin-right: 0.1em;
+            font-weight: 700;
+            color: var(--bark);
+            position: relative;
+            top: 0.4em;
+        }
+        .slider-line {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--bark);
+            min-height: 3rem;
+            max-width: 480px;
+            margin: 0 auto 2rem;
+            line-height: 1.5;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--sand);
+            border-radius: 999px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            background: var(--earth);
+            border: 3px solid var(--cream);
+            border-radius: 999px;
+            cursor: grab;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+        }
+        input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            background: var(--earth);
+            border: 3px solid var(--cream);
+            border-radius: 999px;
+            cursor: grab;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+        }
+        .slider-bounds {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.7rem;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--bark);
+            opacity: 0.7;
+        }
+
+        /* ---------- ROLE GROUPS ---------- */
+        .roles-section {
+            margin-top: 3rem;
+        }
+        .roles-section h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .roles-section p.quiet {
+            margin-bottom: 1.5rem;
+        }
+        .role-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.7rem;
+        }
+        .role-list label {
+            display: flex;
+            gap: 0.85rem;
+            align-items: flex-start;
+            padding: 1rem 1.1rem;
+            border: 1px solid var(--hairline);
+            border-radius: 14px;
+            background: var(--warm);
+            cursor: pointer;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .role-list label:hover { border-color: var(--bark); }
+        .role-list label.is-checked {
+            border-color: var(--moss);
+            background: var(--cream);
+        }
+        .role-list input[type="checkbox"] {
+            margin-top: 0.25rem;
+            accent-color: var(--moss);
+            transform: scale(1.1);
+            flex-shrink: 0;
+        }
+        .role-name {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--earth);
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .role-blurb {
+            font-size: 0.92rem;
+            color: var(--bark);
+            line-height: 1.5;
+            display: block;
+        }
+
+        .micro-list label {
+            background: transparent;
+            border-color: var(--hairline);
+            padding: 0.7rem 0.9rem;
+        }
+        .micro-list label.is-checked { background: var(--warm); }
+        .micro-name {
+            font-size: 0.98rem;
+            color: var(--earth);
+            font-weight: 500;
+        }
+
+        /* ---------- VOW ---------- */
+        .vow-list {
+            margin: 2rem 0 1rem;
+            padding: 0;
+            list-style: none;
+        }
+        .vow-list li {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            line-height: 1.55;
+            color: var(--earth);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--hairline);
+        }
+        .vow-list li:last-child { border-bottom: none; }
+        .vow-sign {
+            margin-top: 2rem;
+        }
+        .vow-sign label {
+            display: block;
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--bark);
+            margin-bottom: 0.6rem;
+            opacity: 0.85;
+        }
+        .vow-sign input {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border: 1px solid var(--hairline);
+            border-bottom: 2px solid var(--bark);
+            background: transparent;
+            border-radius: 6px 6px 0 0;
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            color: var(--earth);
+        }
+        .vow-sign input:focus {
+            outline: none;
+            border-bottom-color: var(--moss);
+            border-bottom-width: 2px;
+        }
+        .vow-sign input::placeholder {
+            color: var(--bark);
+            opacity: 0.45;
+        }
+
+        /* ---------- DETAILS FORM ---------- */
+        .field { margin-bottom: 1.5rem; }
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--bark);
+            margin-bottom: 0.55rem;
+            opacity: 0.85;
+        }
+        .field input, .field textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--hairline);
+            background: var(--warm);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--earth);
+        }
+        .field input:focus, .field textarea:focus {
+            outline: none;
+            border-color: var(--moss);
+            background: #fff;
+        }
+        .field textarea { min-height: 90px; resize: vertical; }
+
+        /* honeypot */
+        .hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+
+        /* ---------- SUMMARY (contribution moment) ---------- */
+        .summary {
+            background: var(--warm);
+            border: 1px solid var(--hairline);
+            border-radius: 14px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.55rem 0;
+            font-size: 0.96rem;
+            border-bottom: 1px dashed var(--hairline);
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 0.85rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .summary-row .label { color: var(--bark); }
+        .summary-row .value { color: var(--earth); text-align: right; }
+
+        #payment-element { margin: 1rem 0 1.5rem; }
+        #payment-message {
+            color: var(--terracotta);
+            font-size: 0.95rem;
+            min-height: 1.5em;
+            margin-top: 0.5rem;
+        }
+        .processing {
+            color: var(--bark);
+            font-style: italic;
+            font-size: 0.92rem;
+        }
+
+        /* ---------- WELCOME ---------- */
+        .welcome-mark {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 1.4rem;
+            color: var(--moss);
+            margin-bottom: 1.5rem;
+        }
+        .welcome-list {
+            margin: 2rem 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid var(--hairline);
+        }
+        .welcome-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--hairline);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .welcome-list li .label { color: var(--earth); }
+        .welcome-list li a {
+            font-size: 0.88rem;
+            color: var(--moss);
+            text-decoration: underline;
+            text-decoration-color: var(--hairline);
+            text-underline-offset: 4px;
+        }
+        .welcome-list li a:hover { text-decoration-color: var(--moss); }
+
+        /* ---------- BACK LINK ---------- */
+        .back-link {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--bark);
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+        }
+        .back-link:hover { opacity: 1; }
+
+        /* footer */
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--bark);
+            opacity: 0.55;
+            font-size: 0.82rem;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 540px) {
+            .page { padding: 2.5rem 1.25rem 4rem; }
+            .moment-name { margin-bottom: 2.5rem; }
+            .display { font-size: 2rem; }
+            .lede { font-size: 1.1rem; }
+            p { font-size: 1rem; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .actions .btn { justify-content: center; }
+            .summary-row { flex-direction: column; gap: 0.2rem; }
+            .summary-row .value { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link" aria-label="Back to The Living Village">← back</a>
+
+    <main class="page">
+
+    <!-- ============ MOMENT 1: THRESHOLD ============ -->
+    <section class="moment is-visible" data-moment="threshold">
+        <div class="moment-name">Threshold</div>
+
+        <h1 class="display">A slower way of saying yes.</h1>
+
+        <p>You found this. Maybe Andre sent you, maybe a friend, maybe you went looking. However you arrived, this is the door, and the door opens both ways.</p>
+
+        <p>The Living Village is two days and one night, August 15-16, at The Living Centre near London, Ontario. A small group, deliberately. A shared meal. A fire. The land. Each other.</p>
+
+        <p><strong>It is not a festival you attend. It is a village you help create.</strong></p>
+
+        <p>There are no tickets here. There is a Reciprocity Pool, a shared body of resources, seeded by a grant, filled by everyone who comes. You bring what you have. Time, skills, goods, currency. You name what you would like back. The pool covers what is needed, and what is left flows toward stewarding the land and what we build through this.</p>
+
+        <p>If that sounds like work, it is. The work is the point.</p>
+
+        <p class="lede">What follows is a slower way of saying yes than buying a ticket. Take it at the pace it asks of you.</p>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="pool">Begin →</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 2: POOL ============ -->
+    <section class="moment" data-moment="pool">
+        <div class="moment-name">The Pool</div>
+
+        <h1 class="display">A shared body of resources.</h1>
+
+        <p>Our current economy treats money and time as the main units of exchange. Nature works differently. Exchange is reciprocal, seasonal, and woven into place.</p>
+
+        <p>The Reciprocity Pool was seeded with eight thousand dollars in grant funding. That money does not belong to anyone. It is the village before the village arrives.</p>
+
+        <p>Everyone who comes adds to the pool, in their own way. Some bring more money. Some bring more time. Some bring food, or a skill, or a song, or a willingness to sweep the lodge at the end of the night. None of these are ranked.</p>
+
+        <p>The pool covers what is needed first. Food, firewood, the people who keep things running. What is left flows toward stewarding the land we are guests on, and toward the next iteration of this work.</p>
+
+        <p class="lede">Some arrive with full pockets. Some arrive with full hands. Both fill the pool.</p>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="shape">I understand →</button>
+            <button class="btn btn-link" data-go="threshold">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 3: SHAPE ============ -->
+    <section class="moment" data-moment="shape">
+        <div class="moment-name">Your Contribution</div>
+
+        <h1 class="display">Shape what you bring.</h1>
+
+        <p>Two parts. A money number, and the things you would like to hold. Move both to where they feel right for this season of your life.</p>
+
+        <div class="slider-wrap">
+            <div class="slider-amount" id="slider-amount-display">
+                <span class="currency">$</span><span id="slider-amount-number">22</span>
+            </div>
+            <p class="slider-line" id="slider-line">Welcomed. The pool will hold what you cannot give right now.</p>
+            <input type="range" id="slider" min="22" max="222" step="1" value="22" aria-label="Your monetary contribution to the Reciprocity Pool">
+            <div class="slider-bounds">
+                <span>$22</span>
+                <span>$222</span>
+            </div>
+        </div>
+
+        <div class="roles-section">
+            <h3>Tend a fire of the village.</h3>
+            <p class="quiet">Pick the role or roles that call to you. These are interests, not assignments. We may ask you to swap if a role gets full.</p>
+            <div class="role-list" id="role-list">
+                <label><input type="checkbox" name="roles" value="Fire Keeper"><span><span class="role-name">Fire Keeper</span><span class="role-blurb">Tends to what is sacred. The energy of ritual, transition, and intentional coming together.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Story Weaver"><span><span class="role-name">Story Weaver</span><span class="role-blurb">The village memory. Captures moments, voices, fragments that would otherwise disappear.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Nourishment Steward"><span><span class="role-name">Nourishment Steward</span><span class="role-blurb">Makes sure no one goes hungry. Mealtime feels like communion, not logistics.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Basecamp Steward"><span><span class="role-name">Basecamp Steward</span><span class="role-blurb">Keeps the foundation steady. The unseen hands that make everything work.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Threshold Keeper"><span><span class="role-name">Threshold Keeper</span><span class="role-blurb">Holds the portal. The first face someone sees. The last energy they carry home.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Exchange Guide"><span><span class="role-name">Exchange Guide</span><span class="role-blurb">Bridges concept and people. Helps everyone trust the shared stewardship model.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Flow Facilitator"><span><span class="role-name">Flow Facilitator</span><span class="role-blurb">Notices who is isolated. Holds space for the emergent. Keeps the schedule alive.</span></span></label>
+                <label><input type="checkbox" name="roles" value="Not sure yet"><span><span class="role-name">Not sure yet</span><span class="role-blurb">Place me where I am needed. I will learn the village by being in it.</span></span></label>
+            </div>
+        </div>
+
+        <div class="roles-section">
+            <h3>Smaller offerings.</h3>
+            <p class="quiet">The everyday things that make a village run. Pick any. None is also fine if your contribution lives elsewhere.</p>
+            <div class="role-list micro-list" id="micro-list">
+                <label><input type="checkbox" name="micro" value="Bring a salad ingredient"><span><span class="micro-name">Bring a salad ingredient for salad club</span></span></label>
+                <label><input type="checkbox" name="micro" value="Bring a dish for opening night potluck"><span><span class="micro-name">Bring a dish for the opening night potluck</span></span></label>
+                <label><input type="checkbox" name="micro" value="An hour on dish duty"><span><span class="micro-name">Take an hour on dish duty</span></span></label>
+                <label><input type="checkbox" name="micro" value="Sweep the lodge"><span><span class="micro-name">Sweep the lodge before we leave</span></span></label>
+                <label><input type="checkbox" name="micro" value="Bring firewood"><span><span class="micro-name">Bring firewood</span></span></label>
+                <label><input type="checkbox" name="micro" value="Hold the welcome table for an hour"><span><span class="micro-name">Hold the welcome table for an hour</span></span></label>
+                <label><input type="checkbox" name="micro" value="Lead a morning walk"><span><span class="micro-name">Lead a morning walk on the land</span></span></label>
+                <label><input type="checkbox" name="micro" value="Help with setup or teardown"><span><span class="micro-name">Help with setup or teardown</span></span></label>
+            </div>
+        </div>
+
+        <div class="field" style="margin-top: 2rem;">
+            <label for="offer">Something else you would like to bring</label>
+            <textarea id="offer" name="offer" placeholder="A skill. A song. A workshop. An offering of any kind. Optional."></textarea>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="vow">Continue →</button>
+            <button class="btn btn-link" data-go="pool">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 4: VOW ============ -->
+    <section class="moment" data-moment="vow">
+        <div class="moment-name">The Vow</div>
+
+        <h1 class="display">A small promise to the village.</h1>
+
+        <p>What you bring is yours to choose. How you show up is the village's to ask.</p>
+
+        <ul class="vow-list">
+            <li>I will arrive present, and I will leave the land better than I found it.</li>
+            <li>I will fulfill what I take on, even if the village asks me to swap roles.</li>
+            <li>I understand that what I add to the pool is a gift to the people beside me, not a transaction.</li>
+        </ul>
+
+        <p class="quiet">Sign by typing your first name below. This is not a contract. It is a way of saying: I read these, and I mean them.</p>
+
+        <div class="vow-sign">
+            <label for="vow-signature">Your first name</label>
+            <input type="text" id="vow-signature" autocomplete="given-name" placeholder="...">
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="details" id="vow-continue" disabled>Continue →</button>
+            <button class="btn btn-link" data-go="shape">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 5: DETAILS ============ -->
+    <section class="moment" data-moment="details">
+        <div class="moment-name">Practical</div>
+
+        <h1 class="display">Now the practical part.</h1>
+
+        <p>So we can reach you, feed you, and meet you where you are.</p>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+            <label for="full-name">Full name</label>
+            <input type="text" id="full-name" name="name" autocomplete="name" placeholder="Your name">
+        </div>
+        <div class="field">
+            <label for="dietary">Dietary needs or food sensitivities</label>
+            <input type="text" id="dietary" name="dietary" placeholder="Optional. Allergies, restrictions, preferences.">
+        </div>
+        <div class="field">
+            <label for="accessibility">Anything we should know to make this accessible to you</label>
+            <textarea id="accessibility" name="accessibility" placeholder="Optional. Mobility, sensory, neurodivergence, anything else."></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="contribution" id="details-continue">Continue →</button>
+            <button class="btn btn-link" data-go="vow">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 6: CONTRIBUTION ============ -->
+    <section class="moment" data-moment="contribution">
+        <div class="moment-name">Contribution</div>
+
+        <h1 class="display">The last gesture.</h1>
+
+        <p>Here is what you are bringing. If anything looks off, step back and adjust.</p>
+
+        <div class="summary" id="summary"></div>
+
+        <p class="quiet">Card details below. Payment is processed by Stripe. We never see your card number.</p>
+
+        <div id="payment-element"></div>
+        <div id="payment-message" role="status" aria-live="polite"></div>
+
+        <div class="actions">
+            <button class="btn btn-primary" id="pay-button">Send my contribution →</button>
+            <button class="btn btn-link" data-go="details">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 7: WELCOME ============ -->
+    <section class="moment" data-moment="welcome">
+        <div class="moment-name">Welcome</div>
+
+        <p class="welcome-mark">You are in.</p>
+
+        <h1 class="display">See you on the land.</h1>
+
+        <p>August 15-16, 2026. The Living Centre, near London, Ontario.</p>
+        <p>You will hear from us before then. A briefing. A work-bee invitation. The unfolding shape of the gathering.</p>
+
+        <ul class="welcome-list">
+            <li><span class="label">Add to your calendar</span><a href="/event.ics" download="the-living-village.ics">Download .ics</a></li>
+            <li><span class="label">A quick note (optional)</span></li>
+        </ul>
+
+        <div class="field">
+            <label for="welcome-note">If you would like, tell us in one sentence what you are bringing</label>
+            <textarea id="welcome-note" placeholder="Optional. We will read every one."></textarea>
+            <div class="actions" style="margin-top: 1rem;">
+                <button class="btn btn-ghost" id="send-note">Send note</button>
+                <span class="processing" id="note-status" style="display:none;">Sent. Thank you.</span>
+            </div>
+        </div>
+
+        <p class="quiet" style="margin-top: 3rem;">Questions before then? Reply to the confirmation email, or write to <a href="mailto:hello@journeyland.ca">hello@journeyland.ca</a>.</p>
+    </section>
+
+    </main>
+
+    <footer>
+        Journeyland · The Living Village · August 15-16, 2026
+    </footer>
+
+    <script>
+        (function () {
+            const STATE_KEY = 'lv-join-v1';
+
+            const state = loadState() || {
+                amount: 22,
+                roles: [],
+                micro: [],
+                offer: '',
+                vow: '',
+                email: '',
+                name: '',
+                dietary: '',
+                accessibility: '',
+                paymentIntentId: '',
+            };
+
+            const moments = ['threshold', 'pool', 'shape', 'vow', 'details', 'contribution', 'welcome'];
+            let currentMoment = 'threshold';
+
+            function loadState() {
+                try { return JSON.parse(sessionStorage.getItem(STATE_KEY)); } catch (e) { return null; }
+            }
+            function saveState() {
+                try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
+            }
+
+            function showMoment(name) {
+                if (!moments.includes(name)) return;
+                document.querySelectorAll('.moment').forEach(el => el.classList.remove('is-visible'));
+                const target = document.querySelector('.moment[data-moment="' + name + '"]');
+                target.classList.add('is-visible');
+                currentMoment = name;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (name === 'contribution') initContributionMoment();
+            }
+
+            // ---------- nav buttons ----------
+            document.querySelectorAll('[data-go]').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    const dest = btn.getAttribute('data-go');
+                    if (!validateBeforeLeaving(currentMoment, dest)) return;
+                    showMoment(dest);
+                });
+            });
+
+            function validateBeforeLeaving(from, to) {
+                // only validate when moving forward
+                if (moments.indexOf(to) <= moments.indexOf(from)) return true;
+
+                if (from === 'shape') {
+                    state.amount = Number(slider.value);
+                    state.roles = readChecked('input[name="roles"]');
+                    state.micro = readChecked('input[name="micro"]');
+                    state.offer = (document.getElementById('offer').value || '').trim();
+                    saveState();
+                }
+                if (from === 'vow') {
+                    const sig = (document.getElementById('vow-signature').value || '').trim();
+                    if (!sig) {
+                        document.getElementById('vow-signature').focus();
+                        return false;
+                    }
+                    state.vow = sig;
+                    saveState();
+                }
+                if (from === 'details') {
+                    const email = document.getElementById('email').value.trim();
+                    const hp = document.getElementById('website').value;
+                    if (hp) return false; // honeypot
+                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        document.getElementById('email').focus();
+                        return false;
+                    }
+                    state.email = email;
+                    state.name = document.getElementById('full-name').value.trim();
+                    state.dietary = document.getElementById('dietary').value.trim();
+                    state.accessibility = document.getElementById('accessibility').value.trim();
+                    saveState();
+                }
+                return true;
+            }
+
+            function readChecked(selector) {
+                return Array.from(document.querySelectorAll(selector + ':checked')).map(el => el.value);
+            }
+
+            // ---------- slider ----------
+            const slider = document.getElementById('slider');
+            const sliderNumber = document.getElementById('slider-amount-number');
+            const sliderLine = document.getElementById('slider-line');
+
+            const sliderLines = [
+                { max: 33,  text: 'Welcomed. The pool will hold what you cannot give right now.' },
+                { max: 66,  text: 'Steady. Every stream fills the pool.' },
+                { max: 122, text: 'This is what filling the pool looks like.' },
+                { max: 177, text: 'Generous. You are holding space for someone bringing time instead of money.' },
+                { max: 222, text: 'A full share. Thank you. The village will feel this.' },
+            ];
+
+            function updateSliderUI(v) {
+                sliderNumber.textContent = v;
+                const line = sliderLines.find(b => v <= b.max);
+                if (line) sliderLine.textContent = line.text;
+            }
+            slider.addEventListener('input', () => {
+                state.amount = Number(slider.value);
+                updateSliderUI(state.amount);
+            });
+            slider.addEventListener('change', saveState);
+            slider.value = state.amount;
+            updateSliderUI(state.amount);
+
+            // ---------- role checkbox styling ----------
+            function wireCheckboxes(container) {
+                container.querySelectorAll('label').forEach(label => {
+                    const cb = label.querySelector('input[type="checkbox"]');
+                    if (!cb) return;
+                    const sync = () => label.classList.toggle('is-checked', cb.checked);
+                    cb.addEventListener('change', sync);
+                    sync();
+                });
+            }
+            wireCheckboxes(document.getElementById('role-list'));
+            wireCheckboxes(document.getElementById('micro-list'));
+
+            // restore prior selections
+            state.roles.forEach(r => {
+                const cb = document.querySelector('input[name="roles"][value="' + cssEscape(r) + '"]');
+                if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+            });
+            state.micro.forEach(r => {
+                const cb = document.querySelector('input[name="micro"][value="' + cssEscape(r) + '"]');
+                if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+            });
+            if (state.offer) document.getElementById('offer').value = state.offer;
+
+            function cssEscape(s) {
+                return String(s).replace(/"/g, '\\"');
+            }
+
+            // ---------- vow ----------
+            const vowInput = document.getElementById('vow-signature');
+            const vowContinue = document.getElementById('vow-continue');
+            vowInput.addEventListener('input', () => {
+                vowContinue.disabled = !vowInput.value.trim();
+            });
+            if (state.vow) {
+                vowInput.value = state.vow;
+                vowContinue.disabled = false;
+            }
+
+            // ---------- details prefill ----------
+            if (state.email) document.getElementById('email').value = state.email;
+            if (state.name) document.getElementById('full-name').value = state.name;
+            if (state.dietary) document.getElementById('dietary').value = state.dietary;
+            if (state.accessibility) document.getElementById('accessibility').value = state.accessibility;
+
+            // ---------- contribution + stripe ----------
+            let stripe, elements, paymentElement, paymentInitialized = false;
+
+            async function initContributionMoment() {
+                renderSummary();
+                if (paymentInitialized) return;
+                paymentInitialized = true;
+
+                const messageEl = document.getElementById('payment-message');
+                try {
+                    const res = await fetch('/api/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: state.amount, email: state.email }),
+                    });
+                    if (!res.ok) {
+                        messageEl.textContent = 'Could not connect to payment. Try again, or email us.';
+                        paymentInitialized = false;
+                        return;
+                    }
+                    const { clientSecret, publishableKey, paymentIntentId } = await res.json();
+                    state.paymentIntentId = paymentIntentId;
+                    saveState();
+
+                    stripe = Stripe(publishableKey);
+                    elements = stripe.elements({
+                        clientSecret,
+                        appearance: {
+                            theme: 'stripe',
+                            variables: {
+                                colorPrimary: '#3D5540',
+                                colorBackground: '#EFE3C8',
+                                colorText: '#2A1D10',
+                                fontFamily: 'Inter, system-ui, sans-serif',
+                                borderRadius: '8px',
+                            },
+                        },
+                    });
+                    paymentElement = elements.create('payment');
+                    paymentElement.mount('#payment-element');
+                } catch (err) {
+                    messageEl.textContent = 'Something went sideways. Refresh and try again, or email us.';
+                    paymentInitialized = false;
+                }
+            }
+
+            function renderSummary() {
+                const lines = [];
+                lines.push(['Monetary contribution', '$' + state.amount]);
+                if (state.roles.length) lines.push(['Roles', state.roles.join(', ')]);
+                if (state.micro.length) lines.push(['Smaller offerings', state.micro.length + ' selected']);
+                if (state.offer) lines.push(['Something else', truncate(state.offer, 60)]);
+                lines.push(['You are', state.vow + ', from ' + (state.email || 'somewhere')]);
+                lines.push(['Total today', '$' + state.amount]);
+                document.getElementById('summary').innerHTML = lines.map(([label, value]) =>
+                    '<div class="summary-row"><span class="label">' + escapeHtml(label) + '</span><span class="value">' + escapeHtml(value) + '</span></div>'
+                ).join('');
+            }
+
+            function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+            function escapeHtml(s) {
+                return String(s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+
+            const payButton = document.getElementById('pay-button');
+            payButton.addEventListener('click', async () => {
+                if (!stripe || !elements) return;
+                const messageEl = document.getElementById('payment-message');
+                payButton.disabled = true;
+                payButton.textContent = 'Sending…';
+                messageEl.textContent = '';
+
+                const { error, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: window.location.origin + '/join/?welcome=1',
+                        receipt_email: state.email,
+                    },
+                    redirect: 'if_required',
+                });
+
+                if (error) {
+                    messageEl.textContent = error.message || 'Payment did not go through. Try again.';
+                    payButton.disabled = false;
+                    payButton.textContent = 'Send my contribution →';
+                    return;
+                }
+
+                if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    state.paymentIntentId = paymentIntent.id;
+                    saveState();
+                    await submitToSheet();
+                    showMoment('welcome');
+                }
+            });
+
+            async function submitToSheet() {
+                try {
+                    await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: state.email,
+                            name: state.name,
+                            roles: state.roles,
+                            micro: state.micro,
+                            comment: state.offer,
+                            amount: state.amount,
+                            vow: state.vow,
+                            dietary: state.dietary,
+                            accessibility: state.accessibility,
+                            paymentIntentId: state.paymentIntentId,
+                            timestamp: new Date().toISOString(),
+                        }),
+                    });
+                } catch (e) {
+                    // payment already succeeded; never block the welcome screen on a sheet write
+                    console.error('Sheet write failed', e);
+                }
+            }
+
+            // ---------- welcome note ----------
+            const sendNote = document.getElementById('send-note');
+            sendNote.addEventListener('click', async () => {
+                const note = document.getElementById('welcome-note').value.trim();
+                if (!note) return;
+                sendNote.disabled = true;
+                sendNote.textContent = 'Sending…';
+                try {
+                    await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: state.email,
+                            name: state.name,
+                            comment: '[note] ' + note,
+                            timestamp: new Date().toISOString(),
+                        }),
+                    });
+                    document.getElementById('note-status').style.display = 'inline';
+                    sendNote.style.display = 'none';
+                } catch (e) {
+                    sendNote.disabled = false;
+                    sendNote.textContent = 'Send note';
+                }
+            });
+
+            // ---------- handle Stripe redirect return ----------
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('welcome') === '1' || params.get('payment_intent')) {
+                // returning from a Stripe redirect; jump to welcome
+                showMoment('welcome');
+            }
+        })();
+    </script>
+</body>
+</html>

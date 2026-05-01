@@ -7,10 +7,26 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email, name, roles, comment, timestamp } = req.body;
+  const {
+    email, name, roles, comment, timestamp,
+    // /join/ flow extras (all optional; older form posts continue to work)
+    micro, amount, vow, dietary, accessibility, paymentIntentId,
+  } = req.body;
   if (!email) return res.status(400).json({ error: 'Email is required' });
 
-  const rowData = [timestamp || new Date().toISOString(), email, name || '', (roles || []).join(', '), comment || ''];
+  const rowData = [
+    timestamp || new Date().toISOString(),
+    email,
+    name || '',
+    (roles || []).join(', '),
+    comment || '',
+    amount != null ? String(amount) : '',
+    (micro || []).join(', '),
+    vow || '',
+    dietary || '',
+    accessibility || '',
+    paymentIntentId || '',
+  ];
 
   try {
     // Step 1: Refresh token
@@ -38,7 +54,9 @@ export default async function handler(req, res) {
     }
 
     // Step 2: Write to sheet
-    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AE:append?valueInputOption=RAW`;
+    // Range widened from A:E to A:K to accommodate /join/ flow fields.
+    // Keep the !-as-%21 and :-as-%3A encoding (regression fixed in 3bd26ea).
+    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AK:append?valueInputOption=RAW`;
     const sheetRes = await fetch(sheetUrl, {
       method: 'POST',
       headers: {
