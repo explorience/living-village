@@ -11,8 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <script src="https://js.stripe.com/v3/"></script>
-
     <style>
         :root {
             --earth: #2A1D10;
@@ -53,6 +51,8 @@
             outline-offset: 3px;
             border-radius: 2px;
         }
+        /* Programmatic focus on moment headings shouldn't show a visual outline. */
+        [tabindex="-1"]:focus { outline: none; }
         button { font-family: inherit; cursor: pointer; }
 
         .page {
@@ -77,7 +77,7 @@
         .moment {
             display: none;
             width: 100%;
-            max-width: 620px;
+            max-width: 660px;
             animation: fadeIn 0.6s ease-out;
         }
         .moment.is-visible { display: block; }
@@ -99,403 +99,441 @@
         .lede {
             font-family: 'Fraunces', serif;
             font-style: italic;
-            font-weight: 400;
-            font-size: clamp(1.15rem, 2vw, 1.4rem);
+            font-size: 1.15rem;
             line-height: 1.55;
             color: var(--bark);
-            margin-bottom: 2rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--hairline);
         }
 
-        p {
-            font-size: 1.05rem;
-            line-height: 1.8;
-            margin-bottom: 1.4rem;
-            color: var(--earth);
-        }
-        p.quiet {
-            font-size: 0.92rem;
+        .moment p {
+            font-size: 1rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
             color: var(--bark);
-            opacity: 0.78;
         }
-        p strong { font-weight: 600; }
 
+        .moment p strong { color: var(--earth); font-weight: 600; }
+
+        .quiet {
+            font-size: 0.9rem;
+            color: var(--bark);
+            opacity: 0.75;
+            font-style: italic;
+        }
+
+        /* ---------- buttons ---------- */
         .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
             margin-top: 2.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
             align-items: center;
         }
-
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             padding: 0.95rem 1.9rem;
             border-radius: 999px;
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.95rem;
-            letter-spacing: 0.02em;
+            font-size: 1rem;
+            letter-spacing: 0.01em;
             border: 1px solid transparent;
             transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-            font-family: inherit;
         }
         .btn-primary { background: var(--earth); color: var(--cream); }
-        .btn-primary:hover:not(:disabled) { background: var(--bark); transform: translateY(-2px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary:hover:not(:disabled) { background: var(--bark); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-link {
+            background: transparent;
+            color: var(--bark);
+            font-weight: 400;
+            padding: 0.95rem 0.5rem;
+            opacity: 0.7;
+            border: none;
+        }
+        .btn-link:hover { opacity: 1; }
         .btn-ghost {
             background: transparent;
             color: var(--bark);
             border-color: var(--hairline);
         }
-        .btn-ghost:hover { border-color: var(--bark); }
-        .btn-link {
-            background: none;
-            border: none;
-            padding: 0;
-            color: var(--bark);
-            text-decoration: underline;
-            text-decoration-color: var(--hairline);
-            text-underline-offset: 4px;
-            font-size: 0.92rem;
-            letter-spacing: 0;
-        }
-        .btn-link:hover { color: var(--earth); text-decoration-color: var(--bark); }
-
-        /* ---------- SLIDER ---------- */
-        .slider-wrap {
-            margin: 2.5rem 0 1rem;
-            text-align: center;
-        }
-        .slider-amount {
-            font-family: 'Fraunces', serif;
-            font-weight: 900;
-            font-size: clamp(4rem, 12vw, 6rem);
-            line-height: 1;
-            color: var(--earth);
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-        }
-        .slider-amount .currency {
-            font-size: 0.5em;
-            vertical-align: top;
-            margin-right: 0.1em;
-            font-weight: 700;
-            color: var(--bark);
-            position: relative;
-            top: 0.4em;
-        }
-        .slider-line {
-            font-family: 'Fraunces', serif;
-            font-style: italic;
-            font-size: 1rem;
-            color: var(--bark);
-            min-height: 3rem;
-            max-width: 480px;
-            margin: 0 auto 2rem;
-            line-height: 1.5;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 4px;
-            background: var(--sand);
-            border-radius: 999px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 28px;
-            height: 28px;
-            background: var(--earth);
-            border: 3px solid var(--cream);
-            border-radius: 999px;
-            cursor: grab;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-        }
-        input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
-        input[type="range"]::-moz-range-thumb {
-            width: 22px;
-            height: 22px;
-            background: var(--earth);
-            border: 3px solid var(--cream);
-            border-radius: 999px;
-            cursor: grab;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-        }
-        .slider-bounds {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.7rem;
-            font-size: 0.78rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--bark);
-            opacity: 0.7;
-        }
-
-        /* ---------- ROLE GROUPS ---------- */
-        .roles-section {
-            margin-top: 3rem;
-        }
-        .roles-section h3 {
-            font-family: 'Fraunces', serif;
-            font-weight: 700;
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-        }
-        .roles-section p.quiet {
-            margin-bottom: 1.5rem;
-        }
-        .role-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.7rem;
-        }
-        .role-list label {
-            display: flex;
-            gap: 0.85rem;
-            align-items: flex-start;
-            padding: 1rem 1.1rem;
-            border: 1px solid var(--hairline);
-            border-radius: 14px;
-            background: var(--warm);
-            cursor: pointer;
-            transition: border-color 0.15s ease, background 0.15s ease;
-        }
-        .role-list label:hover { border-color: var(--bark); }
-        .role-list label.is-checked {
-            border-color: var(--moss);
-            background: var(--cream);
-        }
-        .role-list input[type="checkbox"] {
-            margin-top: 0.25rem;
-            accent-color: var(--moss);
-            transform: scale(1.1);
-            flex-shrink: 0;
-        }
-        .role-name {
-            font-family: 'Fraunces', serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--earth);
-            display: block;
-            margin-bottom: 0.15rem;
-        }
-        .role-blurb {
-            font-size: 0.92rem;
-            color: var(--bark);
-            line-height: 1.5;
-            display: block;
-        }
-
-        .micro-list label {
-            background: transparent;
-            border-color: var(--hairline);
-            padding: 0.7rem 0.9rem;
-        }
-        .micro-list label.is-checked { background: var(--warm); }
-        .micro-name {
-            font-size: 0.98rem;
-            color: var(--earth);
-            font-weight: 500;
-        }
-
-        /* ---------- VOW ---------- */
-        .vow-list {
-            margin: 2rem 0 1rem;
-            padding: 0;
-            list-style: none;
-        }
-        .vow-list li {
-            font-family: 'Fraunces', serif;
-            font-style: italic;
-            font-size: 1.2rem;
-            line-height: 1.55;
-            color: var(--earth);
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--hairline);
-        }
-        .vow-list li:last-child { border-bottom: none; }
-        .vow-sign {
-            margin-top: 2rem;
-        }
-        .vow-sign label {
-            display: block;
-            font-size: 0.85rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--bark);
-            margin-bottom: 0.6rem;
-            opacity: 0.85;
-        }
-        .vow-sign input {
-            width: 100%;
-            padding: 0.95rem 1rem;
-            border: 1px solid var(--hairline);
-            border-bottom: 2px solid var(--bark);
-            background: transparent;
-            border-radius: 6px 6px 0 0;
-            font-family: 'Fraunces', serif;
-            font-style: italic;
-            font-size: 1.4rem;
+        .btn-ghost:hover:not(:disabled) {
+            border-color: var(--bark);
             color: var(--earth);
         }
-        .vow-sign input:focus {
-            outline: none;
-            border-bottom-color: var(--moss);
-            border-bottom-width: 2px;
-        }
-        .vow-sign input::placeholder {
-            color: var(--bark);
-            opacity: 0.45;
-        }
 
-        /* ---------- DETAILS FORM ---------- */
-        .field { margin-bottom: 1.5rem; }
+        /* ---------- form fields ---------- */
+        .field { margin-top: 1.5rem; }
         .field label {
             display: block;
             font-size: 0.85rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--bark);
-            margin-bottom: 0.55rem;
-            opacity: 0.85;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--earth);
+            margin-bottom: 0.5rem;
         }
-        .field input, .field textarea {
+        .field-hint {
+            font-size: 0.85rem;
+            color: var(--bark);
+            opacity: 0.7;
+            font-style: italic;
+            margin-bottom: 0.6rem;
+        }
+        .field input[type="text"],
+        .field input[type="email"],
+        .field textarea {
             width: 100%;
             padding: 0.85rem 1rem;
-            border: 1px solid var(--hairline);
-            background: var(--warm);
-            border-radius: 8px;
+            border: 1.5px solid var(--hairline);
+            border-radius: 10px;
+            background: #fff;
             font-family: inherit;
             font-size: 1rem;
             color: var(--earth);
+            line-height: 1.55;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .field input:focus, .field textarea:focus {
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--moss);
+            box-shadow: 0 0 0 4px rgba(61, 85, 64, 0.12);
+        }
+        .field textarea { min-height: 120px; resize: vertical; }
+        .field textarea.deep { min-height: 160px; }
+
+        .hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; height: 0; width: 0; overflow: hidden; }
+
+        .examples {
+            margin-top: 0.85rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+        .examples-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--moss);
+            opacity: 0.75;
+            margin-bottom: 0.25rem;
+        }
+        .example {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: var(--bark);
+            opacity: 0.78;
+            line-height: 1.55;
+        }
+        .example::before { content: '“'; }
+        .example::after { content: '”'; }
+
+        /* ---------- path cards ---------- */
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 540px) {
+            .path-grid { grid-template-columns: 1fr; }
+        }
+        .path-card {
+            background: #fff;
+            border: 1.5px solid var(--hairline);
+            border-radius: 12px;
+            padding: 1.1rem 1.2rem;
+            text-align: left;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: var(--earth);
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+        }
+        .path-card:hover { border-color: var(--moss); transform: translateY(-1px); }
+        .path-card.is-selected {
+            border-color: var(--moss);
+            background: rgba(61, 85, 64, 0.08);
+            border-width: 2px;
+        }
+        .path-card-name { font-weight: 600; display: block; }
+        .path-card-blurb { font-size: 0.85rem; color: var(--bark); opacity: 0.78; display: block; margin-top: 0.2rem; font-weight: 400; }
+
+        /* ---------- topics ---------- */
+        .topic-section { margin-top: 1.25rem; }
+        .topic-group-title {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--moss);
+            margin-top: 1.75rem;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.005em;
+        }
+        .topic-group-title:first-of-type { margin-top: 0.5rem; }
+
+        .topic {
+            background: #fff;
+            border: 1px solid var(--hairline);
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 0.65rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .topic.is-yes { border-color: rgba(61, 85, 64, 0.6); box-shadow: 0 1px 0 rgba(61, 85, 64, 0.08); }
+        .topic.is-curious { border-color: rgba(217, 164, 65, 0.5); }
+        .topic.is-skip { opacity: 0.55; }
+        .topic-name { font-weight: 600; font-size: 1rem; color: var(--earth); }
+        .topic-blurb {
+            font-size: 0.88rem;
+            color: var(--bark);
+            opacity: 0.78;
+            margin-top: 0.2rem;
+            line-height: 1.5;
+        }
+        .topic-buckets {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+            flex-wrap: wrap;
+        }
+        .bucket-btn {
+            background: transparent;
+            border: 1.5px solid var(--hairline);
+            border-radius: 999px;
+            padding: 0.4rem 0.95rem;
+            font-size: 0.85rem;
+            color: var(--bark);
+            transition: all 0.18s ease;
+            font-weight: 500;
+        }
+        .bucket-btn:hover { border-color: var(--bark); color: var(--earth); }
+        .bucket-btn.is-active.bucket-yes {
+            background: var(--moss);
+            border-color: var(--moss);
+            color: var(--cream);
+        }
+        .bucket-btn.is-active.bucket-curious {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--earth);
+        }
+        .bucket-btn.is-active.bucket-skip {
+            background: rgba(74, 52, 37, 0.6);
+            border-color: rgba(74, 52, 37, 0.6);
+            color: var(--cream);
+        }
+        .topic-cocreate {
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px dashed var(--hairline);
+        }
+        .topic-cocreate-toggle {
+            background: transparent;
+            border: none;
+            color: var(--moss);
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 0.2rem 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-family: inherit;
+        }
+        .topic-cocreate-toggle:hover { color: var(--earth); }
+        .topic-cocreate-text {
+            display: none;
+            margin-top: 0.6rem;
+            width: 100%;
+            min-height: 70px;
+            padding: 0.65rem 0.85rem;
+            border: 1.5px solid var(--hairline);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            color: var(--earth);
+            line-height: 1.55;
+            background: rgba(246, 237, 217, 0.5);
+            resize: vertical;
+        }
+        .topic-cocreate-text:focus {
             outline: none;
             border-color: var(--moss);
             background: #fff;
         }
-        .field textarea { min-height: 90px; resize: vertical; }
+        .topic-cocreate.is-open .topic-cocreate-text { display: block; }
 
-        /* honeypot */
-        .hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
-
-        /* ---------- SUMMARY (contribution moment) ---------- */
-        .summary {
-            background: var(--warm);
-            border: 1px solid var(--hairline);
-            border-radius: 14px;
-            padding: 1.5rem 1.6rem;
-            margin: 2rem 0;
+        /* ---------- roles + micro-offerings ---------- */
+        .roles-section { margin-top: 2rem; }
+        .roles-section h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: var(--earth);
+            margin-bottom: 0.4rem;
         }
-        .summary-row {
+        .roles-section .quiet { margin-bottom: 1rem; }
+        .role-list {
+            display: grid;
+            gap: 0.5rem;
+        }
+        .role-list label {
             display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 0.55rem 0;
-            font-size: 0.96rem;
-            border-bottom: 1px dashed var(--hairline);
+            align-items: flex-start;
+            gap: 0.85rem;
+            padding: 0.85rem 1rem;
+            background: #fff;
+            border: 1.5px solid var(--hairline);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
         }
-        .summary-row:last-child {
-            border-bottom: none;
-            padding-top: 0.85rem;
-            font-weight: 600;
-            font-size: 1.05rem;
+        .role-list label:hover { border-color: var(--moss); }
+        .role-list label.is-checked {
+            border-color: var(--moss);
+            background: rgba(61, 85, 64, 0.06);
         }
-        .summary-row .label { color: var(--bark); }
-        .summary-row .value { color: var(--earth); text-align: right; }
+        .role-list input[type="checkbox"] {
+            margin-top: 0.2rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--moss);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .role-name { font-weight: 600; display: block; color: var(--earth); }
+        .role-blurb { font-size: 0.88rem; color: var(--bark); opacity: 0.82; display: block; margin-top: 0.15rem; line-height: 1.5; }
+        .micro-list label { padding: 0.7rem 1rem; }
+        .micro-name { display: block; font-size: 0.95rem; color: var(--earth); }
 
-        #payment-element { margin: 1rem 0 1.5rem; }
-        #payment-message {
-            color: var(--terracotta);
-            font-size: 0.95rem;
-            min-height: 1.5em;
-            margin-top: 0.5rem;
-        }
-        .processing {
+        .money-line {
+            margin-top: 2rem;
+            padding: 1rem 1.25rem;
+            background: rgba(60, 85, 64, 0.05);
+            border-radius: 10px;
+            font-size: 0.92rem;
             color: var(--bark);
             font-style: italic;
-            font-size: 0.92rem;
+            line-height: 1.6;
         }
 
-        /* ---------- WELCOME ---------- */
-        .welcome-mark {
-            font-family: 'Fraunces', serif;
-            font-style: italic;
-            font-weight: 500;
-            font-size: 1.4rem;
-            color: var(--moss);
-            margin-bottom: 1.5rem;
-        }
-        .welcome-list {
-            margin: 2rem 0;
-            padding: 0;
+        /* ---------- vow ---------- */
+        .vow-list {
             list-style: none;
+            margin: 1.5rem 0 2rem;
+            padding-left: 0;
+            display: grid;
+            gap: 0.85rem;
+        }
+        .vow-list li {
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 1.02rem;
+            line-height: 1.6;
+            color: var(--earth);
+            font-family: 'Fraunces', serif;
+        }
+        .vow-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.7em;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--moss);
+        }
+
+        /* ---------- welcome ---------- */
+        .welcome-mark {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--moss);
+            margin-bottom: 1rem;
+        }
+        .welcome-section {
+            margin-top: 2.5rem;
+            padding-top: 2.5rem;
             border-top: 1px solid var(--hairline);
         }
-        .welcome-list li {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--hairline);
-            font-size: 1rem;
+        .welcome-section h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            line-height: 1.2;
+            color: var(--earth);
+            margin-bottom: 0.5rem;
+        }
+        .solstice {
+            background: rgba(217, 164, 65, 0.1);
+            border-radius: 14px;
+            padding: 1.5rem 1.5rem 1.4rem;
+            margin-top: 1rem;
+        }
+        .solstice h3 { margin-bottom: 0.6rem; }
+        .solstice p { font-size: 0.96rem; color: var(--bark); }
+        .solstice-rsvp {
             display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            background: #fff;
+            border-radius: 10px;
+            border: 1.5px solid var(--hairline);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        .solstice-rsvp:hover { border-color: var(--moss); }
+        .solstice-rsvp input[type="checkbox"] {
+            width: 18px; height: 18px;
+            accent-color: var(--moss);
+            margin-top: 0.15rem;
+        }
+        .solstice-rsvp.is-checked { border-color: var(--moss); background: rgba(61, 85, 64, 0.05); }
+        .solstice-rsvp-text { font-size: 0.95rem; color: var(--earth); line-height: 1.45; }
+
+        .ical-link {
+            display: inline-flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .welcome-list li .label { color: var(--earth); }
-        .welcome-list li a {
-            font-size: 0.88rem;
+            gap: 0.5rem;
+            font-size: 0.92rem;
             color: var(--moss);
-            text-decoration: underline;
-            text-decoration-color: var(--hairline);
-            text-underline-offset: 4px;
-        }
-        .welcome-list li a:hover { text-decoration-color: var(--moss); }
-
-        /* ---------- BACK LINK ---------- */
-        .back-link {
-            position: fixed;
-            top: 1.5rem;
-            left: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--bark);
             text-decoration: none;
-            opacity: 0.6;
-            transition: opacity 0.15s ease;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 2px;
         }
-        .back-link:hover { opacity: 1; }
+        .ical-link:hover { color: var(--earth); }
+        .ical-link svg { width: 16px; height: 16px; }
 
-        /* footer */
+        .processing { font-size: 0.9rem; color: var(--moss); font-style: italic; }
+
+        /* ---------- footer ---------- */
         footer {
             text-align: center;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1.5rem 2.5rem;
+            font-size: 0.8rem;
             color: var(--bark);
-            opacity: 0.55;
-            font-size: 0.82rem;
-            letter-spacing: 0.05em;
+            opacity: 0.6;
+            border-top: 1px solid var(--hairline);
         }
 
         @media (max-width: 540px) {
-            .page { padding: 2.5rem 1.25rem 4rem; }
             .moment-name { margin-bottom: 2.5rem; }
-            .display { font-size: 2rem; }
-            .lede { font-size: 1.1rem; }
-            p { font-size: 1rem; }
-            .actions { flex-direction: column; align-items: stretch; }
-            .actions .btn { justify-content: center; }
-            .summary-row { flex-direction: column; gap: 0.2rem; }
-            .summary-row .value { text-align: left; }
+            .page { padding: 2.5rem 1.25rem 4rem; }
+            .actions { flex-direction: column-reverse; align-items: stretch; }
+            .actions .btn-link { padding: 0.75rem 0; text-align: center; }
+            .actions .btn-primary { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <a href="/" class="back-link" aria-label="Back to The Living Village">← back</a>
 
     <main class="page">
 
@@ -511,62 +549,122 @@
 
         <p><strong>It is not a festival you attend. It is a village you help create.</strong></p>
 
-        <p>There are no tickets here. There is a Reciprocity Pool, a shared body of resources, seeded by a grant, filled by everyone who comes. You bring what you have. Time, skills, goods, currency. You name what you would like back. The pool covers what is needed, and what is left flows toward stewarding the land and what we build through this.</p>
+        <p>What follows is more than a sign-up form. It's a slower way of saying yes. Questions about who you are, what you're drawn to, and what you can live with. Take it at the pace it asks of you.</p>
 
-        <p>If that sounds like work, it is. The work is the point.</p>
-
-        <p class="lede">What follows is a slower way of saying yes than buying a ticket. Take it at the pace it asks of you.</p>
+        <p class="lede">There's no ticket here. Just a few moments of honest reflection, and an invitation.</p>
 
         <div class="actions">
-            <button class="btn btn-primary" data-go="pool">Begin →</button>
+            <button class="btn btn-primary" data-go="why">Begin →</button>
         </div>
     </section>
 
-    <!-- ============ MOMENT 2: POOL ============ -->
-    <section class="moment" data-moment="pool">
-        <div class="moment-name">The Pool</div>
+    <!-- ============ MOMENT 2: WHY ============ -->
+    <section class="moment" data-moment="why">
+        <div class="moment-name">Why</div>
 
-        <h1 class="display">A shared body of resources.</h1>
+        <h1 class="display">What's pulling you here?</h1>
 
-        <p>Our current economy treats money and time as the main units of exchange. Nature works differently. Exchange is reciprocal, seasonal, and woven into place.</p>
+        <p>Don't overthink it. The version that comes first is usually true.</p>
 
-        <p>The Reciprocity Pool was seeded with eight thousand dollars in grant funding. That money does not belong to anyone. It is the village before the village arrives.</p>
-
-        <p>Everyone who comes adds to the pool, in their own way. Some bring more money. Some bring more time. Some bring food, or a skill, or a song, or a willingness to sweep the lodge at the end of the night. None of these are ranked.</p>
-
-        <p>The pool covers what is needed first. Food, firewood, the people who keep things running. What is left flows toward stewarding the land we are guests on, and toward the next iteration of this work.</p>
-
-        <p class="lede">Some arrive with full pockets. Some arrive with full hands. Both fill the pool.</p>
+        <div class="field">
+            <label for="why-text">Tell us in your own words</label>
+            <textarea id="why-text" class="deep" placeholder="A sentence is fine. A paragraph is fine. Whatever lands."></textarea>
+            <div class="examples">
+                <div class="examples-label">A few different shapes this can take</div>
+                <div class="example">Andre invited me and I trust him. I want to see what he's been talking about.</div>
+                <div class="example">I've been dreaming of land for years and don't know where to start.</div>
+                <div class="example">I'm tired of paying rent forever and I want to know if there's another way.</div>
+                <div class="example">Honestly I just want to be around people who think about this stuff too.</div>
+            </div>
+        </div>
 
         <div class="actions">
-            <button class="btn btn-primary" data-go="shape">I understand →</button>
+            <button class="btn btn-primary" data-go="path">Continue →</button>
             <button class="btn btn-link" data-go="threshold">Back</button>
         </div>
     </section>
 
-    <!-- ============ MOMENT 3: SHAPE ============ -->
-    <section class="moment" data-moment="shape">
-        <div class="moment-name">Your Contribution</div>
+    <!-- ============ MOMENT 3: PATH ============ -->
+    <section class="moment" data-moment="path">
+        <div class="moment-name">Where you are</div>
 
-        <h1 class="display">Shape what you bring.</h1>
+        <h1 class="display">Where you are on the path.</h1>
 
-        <p>Two parts. A money number, and the things you would like to hold. Move both to where they feel right for this season of your life.</p>
+        <p>We're not asking for an autobiography. Just a rough sense of where this finds you in your relationship to land-based living.</p>
 
-        <div class="slider-wrap">
-            <div class="slider-amount" id="slider-amount-display">
-                <span class="currency">$</span><span id="slider-amount-number">22</span>
-            </div>
-            <p class="slider-line" id="slider-line">Welcomed. The pool will hold what you cannot give right now.</p>
-            <input type="range" id="slider" min="22" max="222" step="1" value="22" aria-label="Your monetary contribution to the Reciprocity Pool">
-            <div class="slider-bounds">
-                <span>$22</span>
-                <span>$222</span>
-            </div>
+        <div class="path-grid" id="path-grid" role="radiogroup" aria-label="Where you are on the path">
+            <button type="button" class="path-card" data-path="curious" role="radio" aria-checked="false">
+                <span class="path-card-name">Just curious for now</span>
+                <span class="path-card-blurb">Reading, dreaming, watching from a distance.</span>
+            </button>
+            <button type="button" class="path-card" data-path="following" role="radio" aria-checked="false">
+                <span class="path-card-name">Following the thread</span>
+                <span class="path-card-blurb">Going to events, joining conversations, getting closer.</span>
+            </button>
+            <button type="button" class="path-card" data-path="scouting" role="radio" aria-checked="false">
+                <span class="path-card-name">Actively scouting</span>
+                <span class="path-card-blurb">Visiting communities, meeting people who might be my people.</span>
+            </button>
+            <button type="button" class="path-card" data-path="planning" role="radio" aria-checked="false">
+                <span class="path-card-name">Saving and planning</span>
+                <span class="path-card-blurb">Thinking about land, money, when, with whom.</span>
+            </button>
+            <button type="button" class="path-card" data-path="on-land" role="radio" aria-checked="false">
+                <span class="path-card-name">On land, building it</span>
+                <span class="path-card-blurb">Already on the ground. Construction, governance, growing.</span>
+            </button>
+            <button type="button" class="path-card" data-path="living-it" role="radio" aria-checked="false">
+                <span class="path-card-name">Already living it</span>
+                <span class="path-card-blurb">In a community. Coming to share, compare, stay sharp.</span>
+            </button>
         </div>
+
+        <div class="field">
+            <label for="path-note">Anything you'd like us to know about where you live today (optional)</label>
+            <textarea id="path-note" placeholder="Renting in a city. House with a yard. Apartment with too many plants. Already on a piece of land. Whatever's true."></textarea>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="topics">Continue →</button>
+            <button class="btn btn-link" data-go="why">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 4: TOPICS ============ -->
+    <section class="moment" data-moment="topics">
+        <div class="moment-name">What's calling you</div>
+
+        <h1 class="display">What's calling you.</h1>
+
+        <p>These are the conversations and workshops we're shaping for the village. Bucket each one. <strong>Yes</strong> if it lights you up, <strong>Curious</strong> if you want to listen, <strong>Skip</strong> if it's not for you. We'll use this to design what actually happens.</p>
+
+        <p class="quiet">For anything you tap Yes or Curious, an option will appear to say "I could share or lead this", even a little thing counts. We want co-creators, not just attendees.</p>
+
+        <div id="topics-container" class="topic-section"></div>
+
+        <div class="field" style="margin-top: 2rem;">
+            <label for="topic-other">Anything else you want to learn about, or share?</label>
+            <div class="field-hint">A topic, a session, a craft you'd lead. Whatever is missing from the list.</div>
+            <textarea id="topic-other" placeholder="Optional."></textarea>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="bring">Continue →</button>
+            <button class="btn btn-link" data-go="path">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 5: BRING ============ -->
+    <section class="moment" data-moment="bring">
+        <div class="moment-name">What you might bring</div>
+
+        <h1 class="display">What you might bring.</h1>
+
+        <p>Two parts. The role or roles you'd want to hold during the gathering, and the smaller offerings that keep a village running. Pick what calls to you. None is fine if your contribution lives elsewhere.</p>
 
         <div class="roles-section">
             <h3>Tend a fire of the village.</h3>
-            <p class="quiet">Pick the role or roles that call to you. These are interests, not assignments. We may ask you to swap if a role gets full.</p>
+            <p class="quiet">These are interests, not assignments. We may ask you to swap if a role gets full.</p>
             <div class="role-list" id="role-list">
                 <label><input type="checkbox" name="roles" value="Fire Keeper"><span><span class="role-name">Fire Keeper</span><span class="role-blurb">Tends to what is sacred. The energy of ritual, transition, and intentional coming together.</span></span></label>
                 <label><input type="checkbox" name="roles" value="Story Weaver"><span><span class="role-name">Story Weaver</span><span class="role-blurb">The village memory. Captures moments, voices, fragments that would otherwise disappear.</span></span></label>
@@ -581,7 +679,7 @@
 
         <div class="roles-section">
             <h3>Smaller offerings.</h3>
-            <p class="quiet">The everyday things that make a village run. Pick any. None is also fine if your contribution lives elsewhere.</p>
+            <p class="quiet">The everyday things that make a village run. Pick any.</p>
             <div class="role-list micro-list" id="micro-list">
                 <label><input type="checkbox" name="micro" value="Bring a salad ingredient"><span><span class="micro-name">Bring a salad ingredient for salad club</span></span></label>
                 <label><input type="checkbox" name="micro" value="Bring a dish for opening night potluck"><span><span class="micro-name">Bring a dish for the opening night potluck</span></span></label>
@@ -594,98 +692,89 @@
             </div>
         </div>
 
-        <div class="field" style="margin-top: 2rem;">
-            <label for="offer">Something else you would like to bring</label>
-            <textarea id="offer" name="offer" placeholder="A skill. A song. A workshop. An offering of any kind. Optional."></textarea>
+        <div class="field" style="margin-top: 1.75rem;">
+            <label for="offer">Something else you'd like to bring</label>
+            <div class="field-hint">A skill, a song, a workshop, an offering. Optional.</div>
+            <textarea id="offer" placeholder="Optional."></textarea>
+        </div>
+
+        <!-- Solstice work-bee invite (August attendees only) -->
+        <div class="solstice" style="margin-top: 2rem;">
+            <h3>Before the village, there's a smaller invitation.</h3>
+            <p>Saturday <strong>June 20</strong>. A work-bee day at The Living Centre, ending around the fire for their solstice dance. Camp overnight if you want to stay. The land won't be ready without hands; this is one of the ways the village is built.</p>
+            <p class="quiet" style="margin-top: 0.5rem;">For August attendees. Tick the box if you'd like to come.</p>
+            <label class="solstice-rsvp" id="solstice-rsvp-label">
+                <input type="checkbox" id="solstice-rsvp">
+                <span class="solstice-rsvp-text">Yes, I'd like to come to the June 20 work-bee + solstice. Send me the details.</span>
+            </label>
+        </div>
+
+        <div class="money-line">
+            Some people choose to contribute financially to the Reciprocity Pool, the shared body of resources that funds food, firewood, the people running things, and what's left flows toward stewarding the land. We'll share more about that closer to the gathering.
         </div>
 
         <div class="actions">
-            <button class="btn btn-primary" data-go="vow">Continue →</button>
-            <button class="btn btn-link" data-go="pool">Back</button>
+            <button class="btn btn-primary" data-go="practical">Continue →</button>
+            <button class="btn btn-link" data-go="topics">Back</button>
         </div>
     </section>
 
-    <!-- ============ MOMENT 4: VOW ============ -->
-    <section class="moment" data-moment="vow">
-        <div class="moment-name">The Vow</div>
+    <!-- ============ MOMENT 6: VOW + PRACTICAL ============ -->
+    <section class="moment" data-moment="practical">
+        <div class="moment-name">A small promise</div>
 
         <h1 class="display">A small promise to the village.</h1>
 
         <p>What you bring is yours to choose. How you show up is the village's to ask.</p>
 
         <ul class="vow-list">
-            <li>I will arrive present, and I will leave the land better than I found it.</li>
-            <li>I will fulfill what I take on, even if the village asks me to swap roles.</li>
-            <li>I understand that what I add to the pool is a gift to the people beside me, not a transaction.</li>
+            <li>I will care for the land, show up with integrity, and follow through on what I take on.</li>
         </ul>
 
-        <p class="quiet">Sign by typing your first name below. This is not a contract. It is a way of saying: I read these, and I mean them.</p>
+        <p class="quiet">Sign by typing your first name below. This is not a contract. It's a way of saying: I read it, and I mean it.</p>
 
-        <div class="vow-sign">
+        <div class="field">
             <label for="vow-signature">Your first name</label>
             <input type="text" id="vow-signature" autocomplete="given-name" placeholder="...">
         </div>
 
-        <div class="actions">
-            <button class="btn btn-primary" data-go="details" id="vow-continue" disabled>Continue →</button>
-            <button class="btn btn-link" data-go="shape">Back</button>
-        </div>
-    </section>
+        <div class="welcome-section" style="margin-top: 2.5rem; padding-top: 2.5rem;">
+            <p class="quiet" style="margin-bottom: 1rem;">Now the practical part, so we can reach you, feed you, and meet you where you are.</p>
 
-    <!-- ============ MOMENT 5: DETAILS ============ -->
-    <section class="moment" data-moment="details">
-        <div class="moment-name">Practical</div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" required autocomplete="email" placeholder="you@email.com">
+            </div>
+            <div class="field">
+                <label for="full-name">Full name</label>
+                <input type="text" id="full-name" autocomplete="name" placeholder="Optional but helpful">
+            </div>
+            <div class="field">
+                <label for="dietary">Dietary needs or food sensitivities</label>
+                <input type="text" id="dietary" placeholder="Optional. Allergies, restrictions, preferences.">
+            </div>
+            <div class="field">
+                <label for="accessibility">Anything we should know to make this accessible to you</label>
+                <textarea id="accessibility" placeholder="Optional. Mobility, sensory, neurodivergence, anything else."></textarea>
+            </div>
 
-        <h1 class="display">Now the practical part.</h1>
-
-        <p>So we can reach you, feed you, and meet you where you are.</p>
-
-        <div class="field">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@email.com">
-        </div>
-        <div class="field">
-            <label for="full-name">Full name</label>
-            <input type="text" id="full-name" name="name" autocomplete="name" placeholder="Your name">
-        </div>
-        <div class="field">
-            <label for="dietary">Dietary needs or food sensitivities</label>
-            <input type="text" id="dietary" name="dietary" placeholder="Optional. Allergies, restrictions, preferences.">
-        </div>
-        <div class="field">
-            <label for="accessibility">Anything we should know to make this accessible to you</label>
-            <textarea id="accessibility" name="accessibility" placeholder="Optional. Mobility, sensory, neurodivergence, anything else."></textarea>
+            <div class="field">
+                <label for="brave-prompt">Anything we should know about how you show up in groups?</label>
+                <div class="field-hint">Optional. Patterns you're working on, things that help you, things you'd want us to know. We'll hold whatever you share carefully.</div>
+                <textarea id="brave-prompt" placeholder="Optional."></textarea>
+            </div>
         </div>
 
         <div class="hp" aria-hidden="true">
             <label for="website">Website</label>
-            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+            <input type="text" id="website" tabindex="-1" autocomplete="off">
         </div>
 
-        <div class="actions">
-            <button class="btn btn-primary" data-go="contribution" id="details-continue">Continue →</button>
-            <button class="btn btn-link" data-go="vow">Back</button>
-        </div>
-    </section>
-
-    <!-- ============ MOMENT 6: CONTRIBUTION ============ -->
-    <section class="moment" data-moment="contribution">
-        <div class="moment-name">Contribution</div>
-
-        <h1 class="display">The last gesture.</h1>
-
-        <p>Here is what you are bringing. If anything looks off, step back and adjust.</p>
-
-        <div class="summary" id="summary"></div>
-
-        <p class="quiet">Card details below. Payment is processed by Stripe. We never see your card number.</p>
-
-        <div id="payment-element"></div>
-        <div id="payment-message" role="status" aria-live="polite"></div>
+        <div id="submit-message" role="status" aria-live="polite" style="margin-top: 1rem;"></div>
 
         <div class="actions">
-            <button class="btn btn-primary" id="pay-button">Send my contribution →</button>
-            <button class="btn btn-link" data-go="details">Back</button>
+            <button class="btn btn-primary" id="submit-button">Send my yes →</button>
+            <button class="btn btn-link" data-go="bring">Back</button>
         </div>
     </section>
 
@@ -693,24 +782,36 @@
     <section class="moment" data-moment="welcome">
         <div class="moment-name">Welcome</div>
 
-        <p class="welcome-mark">You are in.</p>
+        <p class="welcome-mark">You're in.</p>
 
         <h1 class="display">See you on the land.</h1>
 
         <p>August 15-16, 2026. The Living Centre, near London, Ontario.</p>
-        <p>You will hear from us before then. A briefing. A work-bee invitation. The unfolding shape of the gathering.</p>
+        <p>You'll hear from us before then. A briefing, a work-bee invitation, the unfolding shape of the gathering.</p>
 
-        <ul class="welcome-list">
-            <li><span class="label">Add to your calendar</span><a href="/event.ics" download="the-living-village.ics">Download .ics</a></li>
-            <li><span class="label">A quick note (optional)</span></li>
-        </ul>
+        <p>
+            <a href="/event.ics" class="ical-link" download="the-living-village.ics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Add August 15–16 to your calendar
+            </a>
+        </p>
 
-        <div class="field">
-            <label for="welcome-note">If you would like, tell us in one sentence what you are bringing</label>
-            <textarea id="welcome-note" placeholder="Optional. We will read every one."></textarea>
-            <div class="actions" style="margin-top: 1rem;">
-                <button class="btn btn-ghost" id="send-note">Send note</button>
-                <span class="processing" id="note-status" style="display:none;">Sent. Thank you.</span>
+        <!-- The big question -->
+        <div class="welcome-section">
+            <h3>One last thing, for the conversation we want to keep having.</h3>
+            <p>What would have to be true for you to live in a village like this? Money, land, people, time, courage, something else?</p>
+            <p class="quiet">Optional. Take your time. We read every one. There are no wrong answers, only the start of a longer conversation.</p>
+            <div class="field">
+                <textarea id="big-question" class="deep" placeholder="Optional. A few words or a few paragraphs."></textarea>
+                <div class="actions" style="margin-top: 1rem;">
+                    <button class="btn btn-ghost" id="send-big">Send reflection</button>
+                    <span class="processing" id="big-status" style="display:none;">Sent. Thank you.</span>
+                </div>
             </div>
         </div>
 
@@ -725,10 +826,44 @@
 
     <script>
         (function () {
-            const STATE_KEY = 'lv-join-v1';
+            const STATE_KEY = 'lv-join-v2';
 
-            const state = loadState() || {
-                amount: 22,
+            const TOPICS = [
+                { group: 'The how of building it', items: [
+                    { id: 'governance', name: 'Ecovillage governance & community agreements', blurb: 'How a village makes decisions and holds itself together.' },
+                    { id: 'natural-building', name: 'Natural building', blurb: 'Cob, straw bale, healthy materials, design.' },
+                    { id: 'permaculture', name: 'Permaculture design for community land', blurb: 'Designing land for resilience and yield.' },
+                    { id: 'zoning', name: 'Zoning, land use & legal pathways', blurb: 'What the law actually permits in Ontario.' },
+                    { id: 'finance', name: 'Cooperative finance, how a village is paid for', blurb: 'Community bonds, co-op models, money flows.' },
+                    { id: 'land-trusts', name: 'Indigenous-led land trusts & decolonizing land', blurb: 'Land back, land trusts, land relationships.' },
+                ]},
+                { group: 'The how of living together', items: [
+                    { id: 'conflict', name: 'Conflict, repair & cooperation', blurb: 'When things break, how we mend.' },
+                    { id: 'authentic-relating', name: 'Authentic Relating', blurb: 'Relational practice. Being honest in real time.' },
+                    { id: 'multigenerational', name: 'Multigenerational community', blurb: 'Kids, elders, the chosen-family model.' },
+                    { id: 'cultural-integration', name: 'Cultural integration & bridging difference', blurb: 'How a village holds many cultures inside it.' },
+                ]},
+                { group: 'The land, the body, the ritual', items: [
+                    { id: 'land-stewardship', name: 'Land stewardship & forest walks', blurb: 'Being a guest on the land. Sensory presence.' },
+                    { id: 'circles', name: 'Circles, storytelling & ritual', blurb: 'How a village gathers itself.' },
+                    { id: 'music-fire', name: 'Music, dance & fire', blurb: 'The village at night.' },
+                ]},
+                { group: 'The real and the dreamed', items: [
+                    { id: 'real-stories', name: 'Stories from existing ecovillages. What works, what didn’t', blurb: 'Honest reports from the field.' },
+                ]},
+            ];
+
+            const moments = ['threshold', 'why', 'path', 'topics', 'bring', 'practical', 'welcome'];
+            let currentMoment = 'threshold';
+
+            // ---------- state ----------
+            const initialState = {
+                why: '',
+                pathPosition: '',
+                pathNote: '',
+                topics: {},          // { id: { bucket: 'yes'|'curious'|'skip', cocreate: '' } }
+                topicOther: '',
+                spectrums: {},       // { id: { value: 50, nonNegotiable: false } }
                 roles: [],
                 micro: [],
                 offer: '',
@@ -737,11 +872,12 @@
                 name: '',
                 dietary: '',
                 accessibility: '',
-                paymentIntentId: '',
+                bravePrompt: '',
+                bigQuestion: '',
+                solsticeRsvp: false,
+                submitted: false,
             };
-
-            const moments = ['threshold', 'pool', 'shape', 'vow', 'details', 'contribution', 'welcome'];
-            let currentMoment = 'threshold';
+            const state = Object.assign({}, initialState, loadState() || {});
 
             function loadState() {
                 try { return JSON.parse(sessionStorage.getItem(STATE_KEY)); } catch (e) { return null; }
@@ -750,6 +886,7 @@
                 try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
             }
 
+            // ---------- moment navigation ----------
             function showMoment(name) {
                 if (!moments.includes(name)) return;
                 document.querySelectorAll('.moment').forEach(el => el.classList.remove('is-visible'));
@@ -757,10 +894,14 @@
                 target.classList.add('is-visible');
                 currentMoment = name;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                if (name === 'contribution') initContributionMoment();
+                // Move focus to the new heading for screen readers + keyboard users
+                const heading = target.querySelector('h1, .welcome-mark');
+                if (heading) {
+                    heading.setAttribute('tabindex', '-1');
+                    setTimeout(() => heading.focus({ preventScroll: true }), 50);
+                }
             }
 
-            // ---------- nav buttons ----------
             document.querySelectorAll('[data-go]').forEach(btn => {
                 btn.addEventListener('click', e => {
                     e.preventDefault();
@@ -771,37 +912,25 @@
             });
 
             function validateBeforeLeaving(from, to) {
-                // only validate when moving forward
+                // only persist when moving forward
                 if (moments.indexOf(to) <= moments.indexOf(from)) return true;
 
-                if (from === 'shape') {
-                    state.amount = Number(slider.value);
+                if (from === 'why') {
+                    state.why = (document.getElementById('why-text').value || '').trim();
+                    saveState();
+                }
+                if (from === 'path') {
+                    state.pathNote = (document.getElementById('path-note').value || '').trim();
+                    saveState();
+                }
+                if (from === 'topics') {
+                    state.topicOther = (document.getElementById('topic-other').value || '').trim();
+                    saveState();
+                }
+                if (from === 'bring') {
                     state.roles = readChecked('input[name="roles"]');
                     state.micro = readChecked('input[name="micro"]');
                     state.offer = (document.getElementById('offer').value || '').trim();
-                    saveState();
-                }
-                if (from === 'vow') {
-                    const sig = (document.getElementById('vow-signature').value || '').trim();
-                    if (!sig) {
-                        document.getElementById('vow-signature').focus();
-                        return false;
-                    }
-                    state.vow = sig;
-                    saveState();
-                }
-                if (from === 'details') {
-                    const email = document.getElementById('email').value.trim();
-                    const hp = document.getElementById('website').value;
-                    if (hp) return false; // honeypot
-                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                        document.getElementById('email').focus();
-                        return false;
-                    }
-                    state.email = email;
-                    state.name = document.getElementById('full-name').value.trim();
-                    state.dietary = document.getElementById('dietary').value.trim();
-                    state.accessibility = document.getElementById('accessibility').value.trim();
                     saveState();
                 }
                 return true;
@@ -811,33 +940,123 @@
                 return Array.from(document.querySelectorAll(selector + ':checked')).map(el => el.value);
             }
 
-            // ---------- slider ----------
-            const slider = document.getElementById('slider');
-            const sliderNumber = document.getElementById('slider-amount-number');
-            const sliderLine = document.getElementById('slider-line');
+            // ---------- moment 2: why ----------
+            const whyText = document.getElementById('why-text');
+            if (state.why) whyText.value = state.why;
+            whyText.addEventListener('input', () => { state.why = whyText.value; });
+            whyText.addEventListener('blur', saveState);
 
-            const sliderLines = [
-                { max: 33,  text: 'Welcomed. The pool will hold what you cannot give right now.' },
-                { max: 66,  text: 'Steady. Every stream fills the pool.' },
-                { max: 122, text: 'This is what filling the pool looks like.' },
-                { max: 177, text: 'Generous. You are holding space for someone bringing time instead of money.' },
-                { max: 222, text: 'A full share. Thank you. The village will feel this.' },
-            ];
-
-            function updateSliderUI(v) {
-                sliderNumber.textContent = v;
-                const line = sliderLines.find(b => v <= b.max);
-                if (line) sliderLine.textContent = line.text;
-            }
-            slider.addEventListener('input', () => {
-                state.amount = Number(slider.value);
-                updateSliderUI(state.amount);
+            // ---------- moment 3: path ----------
+            const pathGrid = document.getElementById('path-grid');
+            pathGrid.querySelectorAll('.path-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    pathGrid.querySelectorAll('.path-card').forEach(c => {
+                        c.classList.remove('is-selected');
+                        c.setAttribute('aria-checked', 'false');
+                    });
+                    card.classList.add('is-selected');
+                    card.setAttribute('aria-checked', 'true');
+                    state.pathPosition = card.getAttribute('data-path');
+                    saveState();
+                });
             });
-            slider.addEventListener('change', saveState);
-            slider.value = state.amount;
-            updateSliderUI(state.amount);
+            if (state.pathPosition) {
+                const sel = pathGrid.querySelector('.path-card[data-path="' + cssEscape(state.pathPosition) + '"]');
+                if (sel) {
+                    sel.classList.add('is-selected');
+                    sel.setAttribute('aria-checked', 'true');
+                }
+            }
+            const pathNote = document.getElementById('path-note');
+            if (state.pathNote) pathNote.value = state.pathNote;
+            pathNote.addEventListener('input', () => { state.pathNote = pathNote.value; });
+            pathNote.addEventListener('blur', saveState);
 
-            // ---------- role checkbox styling ----------
+            // ---------- moment 4: topics ----------
+            function renderTopics() {
+                const container = document.getElementById('topics-container');
+                const html = TOPICS.map(group => {
+                    const items = group.items.map(t => {
+                        const tState = state.topics[t.id] || { bucket: '', cocreate: '' };
+                        const cocreateOpen = tState.cocreate ? ' is-open' : '';
+                        return `
+                            <div class="topic" data-topic-id="${t.id}">
+                                <div class="topic-name">${escapeHtml(t.name)}</div>
+                                <div class="topic-blurb">${escapeHtml(t.blurb)}</div>
+                                <div class="topic-buckets">
+                                    <button type="button" class="bucket-btn bucket-yes${tState.bucket === 'yes' ? ' is-active' : ''}" data-bucket="yes">Yes</button>
+                                    <button type="button" class="bucket-btn bucket-curious${tState.bucket === 'curious' ? ' is-active' : ''}" data-bucket="curious">Curious</button>
+                                    <button type="button" class="bucket-btn bucket-skip${tState.bucket === 'skip' ? ' is-active' : ''}" data-bucket="skip">Skip</button>
+                                </div>
+                                <div class="topic-cocreate${cocreateOpen}" ${tState.bucket === 'skip' || !tState.bucket ? 'hidden' : ''}>
+                                    <button type="button" class="topic-cocreate-toggle">+ I could share or lead this</button>
+                                    <textarea class="topic-cocreate-text" placeholder="What you'd bring to this: a story, a session, an hour of teaching, an opinion. Optional.">${escapeHtml(tState.cocreate)}</textarea>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    return `<div class="topic-group-title">${escapeHtml(group.group)}</div>${items}`;
+                }).join('');
+                container.innerHTML = html;
+                wireTopics();
+            }
+
+            function wireTopics() {
+                document.querySelectorAll('.topic').forEach(topicEl => {
+                    const id = topicEl.getAttribute('data-topic-id');
+                    const cocreateBlock = topicEl.querySelector('.topic-cocreate');
+                    const cocreateToggle = topicEl.querySelector('.topic-cocreate-toggle');
+                    const cocreateText = topicEl.querySelector('.topic-cocreate-text');
+
+                    topicEl.querySelectorAll('.bucket-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const bucket = btn.getAttribute('data-bucket');
+                            topicEl.querySelectorAll('.bucket-btn').forEach(b => b.classList.remove('is-active'));
+                            btn.classList.add('is-active');
+                            topicEl.classList.remove('is-yes', 'is-curious', 'is-skip');
+                            topicEl.classList.add('is-' + bucket);
+
+                            state.topics[id] = state.topics[id] || { bucket: '', cocreate: '' };
+                            state.topics[id].bucket = bucket;
+                            saveState();
+
+                            if (bucket === 'skip') {
+                                cocreateBlock.hidden = true;
+                                cocreateBlock.classList.remove('is-open');
+                            } else {
+                                cocreateBlock.hidden = false;
+                            }
+                        });
+                    });
+
+                    cocreateToggle.addEventListener('click', () => {
+                        cocreateBlock.classList.toggle('is-open');
+                        if (cocreateBlock.classList.contains('is-open')) {
+                            setTimeout(() => cocreateText.focus(), 50);
+                        }
+                    });
+
+                    cocreateText.addEventListener('input', () => {
+                        state.topics[id] = state.topics[id] || { bucket: '', cocreate: '' };
+                        state.topics[id].cocreate = cocreateText.value;
+                    });
+                    cocreateText.addEventListener('blur', saveState);
+
+                    // restore visual state
+                    const tState = state.topics[id];
+                    if (tState && tState.bucket) {
+                        topicEl.classList.add('is-' + tState.bucket);
+                    }
+                });
+            }
+            renderTopics();
+
+            const topicOther = document.getElementById('topic-other');
+            if (state.topicOther) topicOther.value = state.topicOther;
+            topicOther.addEventListener('input', () => { state.topicOther = topicOther.value; });
+            topicOther.addEventListener('blur', saveState);
+
+            // ---------- moment 5: bring ----------
             function wireCheckboxes(container) {
                 container.querySelectorAll('label').forEach(label => {
                     const cb = label.querySelector('input[type="checkbox"]');
@@ -850,7 +1069,6 @@
             wireCheckboxes(document.getElementById('role-list'));
             wireCheckboxes(document.getElementById('micro-list'));
 
-            // restore prior selections
             state.roles.forEach(r => {
                 const cb = document.querySelector('input[name="roles"][value="' + cssEscape(r) + '"]');
                 if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
@@ -859,182 +1077,211 @@
                 const cb = document.querySelector('input[name="micro"][value="' + cssEscape(r) + '"]');
                 if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
             });
-            if (state.offer) document.getElementById('offer').value = state.offer;
+            const offerEl = document.getElementById('offer');
+            if (state.offer) offerEl.value = state.offer;
 
-            function cssEscape(s) {
-                return String(s).replace(/"/g, '\\"');
-            }
-
-            // ---------- vow ----------
+            // ---------- moment 7: vow + practical (single submit) ----------
             const vowInput = document.getElementById('vow-signature');
-            const vowContinue = document.getElementById('vow-continue');
-            vowInput.addEventListener('input', () => {
-                vowContinue.disabled = !vowInput.value.trim();
+            const emailEl = document.getElementById('email');
+            const fullNameEl = document.getElementById('full-name');
+            const dietaryEl = document.getElementById('dietary');
+            const accessibilityEl = document.getElementById('accessibility');
+            const braveEl = document.getElementById('brave-prompt');
+            const honeypot = document.getElementById('website');
+            const submitBtn = document.getElementById('submit-button');
+            const submitMsg = document.getElementById('submit-message');
+
+            if (state.vow) vowInput.value = state.vow;
+            if (state.email) emailEl.value = state.email;
+            if (state.name) fullNameEl.value = state.name;
+            if (state.dietary) dietaryEl.value = state.dietary;
+            if (state.accessibility) accessibilityEl.value = state.accessibility;
+            if (state.bravePrompt) braveEl.value = state.bravePrompt;
+
+            [vowInput, emailEl, fullNameEl, dietaryEl, accessibilityEl, braveEl].forEach(el => {
+                el.addEventListener('blur', () => {
+                    state.vow = vowInput.value.trim();
+                    state.email = emailEl.value.trim();
+                    state.name = fullNameEl.value.trim();
+                    state.dietary = dietaryEl.value.trim();
+                    state.accessibility = accessibilityEl.value.trim();
+                    state.bravePrompt = braveEl.value.trim();
+                    saveState();
+                });
             });
-            if (state.vow) {
-                vowInput.value = state.vow;
-                vowContinue.disabled = false;
+
+            submitBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (honeypot.value) return; // honeypot
+
+                const sig = vowInput.value.trim();
+                if (!sig) {
+                    submitMsg.style.color = 'var(--terracotta)';
+                    submitMsg.textContent = 'Sign your first name to continue. The vow is part of saying yes.';
+                    vowInput.focus();
+                    return;
+                }
+                const email = emailEl.value.trim();
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    submitMsg.style.color = 'var(--terracotta)';
+                    submitMsg.textContent = 'Please enter a valid email so we can reach you.';
+                    emailEl.focus();
+                    return;
+                }
+
+                state.vow = sig;
+                state.email = email;
+                state.name = fullNameEl.value.trim();
+                state.dietary = dietaryEl.value.trim();
+                state.accessibility = accessibilityEl.value.trim();
+                state.bravePrompt = braveEl.value.trim();
+                saveState();
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending…';
+                submitMsg.style.color = 'var(--moss)';
+                submitMsg.textContent = '';
+
+                const ok = await submitToSheet({ includeBigQuestion: false });
+                if (ok) {
+                    state.submitted = true;
+                    saveState();
+                    showMoment('welcome');
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send my yes →';
+                    submitMsg.style.color = 'var(--terracotta)';
+                    submitMsg.textContent = 'Something went sideways. Try again, or write to hello@journeyland.ca.';
+                }
+            });
+
+            // ---------- solstice RSVP (lives on Bring moment) ----------
+            const solsticeCheckbox = document.getElementById('solstice-rsvp');
+            const solsticeLabel = document.getElementById('solstice-rsvp-label');
+
+            if (state.solsticeRsvp) {
+                solsticeCheckbox.checked = true;
+                solsticeLabel.classList.add('is-checked');
+            }
+            solsticeCheckbox.addEventListener('change', () => {
+                solsticeLabel.classList.toggle('is-checked', solsticeCheckbox.checked);
+                state.solsticeRsvp = solsticeCheckbox.checked;
+                saveState();
+            });
+
+            // ---------- moment 8: welcome (big question reflection) ----------
+            const bigQuestionEl = document.getElementById('big-question');
+            const sendBigBtn = document.getElementById('send-big');
+            const bigStatus = document.getElementById('big-status');
+
+            if (state.bigQuestion) bigQuestionEl.value = state.bigQuestion;
+
+            sendBigBtn.addEventListener('click', async () => {
+                const text = bigQuestionEl.value.trim();
+                if (!text) return;
+                sendBigBtn.disabled = true;
+                sendBigBtn.textContent = 'Sending…';
+                state.bigQuestion = text;
+                saveState();
+                const ok = await submitFollowUp({ bigQuestion: text });
+                if (ok) {
+                    bigStatus.style.display = 'inline';
+                    sendBigBtn.style.display = 'none';
+                } else {
+                    sendBigBtn.disabled = false;
+                    sendBigBtn.textContent = 'Send reflection';
+                }
+            });
+
+            // ---------- submission helpers ----------
+            function buildPayload(extras) {
+                const topicsYes = [], topicsCurious = [], topicsSkip = [];
+                const topicCoCreator = {};
+                Object.entries(state.topics).forEach(([id, t]) => {
+                    const meta = findTopic(id);
+                    const label = meta ? meta.name : id;
+                    if (t.bucket === 'yes') topicsYes.push(label);
+                    else if (t.bucket === 'curious') topicsCurious.push(label);
+                    else if (t.bucket === 'skip') topicsSkip.push(label);
+                    if (t.cocreate && t.cocreate.trim()) topicCoCreator[label] = t.cocreate.trim();
+                });
+
+                return Object.assign({
+                    timestamp: new Date().toISOString(),
+                    email: state.email,
+                    name: state.name,
+                    roles: state.roles,
+                    comment: state.offer,
+                    micro: state.micro,
+                    vow: state.vow,
+                    dietary: state.dietary,
+                    accessibility: state.accessibility,
+                    why: state.why,
+                    pathPosition: state.pathPosition,
+                    pathNote: state.pathNote,
+                    topicsYes,
+                    topicsCurious,
+                    topicsSkip,
+                    topicCoCreator,
+                    topicOther: state.topicOther,
+                    spectrums: state.spectrums,
+                    bravePrompt: state.bravePrompt,
+                    bigQuestion: state.bigQuestion || '',
+                    solsticeRsvp: !!state.solsticeRsvp,
+                }, extras || {});
             }
 
-            // ---------- details prefill ----------
-            if (state.email) document.getElementById('email').value = state.email;
-            if (state.name) document.getElementById('full-name').value = state.name;
-            if (state.dietary) document.getElementById('dietary').value = state.dietary;
-            if (state.accessibility) document.getElementById('accessibility').value = state.accessibility;
-
-            // ---------- contribution + stripe ----------
-            let stripe, elements, paymentElement, paymentInitialized = false;
-
-            async function initContributionMoment() {
-                renderSummary();
-                if (paymentInitialized) return;
-                paymentInitialized = true;
-
-                const messageEl = document.getElementById('payment-message');
+            async function submitToSheet() {
                 try {
-                    const res = await fetch('/api/checkout', {
+                    const res = await fetch('/api/signup', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: state.amount, email: state.email }),
+                        body: JSON.stringify(buildPayload()),
                     });
-                    if (!res.ok) {
-                        messageEl.textContent = 'Could not connect to payment. Try again, or email us.';
-                        paymentInitialized = false;
-                        return;
-                    }
-                    const { clientSecret, publishableKey, paymentIntentId } = await res.json();
-                    state.paymentIntentId = paymentIntentId;
-                    saveState();
-
-                    stripe = Stripe(publishableKey);
-                    elements = stripe.elements({
-                        clientSecret,
-                        appearance: {
-                            theme: 'stripe',
-                            variables: {
-                                colorPrimary: '#3D5540',
-                                colorBackground: '#EFE3C8',
-                                colorText: '#2A1D10',
-                                fontFamily: 'Inter, system-ui, sans-serif',
-                                borderRadius: '8px',
-                            },
-                        },
-                    });
-                    paymentElement = elements.create('payment');
-                    paymentElement.mount('#payment-element');
-                } catch (err) {
-                    messageEl.textContent = 'Something went sideways. Refresh and try again, or email us.';
-                    paymentInitialized = false;
+                    return res.ok;
+                } catch (e) {
+                    console.error('Submission failed', e);
+                    return false;
                 }
             }
 
-            function renderSummary() {
-                const lines = [];
-                lines.push(['Monetary contribution', '$' + state.amount]);
-                if (state.roles.length) lines.push(['Roles', state.roles.join(', ')]);
-                if (state.micro.length) lines.push(['Smaller offerings', state.micro.length + ' selected']);
-                if (state.offer) lines.push(['Something else', truncate(state.offer, 60)]);
-                lines.push(['You are', state.vow + ', from ' + (state.email || 'somewhere')]);
-                lines.push(['Total today', '$' + state.amount]);
-                document.getElementById('summary').innerHTML = lines.map(([label, value]) =>
-                    '<div class="summary-row"><span class="label">' + escapeHtml(label) + '</span><span class="value">' + escapeHtml(value) + '</span></div>'
-                ).join('');
+            async function submitFollowUp(extras) {
+                // Welcome-screen updates (big question + solstice RSVP) write a fresh row
+                // so the team sees the reflection, not a partial overwrite.
+                try {
+                    const payload = Object.assign(buildPayload(), extras || {}, { comment: '[follow-up]' });
+                    const res = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    return res.ok;
+                } catch (e) {
+                    console.error('Follow-up failed', e);
+                    return false;
+                }
             }
 
-            function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+            // ---------- helpers ----------
+            function findTopic(id) {
+                for (const g of TOPICS) {
+                    for (const t of g.items) {
+                        if (t.id === id) return t;
+                    }
+                }
+                return null;
+            }
+            function cssEscape(s) {
+                return String(s).replace(/"/g, '\\"');
+            }
             function escapeHtml(s) {
                 return String(s)
                     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
             }
 
-            const payButton = document.getElementById('pay-button');
-            payButton.addEventListener('click', async () => {
-                if (!stripe || !elements) return;
-                const messageEl = document.getElementById('payment-message');
-                payButton.disabled = true;
-                payButton.textContent = 'Sending…';
-                messageEl.textContent = '';
-
-                const { error, paymentIntent } = await stripe.confirmPayment({
-                    elements,
-                    confirmParams: {
-                        return_url: window.location.origin + '/join/?welcome=1',
-                        receipt_email: state.email,
-                    },
-                    redirect: 'if_required',
-                });
-
-                if (error) {
-                    messageEl.textContent = error.message || 'Payment did not go through. Try again.';
-                    payButton.disabled = false;
-                    payButton.textContent = 'Send my contribution →';
-                    return;
-                }
-
-                if (paymentIntent && paymentIntent.status === 'succeeded') {
-                    state.paymentIntentId = paymentIntent.id;
-                    saveState();
-                    await submitToSheet();
-                    showMoment('welcome');
-                }
-            });
-
-            async function submitToSheet() {
-                try {
-                    await fetch('/api/signup', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            email: state.email,
-                            name: state.name,
-                            roles: state.roles,
-                            micro: state.micro,
-                            comment: state.offer,
-                            amount: state.amount,
-                            vow: state.vow,
-                            dietary: state.dietary,
-                            accessibility: state.accessibility,
-                            paymentIntentId: state.paymentIntentId,
-                            timestamp: new Date().toISOString(),
-                        }),
-                    });
-                } catch (e) {
-                    // payment already succeeded; never block the welcome screen on a sheet write
-                    console.error('Sheet write failed', e);
-                }
-            }
-
-            // ---------- welcome note ----------
-            const sendNote = document.getElementById('send-note');
-            sendNote.addEventListener('click', async () => {
-                const note = document.getElementById('welcome-note').value.trim();
-                if (!note) return;
-                sendNote.disabled = true;
-                sendNote.textContent = 'Sending…';
-                try {
-                    await fetch('/api/signup', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            email: state.email,
-                            name: state.name,
-                            comment: '[note] ' + note,
-                            timestamp: new Date().toISOString(),
-                        }),
-                    });
-                    document.getElementById('note-status').style.display = 'inline';
-                    sendNote.style.display = 'none';
-                } catch (e) {
-                    sendNote.disabled = false;
-                    sendNote.textContent = 'Send note';
-                }
-            });
-
-            // ---------- handle Stripe redirect return ----------
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('welcome') === '1' || params.get('payment_intent')) {
-                // returning from a Stripe redirect; jump to welcome
+            // ---------- if a previous session already submitted, jump to welcome ----------
+            if (state.submitted) {
                 showMoment('welcome');
             }
         })();

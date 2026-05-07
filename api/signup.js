@@ -8,24 +8,54 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const {
+    // Original homepage form (still supported)
     email, name, roles, comment, timestamp,
-    // /join/ flow extras (all optional; older form posts continue to work)
+    // Original /join/ extras (still supported; financial fields kept for future use)
     micro, amount, vow, dietary, accessibility, paymentIntentId,
+    // /join/ v2 redesign — open prompts, paths, topics, spectrums, big question, solstice
+    why,
+    pathPosition, pathNote,
+    topicsYes, topicsCurious, topicsSkip,
+    topicCoCreator, topicOther,
+    spectrums,
+    bravePrompt,
+    bigQuestion,
+    solsticeRsvp,
   } = req.body;
   if (!email) return res.status(400).json({ error: 'Email is required' });
 
+  const formatTopicCoCreator = (entries) => {
+    if (!entries || typeof entries !== 'object') return '';
+    return Object.entries(entries)
+      .filter(([, note]) => note && String(note).trim())
+      .map(([topic, note]) => `${topic} — ${String(note).trim()}`)
+      .join('; ');
+  };
+
   const rowData = [
-    timestamp || new Date().toISOString(),
-    email,
-    name || '',
-    (roles || []).join(', '),
-    comment || '',
-    amount != null ? String(amount) : '',
-    (micro || []).join(', '),
-    vow || '',
-    dietary || '',
-    accessibility || '',
-    paymentIntentId || '',
+    timestamp || new Date().toISOString(),    // A
+    email,                                    // B
+    name || '',                               // C
+    (roles || []).join(', '),                 // D
+    comment || '',                            // E
+    amount != null ? String(amount) : '',     // F (kept for future financial-contribution flow)
+    (micro || []).join(', '),                 // G
+    vow || '',                                // H
+    dietary || '',                            // I
+    accessibility || '',                      // J
+    paymentIntentId || '',                    // K
+    why || '',                                // L
+    pathPosition || '',                       // M
+    pathNote || '',                           // N
+    (topicsYes || []).join(', '),             // O
+    (topicsCurious || []).join(', '),         // P
+    (topicsSkip || []).join(', '),            // Q
+    formatTopicCoCreator(topicCoCreator),     // R
+    topicOther || '',                         // S
+    spectrums ? JSON.stringify(spectrums) : '', // T
+    bravePrompt || '',                        // U
+    bigQuestion || '',                        // V
+    solsticeRsvp ? 'yes' : '',                // W
   ];
 
   try {
@@ -54,9 +84,9 @@ export default async function handler(req, res) {
     }
 
     // Step 2: Write to sheet
-    // Range widened from A:E to A:K to accommodate /join/ flow fields.
+    // Range widened to A:W to accommodate /join/ v2 fields (was A:K).
     // Keep the !-as-%21 and :-as-%3A encoding (regression fixed in 3bd26ea).
-    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AK:append?valueInputOption=RAW`;
+    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AW:append?valueInputOption=RAW`;
     const sheetRes = await fetch(sheetUrl, {
       method: 'POST',
       headers: {
