@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     topicsYes, topicsCurious, topicsSkip,
     topicCoCreator, topicOther,
     spectrums,
+    orientation,
     bravePrompt,
     bigQuestion,
     solsticeRsvp,
@@ -56,6 +57,7 @@ export default async function handler(req, res) {
     bravePrompt || '',                        // U
     bigQuestion || '',                        // V
     solsticeRsvp ? 'yes' : '',                // W
+    orientation && Object.keys(orientation).length ? JSON.stringify(orientation) : '', // X
   ];
 
   try {
@@ -84,9 +86,9 @@ export default async function handler(req, res) {
     }
 
     // Step 2: Write to sheet
-    // Range widened to A:W to accommodate /join/ v2 fields (was A:K).
+    // Range widened to A:X to accommodate the orientation-sliders column (was A:W).
     // Keep the !-as-%21 and :-as-%3A encoding (regression fixed in 3bd26ea).
-    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AW:append?valueInputOption=RAW`;
+    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AX:append?valueInputOption=RAW`;
     const sheetRes = await fetch(sheetUrl, {
       method: 'POST',
       headers: {

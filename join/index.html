@@ -514,6 +514,98 @@
 
         .processing { font-size: 0.9rem; color: var(--moss); font-style: italic; }
 
+        /* ---------- threshold framing callout ---------- */
+        .framing {
+            margin-top: 1.75rem;
+            padding: 1.25rem 1.4rem;
+            background: rgba(60, 85, 64, 0.06);
+            border-left: 3px solid var(--moss);
+            border-radius: 8px;
+        }
+        .framing p { font-size: 0.95rem; color: var(--bark); margin-bottom: 0.65rem; line-height: 1.65; }
+        .framing p:last-child { margin-bottom: 0; }
+        .framing p.quiet { margin-top: 0.4rem; }
+
+        /* ---------- orientation sliders ---------- */
+        .orientation-list { display: grid; gap: 1.6rem; margin-top: 1.5rem; }
+        .slider-row {
+            background: #fff;
+            border: 1px solid var(--hairline);
+            border-radius: 12px;
+            padding: 1rem 1.15rem 1.1rem;
+        }
+        .slider-row.is-touched { border-color: rgba(61, 85, 64, 0.4); }
+        .slider-line {
+            font-size: 0.98rem;
+            color: var(--earth);
+            line-height: 1.5;
+            margin-bottom: 0.85rem;
+        }
+        .slider-anchors {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--bark);
+            opacity: 0.7;
+            margin-top: 0.45rem;
+        }
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--hairline);
+            border-radius: 999px;
+            outline: none;
+            margin: 0;
+            cursor: pointer;
+        }
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--moss);
+            border: 3px solid var(--cream);
+            box-shadow: 0 1px 3px rgba(20, 16, 10, 0.18);
+            cursor: grab;
+            transition: transform 0.15s ease;
+        }
+        .slider-row input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.1); }
+        .slider-row input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--moss);
+            border: 3px solid var(--cream);
+            box-shadow: 0 1px 3px rgba(20, 16, 10, 0.18);
+            cursor: grab;
+        }
+        .slider-row input[type="range"]:focus-visible::-webkit-slider-thumb {
+            box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.35);
+        }
+
+        /* ---------- reciprocity callout (on Vow moment) ---------- */
+        .reciprocity {
+            margin-top: 1.75rem;
+            margin-bottom: 1.5rem;
+            padding: 1.4rem 1.55rem;
+            background: rgba(217, 164, 65, 0.1);
+            border: 1.5px solid rgba(217, 164, 65, 0.4);
+            border-radius: 14px;
+        }
+        .reciprocity h4 {
+            font-family: 'Fraunces', serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--earth);
+            margin-bottom: 0.55rem;
+        }
+        .reciprocity p { font-size: 0.96rem; color: var(--bark); line-height: 1.65; margin-bottom: 0; }
+
         /* ---------- footer ---------- */
         footer {
             text-align: center;
@@ -543,7 +635,7 @@
 
         <h1 class="display">A slower way of saying yes.</h1>
 
-        <p>You found this. Maybe Andre sent you, maybe a friend, maybe you went looking. However you arrived, this is the door, and the door opens both ways.</p>
+        <p>You found this. Maybe Andre and Heenal sent you, maybe a friend, maybe you went looking. However you arrived, this is the door, and the door opens both ways.</p>
 
         <p>The Living Village is two days and one night, August 15-16, at The Living Centre near London, Ontario. A small group, deliberately. A shared meal. A fire. The land. Each other.</p>
 
@@ -551,14 +643,35 @@
 
         <p>What follows is more than a sign-up form. It's a slower way of saying yes. Questions about who you are, what you're drawn to, and what you can live with. Take it at the pace it asks of you.</p>
 
+        <div class="framing">
+            <p>This gathering is relational, land-rooted, and asks something of each of us. These questions help us understand whether this is the right moment and the right fit, for you and for the village.</p>
+            <p class="quiet">Most people who come through this process are welcomed in. In some cases we may suggest a different timing or pathway if that feels more supportive.</p>
+        </div>
+
         <p class="lede">There's no ticket here. Just a few moments of honest reflection, and an invitation.</p>
 
         <div class="actions">
-            <button class="btn btn-primary" data-go="why">Begin →</button>
+            <button class="btn btn-primary" data-go="orientation">Begin →</button>
         </div>
     </section>
 
-    <!-- ============ MOMENT 2: WHY ============ -->
+    <!-- ============ MOMENT 2: ORIENTATION ============ -->
+    <section class="moment" data-moment="orientation">
+        <div class="moment-name">Orientation</div>
+
+        <h1 class="display">How does this land in you?</h1>
+
+        <p>Six lines about how a village asks us to show up. Move each slider where it feels honest, not where it sounds good. There's no right answer; the village isn't for everyone, and that's okay.</p>
+
+        <div class="orientation-list" id="orientation-list"></div>
+
+        <div class="actions">
+            <button class="btn btn-primary" data-go="why">Continue →</button>
+            <button class="btn btn-link" data-go="threshold">Back</button>
+        </div>
+    </section>
+
+    <!-- ============ MOMENT 3: WHY ============ -->
     <section class="moment" data-moment="why">
         <div class="moment-name">Why</div>
 
@@ -571,7 +684,7 @@
             <textarea id="why-text" class="deep" placeholder="A sentence is fine. A paragraph is fine. Whatever lands."></textarea>
             <div class="examples">
                 <div class="examples-label">A few different shapes this can take</div>
-                <div class="example">Andre invited me and I trust him. I want to see what he's been talking about.</div>
+                <div class="example">Andre and Heenal invited me, and I trust them. I want to see what they've been talking about.</div>
                 <div class="example">I've been dreaming of land for years and don't know where to start.</div>
                 <div class="example">I'm tired of paying rent forever and I want to know if there's another way.</div>
                 <div class="example">Honestly I just want to be around people who think about this stuff too.</div>
@@ -580,7 +693,7 @@
 
         <div class="actions">
             <button class="btn btn-primary" data-go="path">Continue →</button>
-            <button class="btn btn-link" data-go="threshold">Back</button>
+            <button class="btn btn-link" data-go="orientation">Back</button>
         </div>
     </section>
 
@@ -702,15 +815,10 @@
         <div class="solstice" style="margin-top: 2rem;">
             <h3>Before the village, there's a smaller invitation.</h3>
             <p>Saturday <strong>June 20</strong>. A work-bee day at The Living Centre, ending around the fire for their solstice dance. Camp overnight if you want to stay. The land won't be ready without hands; this is one of the ways the village is built.</p>
-            <p class="quiet" style="margin-top: 0.5rem;">For August attendees. Tick the box if you'd like to come.</p>
             <label class="solstice-rsvp" id="solstice-rsvp-label">
                 <input type="checkbox" id="solstice-rsvp">
                 <span class="solstice-rsvp-text">Yes, I'd like to come to the June 20 work-bee + solstice. Send me the details.</span>
             </label>
-        </div>
-
-        <div class="money-line">
-            Some people choose to contribute financially to the Reciprocity Pool, the shared body of resources that funds food, firewood, the people running things, and what's left flows toward stewarding the land. We'll share more about that closer to the gathering.
         </div>
 
         <div class="actions">
@@ -726,6 +834,11 @@
         <h1 class="display">A small promise to the village.</h1>
 
         <p>What you bring is yours to choose. How you show up is the village's to ask.</p>
+
+        <div class="reciprocity">
+            <h4>The Reciprocity Pool.</h4>
+            <p>Some people choose to contribute financially to the Reciprocity Pool, the shared body of resources that funds food, firewood, the people running things, and what's left flows toward stewarding the land. We'll share more about that closer to the gathering.</p>
+        </div>
 
         <ul class="vow-list">
             <li>I will care for the land, show up with integrity, and follow through on what I take on.</li>
@@ -853,7 +966,16 @@
                 ]},
             ];
 
-            const moments = ['threshold', 'why', 'path', 'topics', 'bring', 'practical', 'welcome'];
+            const ORIENTATION_LINES = [
+                { id: 'participate',   line: 'Willingness to participate, not just observe' },
+                { id: 'rhythms',       line: 'Comfort with land-based, communal rhythms' },
+                { id: 'diversity',     line: 'Respect for diversity, difference, and shared leadership' },
+                { id: 'self',          line: 'Capacity for self-responsibility and emotional steadiness' },
+                { id: 'curiosity',     line: 'Curiosity and certainty' },
+                { id: 'contribute',    line: 'Desire to contribute to a village, not consume an experience' },
+            ];
+
+            const moments = ['threshold', 'orientation', 'why', 'path', 'topics', 'bring', 'practical', 'welcome'];
             let currentMoment = 'threshold';
 
             // ---------- state ----------
@@ -864,6 +986,7 @@
                 topics: {},          // { id: { bucket: 'yes'|'curious'|'skip', cocreate: '' } }
                 topicOther: '',
                 spectrums: {},       // { id: { value: 50, nonNegotiable: false } }
+                orientation: {},     // { id: value 0–100, only set when touched }
                 roles: [],
                 micro: [],
                 offer: '',
@@ -945,6 +1068,35 @@
             if (state.why) whyText.value = state.why;
             whyText.addEventListener('input', () => { state.why = whyText.value; });
             whyText.addEventListener('blur', saveState);
+
+            // ---------- moment 2: orientation (sliders) ----------
+            function renderOrientation() {
+                const container = document.getElementById('orientation-list');
+                container.innerHTML = ORIENTATION_LINES.map(o => {
+                    const stored = state.orientation[o.id];
+                    const val = typeof stored === 'number' ? stored : 50;
+                    const touched = typeof stored === 'number' ? ' is-touched' : '';
+                    return `
+                        <div class="slider-row${touched}" data-orient-id="${o.id}">
+                            <label class="slider-line" for="orient-${o.id}">${escapeHtml(o.line)}</label>
+                            <input type="range" id="orient-${o.id}" min="0" max="100" step="1" value="${val}" aria-label="${escapeHtml(o.line)}">
+                            <div class="slider-anchors"><span>Not me</span><span>Very me</span></div>
+                        </div>
+                    `;
+                }).join('');
+                container.querySelectorAll('input[type="range"]').forEach(input => {
+                    const row = input.closest('.slider-row');
+                    const id = row.getAttribute('data-orient-id');
+                    const markTouched = () => {
+                        row.classList.add('is-touched');
+                        state.orientation[id] = Number(input.value);
+                        saveState();
+                    };
+                    input.addEventListener('input', markTouched);
+                    input.addEventListener('change', markTouched);
+                });
+            }
+            renderOrientation();
 
             // ---------- moment 3: path ----------
             const pathGrid = document.getElementById('path-grid');
@@ -1225,6 +1377,7 @@
                     topicCoCreator,
                     topicOther: state.topicOther,
                     spectrums: state.spectrums,
+                    orientation: state.orientation,
                     bravePrompt: state.bravePrompt,
                     bigQuestion: state.bigQuestion || '',
                     solsticeRsvp: !!state.solsticeRsvp,
