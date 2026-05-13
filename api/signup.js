@@ -22,8 +22,12 @@ export default async function handler(req, res) {
     bravePrompt,
     bigQuestion,
     solsticeRsvp,
+    stage,
   } = req.body;
-  if (!email) return res.status(400).json({ error: 'Email is required' });
+  // Partial saves (stage starts with 'partial') are orphan rows captured mid-flow,
+  // before the user has reached the Vow moment where email is collected.
+  const isPartial = typeof stage === 'string' && stage.startsWith('partial');
+  if (!isPartial && !email) return res.status(400).json({ error: 'Email is required' });
 
   const formatTopicCoCreator = (entries) => {
     if (!entries || typeof entries !== 'object') return '';
@@ -58,6 +62,7 @@ export default async function handler(req, res) {
     bigQuestion || '',                        // V
     solsticeRsvp ? 'yes' : '',                // W
     orientation && Object.keys(orientation).length ? JSON.stringify(orientation) : '', // X
+    stage || 'final',                         // Y
   ];
 
   try {
@@ -86,9 +91,9 @@ export default async function handler(req, res) {
     }
 
     // Step 2: Write to sheet
-    // Range widened to A:X to accommodate the orientation-sliders column (was A:W).
+    // Range widened to A:Y to accommodate the stage column (was A:X).
     // Keep the !-as-%21 and :-as-%3A encoding (regression fixed in 3bd26ea).
-    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AX:append?valueInputOption=RAW`;
+    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AY:append?valueInputOption=RAW`;
     const sheetRes = await fetch(sheetUrl, {
       method: 'POST',
       headers: {
