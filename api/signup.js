@@ -81,7 +81,9 @@ export default async function handler(req, res) {
     if (!tokenRes.ok) {
       const errText = await tokenRes.text();
       console.error('Token refresh HTTP error:', tokenRes.status, errText.substring(0, 200));
-      return res.status(502).json({ error: 'auth_failed', stage: 'token_refresh' });
+      let googleError = null;
+      try { googleError = JSON.parse(errText); } catch (e) { googleError = { raw: errText.substring(0, 200) }; }
+      return res.status(502).json({ error: 'auth_failed', stage: 'token_refresh', google: googleError });
     }
 
     const tokenData = await tokenRes.json();
