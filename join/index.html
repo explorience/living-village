@@ -1324,8 +1324,8 @@
                 submitMsg.style.color = 'var(--moss)';
                 submitMsg.textContent = '';
 
-                const ok = await submitToSheet({ includeBigQuestion: false });
-                if (ok) {
+                const result = await submitToSheet({ includeBigQuestion: false });
+                if (result.ok) {
                     state.submitted = true;
                     saveState();
                     showMoment('welcome');
@@ -1333,7 +1333,9 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Send my yes →';
                     submitMsg.style.color = 'var(--terracotta)';
-                    submitMsg.textContent = 'Something went sideways. Try again, or write to hello@journeyland.ca.';
+                    submitMsg.innerHTML = result.reason === 'server'
+                        ? 'Our saving system is having a moment, this is on us, not you. Please email what you wrote to <a href="mailto:hello@journeyland.ca?subject=My%20yes%20to%20the%20Living%20Village" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a> and we will record it by hand. Or try again in a few minutes.'
+                        : 'No connection right now. Check your internet and try again, or email <a href="mailto:hello@journeyland.ca" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a>.';
                 }
             });
 
@@ -1421,10 +1423,14 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(Object.assign(buildPayload(), { stage: 'final' })),
                     });
-                    return res.ok;
+                    if (res.ok) return { ok: true };
+                    let body = null;
+                    try { body = await res.json(); } catch (e) {}
+                    console.error('Submission failed', res.status, body);
+                    return { ok: false, reason: 'server', status: res.status, error: body && body.error };
                 } catch (e) {
-                    console.error('Submission failed', e);
-                    return false;
+                    console.error('Submission failed (network)', e);
+                    return { ok: false, reason: 'network' };
                 }
             }
 
