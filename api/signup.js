@@ -7,27 +7,52 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const {
-    // Original homepage form (still supported)
-    email, name, roles, comment, timestamp,
-    // Original /join/ extras (still supported; financial fields kept for future use)
-    micro, amount, vow, dietary, accessibility, paymentIntentId,
-    // /join/ v2 redesign — open prompts, paths, topics, spectrums, big question, solstice
-    why,
-    pathPosition, pathNote,
-    topicsYes, topicsCurious, topicsSkip,
-    topicCoCreator, topicOther,
-    spectrums,
-    orientation,
-    bravePrompt,
-    bigQuestion,
-    solsticeRsvp,
-    stage,
-  } = req.body;
+  const payload = req.body || {};
+  const { email, stage } = payload;
+
   // Partial saves (stage starts with 'partial') are orphan rows captured mid-flow,
   // before the user has reached the Vow moment where email is collected.
   const isPartial = typeof stage === 'string' && stage.startsWith('partial');
   if (!isPartial && !email) return res.status(400).json({ error: 'Email is required' });
+
+  // Run Sheets write and backup email in parallel. Either succeeding is enough to
+  // count as success. Email always sends (when RESEND_API_KEY is configured) so the
+  // team has redundant visibility and a fallback if Sheets ever breaks.
+  const [sheetResult, emailResult] = await Promise.all([
+    writeToSheet(payload).catch(err => ({ ok: false, reason: 'exception', error: err.message })),
+    sendBackupEmail(payload).catch(err => ({ ok: false, reason: 'exception', error: err.message })),
+  ]);
+
+  const success = sheetResult.ok || emailResult.ok;
+  if (success) {
+    console.log('Signup recorded:', email || '(no email)', 'sheet=' + sheetResult.ok, 'email=' + emailResult.ok);
+    return res.status(200).json({
+      success: true,
+      message: 'Welcome to the village.',
+      sheet: sheetResult.ok,
+      email: emailResult.ok,
+    });
+  }
+
+  console.error('Both paths failed for:', email || '(no email)', 'sheet=', sheetResult, 'email=', emailResult);
+  return res.status(502).json({
+    error: 'all_paths_failed',
+    sheet: sheetResult,
+    email: emailResult,
+  });
+}
+
+async function writeToSheet(payload) {
+  const {
+    email, name, roles, comment, timestamp,
+    micro, amount, vow, dietary, accessibility, paymentIntentId,
+    why, pathPosition, pathNote,
+    topicsYes, topicsCurious, topicsSkip,
+    topicCoCreator, topicOther,
+    spectrums, orientation,
+    bravePrompt, bigQuestion, solsticeRsvp,
+    stage,
+  } = payload;
 
   const formatTopicCoCreator = (entries) => {
     if (!entries || typeof entries !== 'object') return '';
@@ -38,83 +63,162 @@ export default async function handler(req, res) {
   };
 
   const rowData = [
-    timestamp || new Date().toISOString(),    // A
-    email,                                    // B
-    name || '',                               // C
-    (roles || []).join(', '),                 // D
-    comment || '',                            // E
-    amount != null ? String(amount) : '',     // F (kept for future financial-contribution flow)
-    (micro || []).join(', '),                 // G
-    vow || '',                                // H
-    dietary || '',                            // I
-    accessibility || '',                      // J
-    paymentIntentId || '',                    // K
-    why || '',                                // L
-    pathPosition || '',                       // M
-    pathNote || '',                           // N
-    (topicsYes || []).join(', '),             // O
-    (topicsCurious || []).join(', '),         // P
-    (topicsSkip || []).join(', '),            // Q
-    formatTopicCoCreator(topicCoCreator),     // R
-    topicOther || '',                         // S
-    spectrums ? JSON.stringify(spectrums) : '', // T
-    bravePrompt || '',                        // U
-    bigQuestion || '',                        // V
-    solsticeRsvp ? 'yes' : '',                // W
-    orientation && Object.keys(orientation).length ? JSON.stringify(orientation) : '', // X
-    stage || 'final',                         // Y
+    timestamp || new Date().toISOString(),
+    email || '',
+    name || '',
+    (roles || []).join(', '),
+    comment || '',
+    amount != null ? String(amount) : '',
+    (micro || []).join(', '),
+    vow || '',
+    dietary || '',
+    accessibility || '',
+    paymentIntentId || '',
+    why || '',
+    pathPosition || '',
+    pathNote || '',
+    (topicsYes || []).join(', '),
+    (topicsCurious || []).join(', '),
+    (topicsSkip || []).join(', '),
+    formatTopicCoCreator(topicCoCreator),
+    topicOther || '',
+    spectrums ? JSON.stringify(spectrums) : '',
+    bravePrompt || '',
+    bigQuestion || '',
+    solsticeRsvp ? 'yes' : '',
+    orientation && Object.keys(orientation).length ? JSON.stringify(orientation) : '',
+    stage || 'final',
   ];
 
-  try {
-    // Step 1: Refresh token
-    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: process.env.GCLIENT_ID,
-        client_secret: process.env.GCLIENT_SECRET,
-        refresh_token: process.env.GREFRESH_TOKEN,
-        grant_type: 'refresh_token',
-      }).toString(),
-    });
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: process.env.GCLIENT_ID,
+      client_secret: process.env.GCLIENT_SECRET,
+      refresh_token: process.env.GREFRESH_TOKEN,
+      grant_type: 'refresh_token',
+    }).toString(),
+  });
 
-    if (!tokenRes.ok) {
-      const errText = await tokenRes.text();
-      console.error('Token refresh HTTP error:', tokenRes.status, errText.substring(0, 200));
-      let googleError = null;
-      try { googleError = JSON.parse(errText); } catch (e) { googleError = { raw: errText.substring(0, 200) }; }
-      return res.status(502).json({ error: 'auth_failed', stage: 'token_refresh', google: googleError });
-    }
-
-    const tokenData = await tokenRes.json();
-    if (!tokenData.access_token) {
-      console.error('No access_token in response:', JSON.stringify(tokenData).substring(0, 200));
-      return res.status(502).json({ error: 'auth_failed', stage: 'no_access_token' });
-    }
-
-    // Step 2: Write to sheet
-    // Range widened to A:Y to accommodate the stage column (was A:X).
-    // Keep the !-as-%21 and :-as-%3A encoding (regression fixed in 3bd26ea).
-    const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AY:append?valueInputOption=RAW`;
-    const sheetRes = await fetch(sheetUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${tokenData.access_token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ values: [rowData] }),
-    });
-
-    if (!sheetRes.ok) {
-      const errText = await sheetRes.text();
-      console.error('Sheet write error:', sheetRes.status, errText.substring(0, 300));
-      return res.status(502).json({ error: 'sheet_write_failed', status: sheetRes.status });
-    }
-
-    console.log('Sheet write OK for:', email);
-    return res.status(200).json({ success: true, message: "Welcome to the village." });
-  } catch (err) {
-    console.error('Error:', err.message, err.stack?.substring(0, 200));
-    return res.status(500).json({ error: 'server_error', message: err.message });
+  if (!tokenRes.ok) {
+    const errText = await tokenRes.text();
+    let googleError = null;
+    try { googleError = JSON.parse(errText); } catch (e) { googleError = { raw: errText.substring(0, 200) }; }
+    console.error('Sheet auth failed:', tokenRes.status, errText.substring(0, 200));
+    return { ok: false, reason: 'auth_failed', stage: 'token_refresh', google: googleError };
   }
+
+  const tokenData = await tokenRes.json();
+  if (!tokenData.access_token) {
+    console.error('Sheet auth: no access_token in response');
+    return { ok: false, reason: 'auth_failed', stage: 'no_access_token' };
+  }
+
+  const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AY:append?valueInputOption=RAW`;
+  const sheetRes = await fetch(sheetUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${tokenData.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ values: [rowData] }),
+  });
+
+  if (!sheetRes.ok) {
+    const errText = await sheetRes.text();
+    console.error('Sheet write error:', sheetRes.status, errText.substring(0, 300));
+    return { ok: false, reason: 'sheet_write_failed', status: sheetRes.status };
+  }
+
+  return { ok: true };
+}
+
+async function sendBackupEmail(payload) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return { ok: false, reason: 'not_configured' };
+  }
+  const fromAddr = process.env.RESEND_FROM || 'Living Village <onboarding@resend.dev>';
+  const toAddr = process.env.RESEND_TO || 'hello@journeyland.ca';
+
+  const subject = buildSubject(payload);
+  const text = buildHumanSummary(payload) + '\n\n--- Raw JSON ---\n' + JSON.stringify(payload, null, 2);
+
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: fromAddr,
+      to: Array.isArray(toAddr) ? toAddr : [toAddr],
+      reply_to: payload.email || undefined,
+      subject,
+      text,
+    }),
+  });
+
+  if (!r.ok) {
+    const errText = await r.text();
+    console.error('Email backup failed:', r.status, errText.substring(0, 300));
+    return { ok: false, reason: 'send_failed', status: r.status };
+  }
+  return { ok: true };
+}
+
+function buildSubject(p) {
+  const stageTag = !p.stage || p.stage === 'final' ? 'yes' : p.stage;
+  const who = p.email || p.name || '(no email yet)';
+  return `[Living Village] ${stageTag}: ${who}`;
+}
+
+function buildHumanSummary(p) {
+  const L = [];
+  const add = (label, value) => {
+    if (value === undefined || value === null || value === '') return;
+    if (Array.isArray(value) && value.length === 0) return;
+    if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return;
+    L.push(`${label}: ${formatValue(value)}`);
+  };
+  L.push(`Stage: ${p.stage || 'final'}`);
+  L.push(`Time:  ${p.timestamp || new Date().toISOString()}`);
+  L.push('');
+  add('Name', p.name);
+  add('Email', p.email);
+  add('Vow signature', p.vow);
+  L.push('');
+  add('Why pulled here', p.why);
+  add('Path positions', p.pathPosition);
+  add('About where they live', p.pathNote);
+  L.push('');
+  add('Topics: Yes', p.topicsYes);
+  add('Topics: Curious', p.topicsCurious);
+  add('Topics: Skip', p.topicsSkip);
+  add('Topic co-creator notes', p.topicCoCreator);
+  add('Topic: other', p.topicOther);
+  L.push('');
+  add('Roles', p.roles);
+  add('Smaller offerings', p.micro);
+  add('Offer', p.comment);
+  add('Solstice RSVP', p.solsticeRsvp ? 'YES (June 20 work-bee)' : null);
+  L.push('');
+  add('Orientation sliders', p.orientation);
+  add('Brave-honesty prompt', p.bravePrompt);
+  add('Big question reflection', p.bigQuestion);
+  L.push('');
+  add('Dietary', p.dietary);
+  add('Accessibility', p.accessibility);
+  return L.join('\n');
+}
+
+function formatValue(v) {
+  if (Array.isArray(v)) return v.join(', ');
+  if (typeof v === 'object') {
+    return '\n' + Object.entries(v)
+      .map(([k, vv]) => `  - ${k}: ${typeof vv === 'object' ? JSON.stringify(vv) : vv}`)
+      .join('\n');
+  }
+  return String(v);
 }

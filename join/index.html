@@ -1333,9 +1333,9 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Send my yes →';
                     submitMsg.style.color = 'var(--terracotta)';
-                    submitMsg.innerHTML = result.reason === 'server'
-                        ? 'Our saving system is having a moment, this is on us, not you. Please email what you wrote to <a href="mailto:hello@journeyland.ca?subject=My%20yes%20to%20the%20Living%20Village" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a> and we will record it by hand. Or try again in a few minutes.'
-                        : 'No connection right now. Check your internet and try again, or email <a href="mailto:hello@journeyland.ca" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a>.';
+                    submitMsg.innerHTML = result.reason === 'network'
+                        ? 'No connection right now. Check your internet and try again, or email <a href="mailto:hello@journeyland.ca" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a>.'
+                        : 'Something is off on our end. Please email what you wrote to <a href="mailto:hello@journeyland.ca?subject=My%20yes%20to%20the%20Living%20Village" style="color: var(--terracotta); text-decoration: underline;">hello@journeyland.ca</a> and we will record it by hand.';
                 }
             });
 
