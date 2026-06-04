@@ -18,11 +18,18 @@ export default async function handler(req, res) {
   // Run Sheets write and backup email in parallel. Either succeeding is enough to
   // count as success. Email always sends (when RESEND_API_KEY is configured) so the
   // team has redundant visibility and a fallback if Sheets ever breaks.
-  const [sheetResult, emailResult] = await Promise.all([
+  const tasks = [
     writeToSheet(payload).catch(err => ({ ok: false, reason: 'exception', error: err.message })),
     sendBackupEmail(payload).catch(err => ({ ok: false, reason: 'exception', error: err.message })),
-  ]);
+  ];
+  // Send a warm confirmation to the applicant only on a real final submission —
+  // not partial saves, and not the post-welcome "big question" follow-up (which sends no stage).
+  if (stage === 'final' && email) {
+    tasks.push(sendApplicantConfirmation(payload).catch(err => ({ ok: false, reason: 'exception', error: err.message })));
+  }
+  const [sheetResult, emailResult] = await Promise.all(tasks);
 
+  // The applicant confirmation never affects success — the signup is recorded if Sheets or the backup email worked.
   const success = sheetResult.ok || emailResult.ok;
   if (success) {
     console.log('Signup recorded:', email || '(no email)', 'sheet=' + sheetResult.ok, 'email=' + emailResult.ok);
@@ -115,7 +122,10 @@ async function writeToSheet(payload) {
     return { ok: false, reason: 'auth_failed', stage: 'no_access_token' };
   }
 
-  const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A%3AY:append?valueInputOption=RAW`;
+  // Anchor the append to a single cell (A1) + INSERT_ROWS so Sheets always writes a full
+  // row starting at column A. Appending to a wide range (A:Y) let Sheets' table auto-detection
+  // drift on sparse rows and start writing at column Y — this prevents that. Keep %21 = '!'.
+  const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Signups%21A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
   const sheetRes = await fetch(sheetUrl, {
     method: 'POST',
     headers: {
@@ -166,6 +176,76 @@ async function sendBackupEmail(payload) {
     return { ok: false, reason: 'send_failed', status: r.status };
   }
   return { ok: true };
+}
+
+// Warm, applicant-facing confirmation sent on a final submission. Failure here is logged
+// but never blocks the signup (success is decided by the Sheet + backup-email paths).
+async function sendApplicantConfirmation(payload) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { ok: false, reason: 'not_configured' };
+  if (!payload.email) return { ok: false, reason: 'no_recipient' };
+
+  const fromAddr = process.env.RESEND_FROM || 'The Living Village <onboarding@resend.dev>';
+  const replyToRaw = process.env.RESEND_TO || 'hello@journeyland.ca';
+  const replyTo = Array.isArray(replyToRaw) ? replyToRaw[0] : replyToRaw;
+
+  const firstName = firstNameFrom(payload);
+  const greeting = firstName ? `Hi ${firstName},` : 'Hi,';
+
+  const text = [
+    greeting,
+    '',
+    'Your yes landed. Thank you for the care you put into your answers — we read every one.',
+    '',
+    'The Living Village gathers on the land, August 15–16, 2026. Hold the dates. We’ll be in touch before then with arrival details, what to bring, and how the two days will flow.',
+    '',
+    'Until then: this isn’t a ticket you bought, it’s a village you’re helping make. If something stirs, or you think of something you’d love to bring, just reply to this email — it reaches us directly.',
+    '',
+    'See you on the land,',
+    'The Living Village',
+  ].join('\n');
+
+  const greetingHtml = firstName ? `Hi ${escapeHtml(firstName)},` : 'Hi,';
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#2c2a26;line-height:1.6;font-size:16px;">
+  <p>${greetingHtml}</p>
+  <p>Your <strong>yes</strong> landed. Thank you for the care you put into your answers — we read every one.</p>
+  <p><strong>The Living Village</strong> gathers on the land, <strong>August&nbsp;15&ndash;16,&nbsp;2026.</strong> Hold the dates. We&rsquo;ll be in touch before then with arrival details, what to bring, and how the two days will flow.</p>
+  <p>Until then: this isn&rsquo;t a ticket you bought, it&rsquo;s a village you&rsquo;re helping make. If something stirs, or you think of something you&rsquo;d love to bring, just reply to this email — it reaches us directly.</p>
+  <p style="margin-top:24px;">See you on the land,<br><strong>The Living Village</strong></p>
+</div>`;
+
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: fromAddr,
+      to: [payload.email],
+      reply_to: replyTo,
+      subject: 'Your yes is received 🌱 — The Living Village, Aug 15–16',
+      text,
+      html,
+    }),
+  });
+
+  if (!r.ok) {
+    const errText = await r.text();
+    console.error('Applicant confirmation failed:', r.status, errText.substring(0, 300));
+    return { ok: false, reason: 'send_failed', status: r.status };
+  }
+  return { ok: true };
+}
+
+function firstNameFrom(p) {
+  const raw = String(p.vow || p.name || '').trim();
+  if (!raw) return '';
+  return raw.split(/[\s,]+/)[0];
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function buildSubject(p) {
