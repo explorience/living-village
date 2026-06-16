@@ -1,4 +1,32 @@
-export default function handler(req, res) {
+import { resolveDbUrl, ensureSchema, syncFromSheet, getAllApplicants, getActivitySuggestions } from './_lib/db.js';
+import { readCleanApplicants } from './_lib/sheet.js';
+
+export default async function handler(req, res) {
+  // Guarded full-chain DB test: /api/debug?dbtest=lv-diag-9fK3pQ
+  // Proves DB connect + sheet read + sync + read without a login. Counts only, no PII.
+  // Removed right after diagnosis.
+  if (req.query && req.query.dbtest === 'lv-diag-9fK3pQ') {
+    try {
+      await ensureSchema();
+      const clean = await readCleanApplicants();
+      await syncFromSheet(clean);
+      const [applicants, activities] = await Promise.all([getAllApplicants(), getActivitySuggestions()]);
+      return res.status(200).json({
+        ok: true,
+        sheetCount: clean.length,
+        dbCount: applicants.length,
+        activitiesCount: activities.length,
+      });
+    } catch (err) {
+      return res.status(200).json({ ok: false, error: err.message });
+    }
+  }
+
+  // Env var names whose value is a Postgres connection string (names only, no values).
+  const dbCandidateVars = Object.entries(process.env)
+    .filter(([, v]) => typeof v === 'string' && /^postgres(ql)?:\/\//.test(v))
+    .map(([k]) => k);
+
   return res.status(200).json({
     hasClientId: !!process.env.GCLIENT_ID,
     hasSecret: !!process.env.GCLIENT_SECRET,
@@ -10,11 +38,7 @@ export default function handler(req, res) {
     resendFrom: process.env.RESEND_FROM || '(unset -> onboarding@resend.dev)',
     hasResendTo: !!process.env.RESEND_TO,
     hasSessionSecret: !!process.env.ADMIN_SESSION_SECRET,
-    hasDatabaseUrl: !!(process.env.DATABASE_URL || process.env.POSTGRES_URL
-      || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING),
-    dbVar: process.env.DATABASE_URL ? 'DATABASE_URL'
-      : process.env.POSTGRES_URL ? 'POSTGRES_URL'
-      : process.env.DATABASE_URL_UNPOOLED ? 'DATABASE_URL_UNPOOLED'
-      : process.env.POSTGRES_URL_NON_POOLING ? 'POSTGRES_URL_NON_POOLING' : 'NONE',
+    dbResolved: !!resolveDbUrl(),
+    dbCandidateVars,
   });
 }

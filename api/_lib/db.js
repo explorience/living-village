@@ -15,12 +15,24 @@ const SEED_ACTIVITIES = [
   'Kitchen & dish duty', 'Fire keeping', 'Music & dance', 'Childcare', 'Opening ceremony',
 ];
 
+// Find the Postgres connection string regardless of the env var name. The Vercel/Neon
+// integration lets you set a custom prefix (e.g. STORAGE_URL, STORAGE_POSTGRES_URL), so we
+// check the common names first, then fall back to scanning for any postgres:// value and
+// prefer a pooled connection (best fit for the serverless HTTP driver).
+export function resolveDbUrl() {
+  const named = process.env.DATABASE_URL || process.env.POSTGRES_URL
+    || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
+  if (named) return named;
+  const candidates = Object.values(process.env)
+    .filter(v => typeof v === 'string' && /^postgres(ql)?:\/\//.test(v));
+  return candidates.find(v => v.includes('-pooler')) || candidates[0] || null;
+}
+
 let _sql = null;
 function db() {
   if (_sql) return _sql;
-  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL
-    || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
-  if (!url) throw new Error('No database URL configured (DATABASE_URL / POSTGRES_URL)');
+  const url = resolveDbUrl();
+  if (!url) throw new Error('No database URL configured (DATABASE_URL / POSTGRES_URL / *_URL)');
   _sql = neon(url);
   return _sql;
 }
