@@ -40,5 +40,10 @@ export default async function handler(req, res) {
     hasSessionSecret: !!process.env.ADMIN_SESSION_SECRET,
     dbResolved: !!resolveDbUrl(),
     dbCandidateVars,
+    // All env var NAMES present in this Production runtime (names only, no values) so we can
+    // see exactly what the Neon integration created. Filters out Vercel system noise.
+    envKeys: Object.keys(process.env)
+      .filter(k => !/^(VERCEL|AWS|LAMBDA|NODE|PATH|PWD|HOME|SHLVL|_|TZ|LANG|HOSTNAME|NOW_)/.test(k))
+      .sort(),
   });
 }
