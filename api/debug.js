@@ -1,4 +1,22 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
+  // Guarded one-shot live Resend test: /api/debug?resendtest=lv-diag-9fK3pQ
+  // Surfaces Resend's actual HTTP status + body so we can see why the magic link fails.
+  // Removed right after diagnosis.
+  if (req.query && req.query.resendtest === 'lv-diag-9fK3pQ') {
+    try {
+      const from = process.env.RESEND_FROM || 'The Living Village <onboarding@resend.dev>';
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from, to: ['1heenal@gmail.com'], subject: 'LV resend diagnostic', text: 'diagnostic' }),
+      });
+      const body = await r.text();
+      return res.status(200).json({ resendStatus: r.status, resendBody: body.slice(0, 500), from });
+    } catch (err) {
+      return res.status(200).json({ resendError: err.message });
+    }
+  }
+
   return res.status(200).json({
     hasClientId: !!process.env.GCLIENT_ID,
     hasSecret: !!process.env.GCLIENT_SECRET,
