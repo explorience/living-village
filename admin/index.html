@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Keepers’ Room · The Living Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --earth:#2A1D10; --bark:#4A3425; --moss:#3D5540; --sage:#7A9E7E; --fern:#A6C1A3;
+    --cream:#F6EDD9; --warm:#EFE3C8; --sand:#DCC9A3; --terracotta:#C4704B; --gold:#D9A441;
+    --deep:#14100A; --ink:#1A1208; --muted:#9A8A73; --hairline:rgba(74,52,37,.16);
+    --paper:#FBF5E6;
+    --r-fire:#C4704B; --r-story:#C99A2E; --r-camp:#9A6B3F; --r-thresh:#3D5540;
+    --r-exch:#5E8A6B; --r-flow:#4C7E86; --r-unsure:#9A8A73;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif; color:var(--earth);
+    background:var(--cream); line-height:1.6; -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility; min-height:100vh; overflow-x:hidden;
+  }
+  /* warm atmospheric ground + faint topographic contours + grain */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1100px 700px at 12% -8%, rgba(217,164,65,.18), transparent 60%),
+      radial-gradient(1000px 800px at 105% 10%, rgba(196,112,75,.14), transparent 55%),
+      radial-gradient(900px 900px at 50% 120%, rgba(61,85,64,.16), transparent 60%),
+      var(--cream);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  }
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ::selection{background:var(--gold);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:2px;border-radius:3px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .display{font-family:'Fraunces',Georgia,serif}
+  .hidden{display:none!important}
+
+  /* ───────────────────────── GATE ───────────────────────── */
+  #gate{min-height:100vh;display:grid;place-items:center;padding:32px}
+  .gate-card{
+    width:100%;max-width:430px;text-align:center;
+    background:linear-gradient(180deg,var(--paper),var(--warm));
+    border:1px solid var(--hairline);border-radius:22px;
+    padding:46px 38px 40px;box-shadow:0 30px 70px -40px rgba(42,29,16,.5);
+    animation:rise .8s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .gate-mark{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
+  .gate-card h1{
+    font-family:'Fraunces',serif;font-weight:500;font-size:clamp(30px,6vw,40px);
+    line-height:1.05;margin:14px 0 6px;color:var(--bark);font-optical-sizing:auto
+  }
+  .gate-card h1 em{font-style:italic;color:var(--terracotta)}
+  .gate-sub{color:var(--muted);font-size:15px;margin-bottom:30px}
+  .field{display:flex;flex-direction:column;gap:12px}
+  input[type=email]{
+    width:100%;padding:15px 18px;border-radius:13px;border:1px solid var(--hairline);
+    background:var(--cream);font-size:16px;color:var(--earth);transition:border-color .2s,box-shadow .2s
+  }
+  input[type=email]:focus{outline:none;border-color:var(--terracotta);box-shadow:0 0 0 4px rgba(196,112,75,.12)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    background:var(--terracotta);color:var(--cream);font-weight:500;font-size:15px;
+    padding:14px 22px;border-radius:999px;transition:transform .18s,background .2s,box-shadow .2s;
+    box-shadow:0 14px 30px -14px rgba(196,112,75,.8)
+  }
+  .btn:hover{transform:translateY(-2px);background:#b5613d}
+  .btn:active{transform:translateY(0)}
+  .btn[disabled]{opacity:.6;pointer-events:none}
+  .gate-note{margin-top:18px;font-size:13.5px;color:var(--muted);min-height:20px}
+  .gate-note.err{color:var(--terracotta)}
+  .gate-note.ok{color:var(--moss)}
+
+  /* ───────────────────────── SHELL ───────────────────────── */
+  header.bar{
+    position:sticky;top:0;z-index:30;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:16px clamp(18px,4vw,40px);
+    background:linear-gradient(180deg,rgba(246,237,217,.96),rgba(246,237,217,.78));
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--hairline)
+  }
+  .brand{display:flex;flex-direction:column;line-height:1.1;margin-right:auto}
+  .brand .k{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+  .brand .n{font-family:'Fraunces',serif;font-weight:600;font-size:21px;color:var(--bark)}
+  .count{font-family:'Fraunces',serif;font-size:14px;color:var(--moss);white-space:nowrap}
+  .count b{font-weight:600;font-size:17px;color:var(--terracotta)}
+  .toggle{display:flex;background:var(--warm);border:1px solid var(--hairline);border-radius:999px;padding:4px}
+  .toggle button{padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--muted);transition:color .2s}
+  .toggle button.on{background:var(--paper);color:var(--bark);box-shadow:0 4px 12px -6px rgba(42,29,16,.4)}
+  .who{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .who a{color:var(--terracotta);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+  .who a:hover{border-color:var(--terracotta)}
+
+  main{max-width:1180px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,40px) 120px}
+  .loading,.feedback{text-align:center;color:var(--muted);padding:80px 0;font-family:'Fraunces',serif;font-size:18px}
+
+  /* ─────────────────── TIMELINE ─────────────────── */
+  #view-timeline{position:relative;max-width:720px;margin:0 auto}
+  .spine{position:absolute;left:13px;top:6px;bottom:0;width:2px;
+    background:linear-gradient(180deg,var(--gold),var(--sage) 30%,var(--moss));opacity:.55}
+  @media(min-width:680px){.spine{left:140px}}
+  .month{position:relative;margin:34px 0 14px;padding-left:42px}
+  @media(min-width:680px){.month{padding-left:0;text-align:right;width:120px}}
+  .month span{font-family:'Fraunces',serif;font-style:italic;font-size:20px;color:var(--bark)}
+  .month::before{content:"";position:absolute;left:7px;top:9px;width:14px;height:14px;border-radius:50%;
+    background:var(--gold);border:3px solid var(--cream);box-shadow:0 0 0 1px var(--gold)}
+  @media(min-width:680px){.month::before{left:134px}}
+
+  .entry{position:relative;padding-left:42px;margin-bottom:14px}
+  @media(min-width:680px){.entry{padding-left:172px}}
+  .entry::before{content:"";position:absolute;left:9px;top:26px;width:10px;height:10px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--terracotta);z-index:2}
+  @media(min-width:680px){.entry::before{left:136px}}
+  .entry .when{position:absolute;left:42px;top:-2px;font-size:12px;color:var(--muted);display:none}
+  @media(min-width:680px){.entry .when{display:block;left:0;width:120px;text-align:right;top:22px}}
+
+  .card{
+    background:linear-gradient(180deg,var(--paper),#fbf3df);
+    border:1px solid var(--hairline);border-radius:16px;padding:18px 20px;
+    cursor:pointer;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s;
+    box-shadow:0 12px 30px -24px rgba(42,29,16,.6);position:relative;overflow:hidden
+  }
+  .card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--terracotta);
+    transform:scaleY(0);transform-origin:top;transition:transform .25s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 22px 44px -26px rgba(42,29,16,.66);border-color:rgba(196,112,75,.4)}
+  .card:hover::after{transform:scaleY(1)}
+  .card .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .card .nm{font-family:'Fraunces',serif;font-weight:600;font-size:21px;color:var(--bark);line-height:1.1}
+  .card .dt{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  @media(min-width:680px){.entry .card .dt{display:none}}
+  .essence{margin:9px 0 13px;color:#5b4a35;font-size:14.5px;font-style:italic;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;
+    padding:4px 10px 4px 8px;border-radius:999px;background:var(--warm);color:var(--bark);
+    border:1px solid var(--hairline);white-space:nowrap}
+  .chip svg{width:12px;height:12px;flex:none}
+  .chip .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .sol{margin-left:auto;font-size:11px;color:var(--moss);display:inline-flex;align-items:center;gap:4px}
+
+  /* ─────────────────── ROLES BOARD ─────────────────── */
+  .rolebar{display:flex;align-items:center;gap:11px;margin-bottom:18px;font-size:13px;color:var(--muted)}
+  .board{display:flex;gap:16px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x proximity}
+  .col{flex:0 0 248px;scroll-snap-align:start;background:rgba(251,245,230,.6);
+    border:1px solid var(--hairline);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .col-h{display:flex;align-items:center;gap:9px;padding:4px 4px 10px;border-bottom:1px solid var(--hairline)}
+  .col-h .em{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#fff;flex:none}
+  .col-h .em svg{width:17px;height:17px}
+  .col-h .rn{font-family:'Fraunces',serif;font-weight:600;font-size:15.5px;color:var(--bark);line-height:1.1}
+  .col-h .rc{margin-left:auto;font-family:'Fraunces',serif;font-size:15px;color:var(--muted)}
+  .person{background:var(--paper);border:1px solid var(--hairline);border-radius:11px;padding:10px 12px;cursor:pointer;
+    transition:transform .18s,box-shadow .18s,border-color .18s}
+  .person:hover{transform:translateY(-2px);box-shadow:0 12px 24px -18px rgba(42,29,16,.7);border-color:rgba(196,112,75,.4)}
+  .person .pn{font-weight:600;font-size:14px;color:var(--bark)}
+  .person .pd{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .col .empty{color:var(--muted);font-size:12.5px;font-style:italic;padding:8px 4px}
+
+  /* ─────────────────── DETAIL DRAWER ─────────────────── */
+  #scrim{position:fixed;inset:0;background:rgba(20,16,10,.5);backdrop-filter:blur(2px);z-index:40;opacity:0;
+    pointer-events:none;transition:opacity .3s}
+  #scrim.show{opacity:1;pointer-events:auto}
+  #drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,100vw);z-index:50;
+    background:linear-gradient(180deg,var(--paper),var(--warm));border-left:1px solid var(--hairline);
+    box-shadow:-30px 0 80px -40px rgba(20,16,10,.7);transform:translateX(100%);
+    transition:transform .42s cubic-bezier(.22,.9,.24,1);overflow-y:auto;overscroll-behavior:contain}
+  #drawer.show{transform:translateX(0)}
+  .d-head{position:sticky;top:0;z-index:2;padding:24px clamp(22px,5vw,36px) 18px;
+    background:linear-gradient(180deg,var(--paper),rgba(251,245,230,.86));backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--hairline)}
+  .d-close{position:absolute;top:18px;right:20px;width:36px;height:36px;border-radius:50%;
+    background:var(--warm);border:1px solid var(--hairline);display:grid;place-items:center;color:var(--bark);
+    font-size:18px;transition:transform .2s,background .2s}
+  .d-close:hover{transform:rotate(90deg);background:var(--sand)}
+  .d-head .dn{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(26px,5vw,34px);color:var(--bark);
+    line-height:1.05;padding-right:44px}
+  .d-meta{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:8px;font-size:13px;color:var(--muted)}
+  .d-meta a{color:var(--terracotta);text-decoration:none}
+  .badge{display:inline-flex;align-items:center;gap:5px;background:rgba(61,85,64,.12);color:var(--moss);
+    padding:3px 10px;border-radius:999px;font-size:12px;font-weight:500}
+  .d-body{padding:6px clamp(22px,5vw,36px) 60px}
+  .sec{padding:20px 0;border-bottom:1px solid var(--hairline)}
+  .sec:last-child{border-bottom:none}
+  .sec h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:11px;font-weight:600}
+  .quote{font-family:'Fraunces',serif;font-size:20px;line-height:1.45;color:var(--bark);font-style:italic}
+  .prose{font-size:15px;color:#4a3a26;line-height:1.66;white-space:pre-wrap}
+  .prose+.prose{margin-top:10px}
+  .kv{font-size:13px;color:var(--muted);margin-bottom:4px}
+  .topwrap{display:flex;flex-direction:column;gap:12px}
+  .toprow .tl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+  .toprow .tl .sw{width:9px;height:9px;border-radius:2px}
+  .topitems{display:flex;flex-wrap:wrap;gap:6px}
+  .ti{font-size:12.5px;padding:4px 10px;border-radius:8px;background:var(--cream);border:1px solid var(--hairline);color:#4a3a26}
+  .sliders{display:flex;flex-direction:column;gap:11px}
+  .slider .sh{display:flex;justify-content:space-between;font-size:12.5px;color:#4a3a26;margin-bottom:4px}
+  .slider .sh b{font-family:'Fraunces',serif;color:var(--terracotta);font-weight:500}
+  .track{height:7px;border-radius:999px;background:var(--warm);overflow:hidden}
+  .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sage),var(--moss))}
+  /* status pills (on cards) */
+  .spill{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;color:var(--sc);vertical-align:middle;
+    background:color-mix(in srgb,var(--sc) 15%,transparent);border:1px solid color-mix(in srgb,var(--sc) 34%,transparent)}
+  .card .nm .spill{margin-left:9px;position:relative;top:-2px}
+  .person .spill{margin-top:7px}
+
+  /* assignment panel */
+  .assign{display:flex;flex-direction:column;gap:19px}
+  .af label{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+  .pills{display:flex;flex-wrap:wrap;gap:7px}
+  .pill-opt{font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:999px;border:1px solid var(--hairline);
+    background:var(--cream);color:var(--bark);transition:background .16s,border-color .16s,color .16s}
+  .pill-opt:hover{border-color:var(--sc,var(--terracotta))}
+  .pill-opt.on{color:#fff;border-color:transparent;background:var(--sc,var(--terracotta))}
+  .role-tog{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:999px;
+    border:1px solid var(--hairline);background:var(--cream);color:var(--bark);transition:background .16s,border-color .16s,color .16s}
+  .role-tog .dot{width:8px;height:8px;border-radius:50%;background:var(--rc);flex:none}
+  .role-tog.on{background:var(--rc);color:#fff;border-color:transparent}
+  .role-tog.on .dot{background:rgba(255,255,255,.92)}
+  .role-tog .picked{font-size:10px;opacity:.72;font-style:italic}
+  .actchips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+  .actchip{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 8px 6px 13px;border-radius:999px;
+    background:rgba(94,138,107,.15);border:1px solid rgba(94,138,107,.32);color:var(--bark)}
+  .actchip button{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:14px;line-height:1;
+    color:var(--bark);background:rgba(42,29,16,.08)}
+  .actchip button:hover{background:var(--terracotta);color:#fff}
+  .assign input[type=text]{width:100%;padding:11px 14px;border-radius:11px;border:1px solid var(--hairline);
+    background:var(--cream);font-size:14px;color:var(--earth)}
+  .assign input[type=text]:focus{outline:none;border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(196,112,75,.12)}
+  .suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .sugg{font-size:11.5px;padding:5px 11px;border-radius:999px;border:1px dashed var(--hairline);color:var(--muted);background:transparent;transition:all .16s}
+  .sugg:hover{border-style:solid;border-color:var(--sage);color:var(--moss)}
+  .assign textarea{width:100%;padding:12px 14px;border-radius:11px;border:1px solid var(--hairline);
+    background:var(--cream);font-family:inherit;font-size:14px;color:var(--earth);resize:vertical;line-height:1.55}
+  .assign textarea:focus{outline:none;border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(196,112,75,.12)}
+  .save-row{display:flex;align-items:center;gap:15px}
+  .btn.save{padding:11px 26px;font-size:14px}
+  .saved{font-size:13px;color:var(--moss);opacity:0;transition:opacity .3s}
+  .saved.show{opacity:1}
+  .empty-note{color:var(--muted);font-style:italic;font-size:14px}
+
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .stagger{opacity:0;animation:rise .6s cubic-bezier(.2,.8,.2,1) forwards}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<section id="gate" class="hidden">
+  <div class="gate-card">
+    <div class="gate-mark">The Living Village</div>
+    <h1 class="display">The keepers’ <em>room</em></h1>
+    <p class="gate-sub">For Heenal &amp; Andre. Pop in your email and a one-tap link will find you.</p>
+    <form id="gate-form" class="field">
+      <input type="email" id="gate-email" placeholder="you@email.com" autocomplete="email" required>
+      <button class="btn" type="submit" id="gate-btn">Send me a link</button>
+    </form>
+    <div class="gate-note" id="gate-note"></div>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <header class="bar">
+    <div class="brand"><span class="k">The Living Village</span><span class="n display">Keepers’ Room</span></div>
+    <div class="count" id="count"></div>
+    <div class="toggle">
+      <button id="t-timeline" class="on" onclick="setView('timeline')">Timeline</button>
+      <button id="t-roles" onclick="setView('roles')">By role</button>
+    </div>
+    <div class="who"><span id="me"></span><a href="/api/auth/logout">Sign out</a></div>
+  </header>
+  <main>
+    <div class="loading display" id="loading">Reading the land…</div>
+    <div id="view-timeline" class="hidden"></div>
+    <div id="view-roles" class="hidden"></div>
+  </main>
+</div>
+
+<!-- DETAIL -->
+<div id="scrim" onclick="closeDetail()"></div>
+<aside id="drawer" aria-hidden="true"></aside>
+
+<script>
+const ROLE_META = {
+  'Fire Keeper':     {c:'var(--r-fire)',   g:'flame'},
+  'Story Weaver':    {c:'var(--r-story)',  g:'book'},
+  'Basecamp Steward':{c:'var(--r-camp)',   g:'tent'},
+  'Threshold Keeper':{c:'var(--r-thresh)', g:'arch'},
+  'Exchange Guide':  {c:'var(--r-exch)',   g:'exchange'},
+  'Flow Facilitator':{c:'var(--r-flow)',   g:'wave'},
+  'Not sure yet':    {c:'var(--r-unsure)', g:'seed'},
+};
+const GLYPH = {
+  flame:'<path d="M12 3c2.6 3.4 4.5 5.6 4.5 8.6a4.5 4.5 0 0 1-9 0c0-1.6.8-2.9 1.8-4 .3 1 .9 1.7 1.7 2 .1-2.3.5-4.4 1-6.6Z"/>',
+  book:'<path d="M12 6.4C10 5 7.2 5 5 5.6v11.2c2.2-.6 5-.6 7 .8 2-1.4 4.8-1.4 7-.8V5.6C16.8 5 14 5 12 6.4Z"/><path d="M12 6.4v11.6"/>',
+  tent:'<path d="M12 4 3.5 19h17L12 4Z"/><path d="M12 9.5 8 19m4-9.5 4 9.5"/>',
+  arch:'<path d="M5.5 20V11a6.5 6.5 0 0 1 13 0v9"/><path d="M12 20v-6"/>',
+  exchange:'<path d="M6 9.5h9l-2.4-2.6M18 14.5H9l2.4 2.6"/>',
+  wave:'<path d="M3 13c1.6-2.6 3.2-2.6 4.8 0s3.2 2.6 4.8 0 3.2-2.6 4.8 0"/>',
+  seed:'<path d="M12 20v-5m0 0c-2.8 0-4.6-1.8-4.6-4.6 2.8 0 4.6 1.8 4.6 4.6Zm0 0c0-2.3 1.5-3.8 3.8-3.8 0 2.3-1.5 3.8-3.8 3.8Z"/>',
+};
+const SLIDER_LABELS = {
+  participate:'Wants to take part', rhythms:'Drawn to shared rhythms', diversity:'Values difference',
+  self:'Sense of self', curiosity:'Curiosity', contribute:'Eager to contribute',
+};
+
+let DATA = [], ROLES = [], view = 'timeline';
+let ACTS = [], roleMode = 'chosen', edit = null;
+const STATUS_META = {
+  confirmed:{label:'Confirmed', c:'var(--moss)'},
+  maybe:{label:'Maybe', c:'var(--gold)'},
+  waitlist:{label:'Waitlist', c:'var(--terracotta)'},
+  declined:{label:'Not this time', c:'var(--muted)'},
+};
+const STATUS_ORDER = ['confirmed','maybe','waitlist','declined'];
+const statusPill = s => { const m=STATUS_META[s]; return m?`<span class="spill" style="--sc:${m.c}">${m.label}</span>`:''; };
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const firstName = a => (a.name || a.vow || 'A keeper').split(/[\s,]+/)[0];
+const fmtDay = iso => { const d=new Date(iso); return isNaN(d)?'' : d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+const monthKey = iso => { const d=new Date(iso); return isNaN(d)?'' : d.toLocaleDateString('en-GB',{month:'long',year:'numeric'}); };
+function essence(a){
+  const t = a.why || a.comment || '';
+  return t.length>150 ? t.slice(0,150).replace(/\s+\S*$/,'')+'…' : t;
+}
+function glyphSvg(name){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${GLYPH[name]||''}</svg>`;
+}
+function roleChip(role){
+  const m = ROLE_META[role] || {c:'var(--muted)'};
+  return `<span class="chip" style="border-color:${m.c}33"><span class="dot" style="background:${m.c}"></span>${esc(role)}</span>`;
+}
+
+/* ── boot ── */
+init();
+async function init(){
+  try{
+    const r = await fetch('/api/admin/applicants',{headers:{'Accept':'application/json'}});
+    if(r.status===401){ showGate(); return; }
+    if(!r.ok){ const e=await r.json().catch(()=>({})); showApp(); fail(e.detail||'Could not read the sheet.'); return; }
+    const j = await r.json();
+    DATA = j.applicants||[]; ROLES = j.roles||Object.keys(ROLE_META); ACTS = j.activities||[];
+    showApp();
+    $('#me').textContent = j.me||'';
+    $('#count').innerHTML = `<b>${DATA.length}</b> ${DATA.length===1?'soul has':'souls have'} said yes`;
+    $('#loading').classList.add('hidden');
+    render();
+  }catch(err){ showGate(); }
+}
+function showGate(){
+  $('#app').classList.add('hidden'); $('#gate').classList.remove('hidden');
+  const p = new URLSearchParams(location.search);
+  if(p.get('error')==='link'){ const n=$('#gate-note'); n.textContent='That link expired or was already used. Ask for a fresh one.'; n.className='gate-note err'; }
+}
+function showApp(){ $('#gate').classList.add('hidden'); $('#app').classList.remove('hidden'); }
+function fail(msg){ $('#loading').classList.remove('hidden'); $('#loading').textContent = msg; }
+
+/* ── gate form ── */
+$('#gate-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const email = $('#gate-email').value.trim(); const btn=$('#gate-btn'); const note=$('#gate-note');
+  if(!email) return;
+  btn.disabled=true; btn.textContent='Sending…';
+  try{
+    await fetch('/api/auth/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    note.textContent='Check your inbox — your link is on its way (good for 20 minutes).'; note.className='gate-note ok';
+    btn.textContent='Link sent ✓';
+  }catch(err){ note.textContent='Something went wrong. Try again in a moment.'; note.className='gate-note err'; btn.disabled=false; btn.textContent='Send me a link'; }
+});
+
+/* ── views ── */
+function setView(v){
+  view=v;
+  $('#t-timeline').classList.toggle('on',v==='timeline');
+  $('#t-roles').classList.toggle('on',v==='roles');
+  render();
+}
+function render(){ view==='timeline'?renderTimeline():renderRoles(); }
+
+function renderTimeline(){
+  $('#view-roles').classList.add('hidden');
+  const el=$('#view-timeline'); el.classList.remove('hidden');
+  if(!DATA.length){ el.innerHTML='<div class="feedback display">No keepers yet.</div>'; return; }
+  let html='<div class="spine"></div>'; let lastMonth=''; let i=0;
+  for(const a of DATA){
+    const mk=monthKey(a.applied);
+    if(mk && mk!==lastMonth){ html+=`<div class="month"><span class="display">${esc(mk)}</span></div>`; lastMonth=mk; }
+    const sol = a.solsticeRsvp ? '<span class="sol">◍ solstice</span>' : '';
+    const ess = essence(a);
+    html+=`<div class="entry stagger" style="animation-delay:${Math.min(i,14)*45}ms">
+      <span class="when">${esc(fmtDay(a.applied))}</span>
+      <div class="card" onclick="openDetail('${esc(a.id)}')">
+        <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
+        ${ess?`<div class="essence">${esc(ess)}</div>`:''}
+        <div class="chips">${a.roles.map(roleChip).join('')}${sol}</div>
+      </div></div>`;
+    i++;
+  }
+  el.innerHTML=html;
+}
+
+function renderRoles(){
+  $('#view-timeline').classList.add('hidden');
+  const el=$('#view-roles'); el.classList.remove('hidden');
+  const field = roleMode==='assigned' ? 'assignedRoles' : 'roles';
+  let cols='';
+  ROLES.forEach((role,ci)=>{
+    const m=ROLE_META[role]||{c:'var(--muted)',g:'seed'};
+    const people=DATA.filter(a=>(a[field]||[]).includes(role));
+    cols+=`<div class="col stagger" style="animation-delay:${ci*55}ms">
+      <div class="col-h"><span class="em" style="background:${m.c}">${glyphSvg(m.g)}</span>
+        <span class="rn display">${esc(role)}</span><span class="rc display">${people.length}</span></div>
+      ${people.length?people.map(a=>`<div class="person" onclick="openDetail('${esc(a.id)}')">
+          <div class="pn">${esc(a.name||firstName(a))}</div>
+          <div class="pd">${esc(fmtDay(a.applied))}${a.solsticeRsvp?' · solstice':''}</div>
+          ${statusPill(a.status)}</div>`).join('')
+        :'<div class="empty">No one here yet.</div>'}
+    </div>`;
+  });
+  el.innerHTML=`<div class="rolebar">Group by:
+    <div class="toggle"><button class="${roleMode==='chosen'?'on':''}" onclick="setRoleMode('chosen')">What they chose</button>
+    <button class="${roleMode==='assigned'?'on':''}" onclick="setRoleMode('assigned')">What you assigned</button></div></div>
+    <div class="board">${cols}</div>`;
+}
+function setRoleMode(m){ roleMode=m; renderRoles(); }
+
+/* ── detail ── */
+function openDetail(id){
+  const a=DATA.find(x=>x.id===id); if(!a) return;
+  const block=(label,text)=>text?`<div class="sec"><h3>${label}</h3><div class="prose">${esc(text)}</div></div>`:'';
+  const topicBlock=(label,sw,text)=>text?`<div class="toprow"><div class="tl"><span class="sw" style="background:${sw}"></span>${label}</div><div class="prose" style="font-size:14px">${esc(text)}</div></div>`:'';
+
+  let sliders='';
+  if(a.orientation){
+    const items=Object.entries(a.orientation).filter(([k])=>SLIDER_LABELS[k]);
+    if(items.length) sliders=`<div class="sec"><h3>Where they lean</h3><div class="sliders">${
+      items.map(([k,v])=>`<div class="slider"><div class="sh"><span>${SLIDER_LABELS[k]}</span><b>${v}</b></div><div class="track"><div class="fill" style="width:${Math.max(0,Math.min(100,v))}%"></div></div></div>`).join('')
+    }</div></div>`;
+  }
+  const path = [a.pathPosition, a.pathNote].filter(Boolean).join(' · ');
+
+  $('#drawer').innerHTML = `
+    <div class="d-head">
+      <button class="d-close" onclick="closeDetail()" aria-label="Close">×</button>
+      <div class="dn display">${esc(a.name||firstName(a))}</div>
+      <div class="d-meta">
+        <span>${esc(fmtDay(a.applied))}</span>
+        ${a.email?`<a href="mailto:${esc(a.email)}">${esc(a.email)}</a>`:''}
+        ${a.solsticeRsvp?'<span class="badge">◍ Solstice work-bee</span>':''}
+      </div>
+      <div class="chips" style="margin-top:12px">${a.roles.map(roleChip).join('')}</div>
+    </div>
+    <div class="d-body">
+      ${a.why?`<div class="sec"><h3>Why they’re here</h3><div class="quote">“${esc(a.why)}”</div></div>`:''}
+      ${path?`<div class="sec"><h3>Where they are on the path</h3><div class="prose">${esc(path)}</div></div>`:''}
+      ${block('What they’d offer', a.comment)}
+      ${a.micro&&a.micro.length?`<div class="sec"><h3>Smaller offerings</h3><div class="topitems">${a.micro.map(x=>`<span class="ti">${esc(x)}</span>`).join('')}</div></div>`:''}
+      ${(a.topicsYes||a.topicsCurious||a.topicsSkip)?`<div class="sec"><h3>Topics</h3><div class="topwrap">
+        ${topicBlock('Yes','var(--moss)',a.topicsYes)}
+        ${topicBlock('Curious','var(--gold)',a.topicsCurious)}
+        ${topicBlock('Skip','var(--muted)',a.topicsSkip)}
+      </div></div>`:''}
+      ${block('Where they could co-create', a.topicCoCreator)}
+      ${block('Something else they’d love', a.topicOther)}
+      ${sliders}
+      ${block('A braver truth', a.bravePrompt)}
+      ${block('Their big question', a.bigQuestion)}
+      ${(a.dietary||a.accessibility)?`<div class="sec"><h3>Care &amp; logistics</h3>
+        ${a.dietary?`<div class="kv">Dietary: <b>${esc(a.dietary)}</b></div>`:''}
+        ${a.accessibility?`<div class="kv">Access: <b>${esc(a.accessibility)}</b></div>`:''}</div>`:''}
+      <div class="sec"><h3>Assignment</h3><div class="assign" id="assign-panel"></div></div>
+    </div>`;
+  $('#scrim').classList.add('show'); $('#drawer').classList.add('show'); $('#drawer').setAttribute('aria-hidden','false');
+  $('#drawer').scrollTop=0; document.body.style.overflow='hidden';
+  edit = { id:a.id, roles:new Set(a.assignedRoles||[]), chosen:new Set(a.roles||[]), acts:[...(a.assignedActivities||[])], status:a.status||'', notes:a.notes||'', _avail:[] };
+  renderAssign();
+}
+
+function renderAssign(){
+  const p=$('#assign-panel'); if(!p||!edit) return;
+  const statusOpts=['',...STATUS_ORDER].map(s=>{
+    const m=s?STATUS_META[s]:{label:'Unset',c:'var(--muted)'};
+    return `<button class="pill-opt ${edit.status===s?'on':''}" style="--sc:${m.c}" onclick="setStatus('${s}')">${m.label}</button>`;
+  }).join('');
+  const roleOpts=ROLES.map(r=>{
+    const m=ROLE_META[r]||{c:'var(--muted)'};
+    return `<button class="role-tog ${edit.roles.has(r)?'on':''}" style="--rc:${m.c}" onclick="toggleRole('${esc(r)}')"><span class="dot"></span>${esc(r)}${edit.chosen.has(r)?'<span class="picked">chose</span>':''}</button>`;
+  }).join('');
+  const chips=edit.acts.map((a,i)=>`<span class="actchip">${esc(a)}<button onclick="removeActivity(${i})" aria-label="Remove">×</button></span>`).join('');
+  edit._avail=ACTS.filter(a=>!edit.acts.includes(a));
+  const suggs=edit._avail.map((a,i)=>`<button class="sugg" onclick="addSugg(${i})">+ ${esc(a)}</button>`).join('');
+  p.innerHTML=`
+    <div class="af"><label>Status</label><div class="pills">${statusOpts}</div></div>
+    <div class="af"><label>Assigned roles</label><div class="pills">${roleOpts}</div></div>
+    <div class="af"><label>Activities</label>
+      <div class="actchips">${chips}</div>
+      <input type="text" id="act-input" placeholder="Add an activity, then press Enter" onkeydown="if(event.key==='Enter'){event.preventDefault();addActivity(this.value);this.value='';}">
+      ${suggs?`<div class="suggest">${suggs}</div>`:''}</div>
+    <div class="af"><label>Private notes</label>
+      <textarea id="notes-input" rows="3" placeholder="Just for you and Andre…" oninput="edit.notes=this.value">${esc(edit.notes)}</textarea></div>
+    <div class="save-row"><button class="btn save" onclick="saveAssignment()">Save assignment</button><span class="saved" id="saved-msg">Saved ✓</span></div>`;
+}
+function setStatus(s){ edit.status=(edit.status===s?'':s); renderAssign(); }
+function toggleRole(r){ edit.roles.has(r)?edit.roles.delete(r):edit.roles.add(r); renderAssign(); }
+function addActivity(name){ name=String(name||'').trim(); if(name&&!edit.acts.includes(name)) edit.acts.push(name); renderAssign(); const i=$('#act-input'); if(i) i.focus(); }
+function addSugg(i){ if(edit._avail[i]) addActivity(edit._avail[i]); }
+function removeActivity(i){ edit.acts.splice(i,1); renderAssign(); }
+async function saveAssignment(){
+  if(!edit) return;
+  const btn=document.querySelector('#assign-panel .btn.save'); if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  try{
+    const r=await fetch('/api/admin/assign',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:edit.id,assignedRoles:[...edit.roles],assignedActivities:edit.acts,status:edit.status,notes:edit.notes})});
+    if(!r.ok) throw new Error('save_failed');
+    const j=await r.json(); const idx=DATA.findIndex(x=>x.id===edit.id); if(idx>=0) DATA[idx]=j.applicant;
+    if(!ACTS.length||edit.acts.some(a=>!ACTS.includes(a))) ACTS=[...new Set([...ACTS,...edit.acts])].sort((a,b)=>a.localeCompare(b));
+    const msg=$('#saved-msg'); if(btn){btn.disabled=false;btn.textContent='Save assignment';}
+    if(msg){msg.textContent='Saved ✓';msg.style.color='var(--moss)';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2200);}
+    render();
+  }catch(err){
+    const btn2=document.querySelector('#assign-panel .btn.save'); if(btn2){btn2.disabled=false;btn2.textContent='Save assignment';}
+    const msg=$('#saved-msg'); if(msg){msg.textContent='Could not save — try again';msg.style.color='var(--terracotta)';msg.classList.add('show');}
+  }
+}
+function closeDetail(){
+  $('#scrim').classList.remove('show'); $('#drawer').classList.remove('show'); $('#drawer').setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDetail(); });
+</script>
+</body>
+</html>
