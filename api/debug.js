@@ -22,6 +22,27 @@ export default async function handler(req, res) {
     }
   }
 
+  // Guarded form-side roster read (sheet only, no DB): /api/debug?sheettest=lv-diag-9fK3pQ
+  // Shows what the website form actually captured for the solstice RSVP. Removed after.
+  if (req.query && req.query.sheettest === 'lv-diag-9fK3pQ') {
+    try {
+      const clean = await readCleanApplicants();
+      return res.status(200).json({
+        ok: true,
+        total: clean.length,
+        solsticeYes: clean.filter(a => a.solsticeRsvp).map(a => a.name || a.email),
+        roster: clean.map(a => ({
+          name: a.name || a.email,
+          solstice: !!a.solsticeRsvp,
+          roles: a.roles,
+          applied: (a.applied || '').slice(0, 10),
+        })),
+      });
+    } catch (err) {
+      return res.status(200).json({ ok: false, error: err.message });
+    }
+  }
+
   // Env var names whose value is a Postgres connection string (names only, no values).
   const dbCandidateVars = Object.entries(process.env)
     .filter(([, v]) => typeof v === 'string' && /^postgres(ql)?:\/\//.test(v))
