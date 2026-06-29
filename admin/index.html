@@ -249,6 +249,35 @@
 
   @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .stagger{opacity:0;animation:rise .6s cubic-bezier(.2,.8,.2,1) forwards}
+
+  /* ───────────────────────── GUIDE ───────────────────────── */
+  .who .glink{color:var(--terracotta);font-size:13px;border-bottom:1px solid transparent;transition:border-color .2s}
+  .who .glink:hover{border-color:var(--terracotta)}
+  #guide-wrap{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;
+    background:rgba(20,16,10,.5);backdrop-filter:blur(2px);overflow-y:auto}
+  .guide-card{position:relative;width:100%;max-width:640px;margin:auto;
+    background:linear-gradient(180deg,var(--paper),var(--warm));border:1px solid var(--hairline);
+    border-radius:20px;box-shadow:0 40px 90px -40px rgba(20,16,10,.7);
+    padding:40px clamp(24px,5vw,44px) 44px;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  .g-x{top:16px;right:18px}
+  .g-mark{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .guide-card h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,5vw,34px);color:var(--bark);line-height:1.1;margin-bottom:14px}
+  .guide-card h2 em{font-style:italic;color:var(--terracotta)}
+  .g-lead{font-size:16px;color:#4a3a26;line-height:1.66;margin-bottom:4px}
+  .g-lead em{font-style:italic;color:var(--terracotta);font-weight:500}
+  .g-h{font-family:'Fraunces',serif;font-weight:600;font-size:18px;color:var(--moss);margin:26px 0 8px}
+  .g-p{font-size:14.5px;color:#4a3a26;line-height:1.62;margin-bottom:8px}
+  .g-muted{color:var(--muted);font-style:italic;font-size:13px;margin-bottom:8px}
+  .g-ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+  .g-ul li{font-size:14.5px;color:#4a3a26;padding-left:18px;position:relative;line-height:1.55}
+  .g-ul li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--sage)}
+  .g-roles{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .g-roles li{font-size:14.5px;color:#4a3a26;line-height:1.5;display:flex;align-items:baseline;gap:10px}
+  .g-dot{width:9px;height:9px;border-radius:50%;flex:none;position:relative;top:1px}
+  .g-roles li i{color:var(--muted);font-style:italic}
+  .g-btn{display:inline-block;margin-top:6px;background:var(--moss);color:var(--cream);text-decoration:none;
+    padding:11px 22px;border-radius:999px;font-size:14px;font-weight:500;transition:transform .2s,background .2s}
+  .g-btn:hover{background:var(--terracotta);transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -276,7 +305,7 @@
       <button id="t-timeline" class="on" onclick="setView('timeline')">Timeline</button>
       <button id="t-roles" onclick="setView('roles')">By role</button>
     </div>
-    <div class="who"><span id="me"></span><a href="/api/auth/logout">Sign out</a></div>
+    <div class="who"><span id="me"></span><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
   </header>
   <main>
     <div class="loading display" id="loading">Reading the land…</div>
@@ -288,6 +317,50 @@
 <!-- DETAIL -->
 <div id="scrim" onclick="closeDetail()"></div>
 <aside id="drawer" aria-hidden="true"></aside>
+
+<!-- GUIDE -->
+<div id="guide-wrap" class="hidden" onclick="if(event.target===this)closeGuide()">
+  <div class="guide-card" role="dialog" aria-label="Guide">
+    <button class="d-close g-x" onclick="closeGuide()" aria-label="Close">×</button>
+    <div class="g-mark">The Living Village</div>
+    <h2 class="display">Welcome to the Keepers’ Room</h2>
+    <p class="g-lead">This is where we hold the <em>people</em> side of the village: who’s joining, what they’re drawn to, and who’s doing what. A shared map of our crew, so it doesn’t all live in one person’s head. It’s yours as much as ours.</p>
+
+    <h3 class="g-h">The two views</h3>
+    <p class="g-p"><b>Timeline</b> — everyone who’s said yes, newest first, with when they applied and the roles they picked.</p>
+    <p class="g-p"><b>By role</b> — the same people, grouped by role. Flip between <i>what they chose</i> (their pick on the form) and <i>what you assigned</i> (what we’ve actually given them) to watch the crew take shape.</p>
+
+    <h3 class="g-h">Opening someone</h3>
+    <p class="g-p">Click any card to see their full answers: why they’re here, what they’d love to offer, dietary and access needs, and more.</p>
+
+    <h3 class="g-h">Giving someone a role</h3>
+    <ul class="g-ul">
+      <li>Set a <b>status</b> — Confirmed, Maybe, Waitlist, or Not this time.</li>
+      <li>Assign <b>roles</b> and <b>activities</b> (free text, with suggestions).</li>
+      <li>Leave <b>private notes</b> — only the crew sees these, never the applicant.</li>
+      <li>Hit <b>Save</b>. That’s it.</li>
+    </ul>
+
+    <h3 class="g-h">How it stays honest</h3>
+    <p class="g-p">The roster syncs from the website signup form automatically, so new yeses just appear. Your assignments live separately and are <b>never overwritten</b> by a sync. Edit freely, nothing you do here gets clobbered.</p>
+
+    <h3 class="g-h">The seven roles</h3>
+    <p class="g-muted">Working descriptions, refine as you like.</p>
+    <ul class="g-roles">
+      <li><span class="g-dot" style="background:var(--r-fire)"></span><span><b>Fire Keeper</b> — tends the warmth, holds the fire and the closing circles.</span></li>
+      <li><span class="g-dot" style="background:var(--r-story)"></span><span><b>Story Weaver</b> — gathers people’s stories and gives them back to the village.</span></li>
+      <li><span class="g-dot" style="background:var(--r-camp)"></span><span><b>Basecamp Steward</b> — the beating heart of the site: coordination, logistics, who’s-where. <i>(Savannah &amp; Alex, that’s you.)</i></span></li>
+      <li><span class="g-dot" style="background:var(--r-thresh)"></span><span><b>Threshold Keeper</b> — welcomes arrivals and helps people land softly.</span></li>
+      <li><span class="g-dot" style="background:var(--r-exch)"></span><span><b>Exchange Guide</b> — helps people find what to give and what to receive.</span></li>
+      <li><span class="g-dot" style="background:var(--r-flow)"></span><span><b>Flow Facilitator</b> — keeps the rhythm of the days: sessions, music, movement.</span></li>
+      <li><span class="g-dot" style="background:var(--r-unsure)"></span><span><b>Not sure yet</b> — still finding their place. Welcome here too.</span></li>
+    </ul>
+
+    <h3 class="g-h">Want something changed?</h3>
+    <p class="g-p">This is built to make your job lighter. If something’s clunky, or you want a new view or a tweak, just say, Heenal genuinely loves making this better.</p>
+    <p><a class="g-btn" href="mailto:1heenal@gmail.com?subject=Living%20Village%20admin%20feedback">Send Heenal a note</a></p>
+  </div>
+</div>
 
 <script>
 const ROLE_META = {
@@ -535,7 +608,12 @@ function closeDetail(){
   $('#scrim').classList.remove('show'); $('#drawer').classList.remove('show'); $('#drawer').setAttribute('aria-hidden','true');
   document.body.style.overflow='';
 }
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDetail(); });
+function openGuide(){ $('#guide-wrap').classList.remove('hidden'); document.body.style.overflow='hidden'; }
+function closeGuide(){ $('#guide-wrap').classList.add('hidden'); document.body.style.overflow=''; }
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(!$('#guide-wrap').classList.contains('hidden')) closeGuide(); else closeDetail();
+});
 </script>
 </body>
 </html>

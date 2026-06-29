@@ -11,7 +11,8 @@ const SESSION_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days
 const LINK_TTL = 20 * 60 * 1000;              // 20 minutes
 
 export function allowlist() {
-  const raw = process.env.ADMIN_ALLOWLIST || '1heenal@gmail.com,andre.vashist@gmail.com';
+  const raw = process.env.ADMIN_ALLOWLIST
+    || '1heenal@gmail.com,andre.vashist@gmail.com,hayesrsavannah@gmail.com,oleksandra.makovska99@gmail.com';
   return raw.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 }
 
