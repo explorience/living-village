@@ -1,5 +1,5 @@
 // POST /api/admin/assign -> save the assignment layer for one applicant (behind a session).
-// Body: { id, assignedRoles?: string[], assignedActivities?: string[], status?, notes? }
+// Body: { id, assignedRoles?: string[], assignedActivities?: string[], status?, notes?, phone? }
 
 import { getSession } from '../_lib/auth.js';
 import { ensureSchema, updateAssignment } from '../_lib/db.js';
@@ -21,10 +21,11 @@ export default async function handler(req, res) {
     ? [...new Set(b.assignedActivities.map(s => String(s).trim()).filter(Boolean))].slice(0, 30) : [];
   const status = STATUSES.includes(b.status) ? b.status : '';
   const notes = typeof b.notes === 'string' ? b.notes.slice(0, 4000) : '';
+  const phone = typeof b.phone === 'string' ? b.phone.trim().slice(0, 40) : '';
 
   try {
     await ensureSchema();
-    const applicant = await updateAssignment(b.id, { assignedRoles, assignedActivities, status, notes });
+    const applicant = await updateAssignment(b.id, { assignedRoles, assignedActivities, status, notes, phone });
     if (!applicant) return res.status(404).json({ error: 'not_found' });
     return res.status(200).json({ ok: true, applicant });
   } catch (err) {

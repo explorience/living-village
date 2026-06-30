@@ -51,10 +51,13 @@ export async function ensureSchema() {
     assigned_activities jsonb  NOT NULL DEFAULT '[]'::jsonb,
     status              text   NOT NULL DEFAULT '',
     notes               text   NOT NULL DEFAULT '',
+    phone               text   NOT NULL DEFAULT '',
     created_at          timestamptz NOT NULL DEFAULT now(),
     updated_at          timestamptz NOT NULL DEFAULT now(),
     assigned_updated_at timestamptz
   )`;
+  // Migrate tables created before the crew-editable phone column existed.
+  await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT ''`;
   _schemaReady = true;
 }
 
@@ -78,6 +81,7 @@ function rowToApplicant(row) {
     assignedActivities: Array.isArray(row.assigned_activities) ? row.assigned_activities : [],
     status: row.status || '',
     notes: row.notes || '',
+    phone: row.phone || '',
     assignedUpdatedAt: row.assigned_updated_at || null,
   };
 }
@@ -85,21 +89,21 @@ function rowToApplicant(row) {
 export async function getAllApplicants() {
   const sql = db();
   const rows = await sql`
-    SELECT id, data, assigned_roles, assigned_activities, status, notes, assigned_updated_at
+    SELECT id, data, assigned_roles, assigned_activities, status, notes, phone, assigned_updated_at
     FROM applicants ORDER BY applied DESC NULLS LAST`;
   return rows.map(rowToApplicant);
 }
 
-export async function updateAssignment(id, { assignedRoles, assignedActivities, status, notes }) {
+export async function updateAssignment(id, { assignedRoles, assignedActivities, status, notes, phone }) {
   const sql = db();
   const rows = await sql`
     UPDATE applicants SET
       assigned_roles = ${JSON.stringify(assignedRoles)}::jsonb,
       assigned_activities = ${JSON.stringify(assignedActivities)}::jsonb,
-      status = ${status}, notes = ${notes},
+      status = ${status}, notes = ${notes}, phone = ${phone},
       assigned_updated_at = now(), updated_at = now()
     WHERE id = ${id}
-    RETURNING id, data, assigned_roles, assigned_activities, status, notes, assigned_updated_at`;
+    RETURNING id, data, assigned_roles, assigned_activities, status, notes, phone, assigned_updated_at`;
   return rows.length ? rowToApplicant(rows[0]) : null;
 }
 

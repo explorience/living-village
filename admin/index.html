@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Keepers’ Room · The Living Village</title>
+<title>Backstage · The Living Village</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -278,6 +278,47 @@
   .g-btn{display:inline-block;margin-top:6px;background:var(--moss);color:var(--cream);text-decoration:none;
     padding:11px 22px;border-radius:999px;font-size:14px;font-weight:500;transition:transform .2s,background .2s}
   .g-btn:hover{background:var(--terracotta);transform:translateY(-1px)}
+
+  /* ───────────────────────── STAT BAR + FILTER ───────────────────────── */
+  .statbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:1180px;margin:0 auto 6px;
+    padding:14px clamp(16px,4vw,28px) 4px}
+  .stat{display:inline-flex;align-items:baseline;gap:6px;font-size:13px;color:var(--bark);
+    padding:6px 13px;border-radius:999px;border:1px solid var(--hairline);background:var(--paper);
+    transition:border-color .16s,background .16s,box-shadow .16s}
+  .stat b{font-family:'Fraunces',serif;font-size:15px;color:var(--sc,var(--bark))}
+  .stat:hover{border-color:var(--sc,var(--terracotta))}
+  .stat.on{border-color:var(--sc,var(--terracotta));background:color-mix(in srgb,var(--sc) 12%,var(--paper));
+    box-shadow:0 4px 14px -8px var(--sc,var(--terracotta))}
+  .stat-sep{width:1px;height:22px;background:var(--hairline);margin:0 2px}
+  .stat.csv{margin-left:auto;color:var(--moss);border-style:dashed}
+  .stat.csv:hover{border-style:solid;border-color:var(--moss);background:color-mix(in srgb,var(--moss) 10%,var(--paper))}
+
+  /* ───────────────────────── CONTACT (in drawer) ───────────────────────── */
+  .contact-sec{padding-top:18px}
+  .contact-row{display:flex;flex-wrap:wrap;gap:9px}
+  .contact-btn{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;text-decoration:none;
+    padding:9px 15px;border-radius:11px;border:1px solid var(--hairline);background:var(--cream);
+    color:var(--bark);transition:background .16s,border-color .16s,transform .12s}
+  .contact-btn .ci{font-size:14px}
+  .contact-btn.email{color:var(--terracotta)} .contact-btn.email:hover{border-color:var(--terracotta);background:color-mix(in srgb,var(--terracotta) 9%,var(--cream));transform:translateY(-1px)}
+  .contact-btn.phone{color:var(--moss)} .contact-btn.phone:hover{border-color:var(--moss);background:color-mix(in srgb,var(--moss) 9%,var(--cream));transform:translateY(-1px)}
+  .contact-none{font-size:13px;color:var(--muted);font-style:italic;align-self:center}
+
+  /* ───────────────────────── NEEDS ROLL-UP ───────────────────────── */
+  #view-needs{max-width:1080px;margin:0 auto;padding:6px clamp(16px,4vw,28px) 60px}
+  .needs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .need-card{background:linear-gradient(180deg,var(--paper),var(--warm));border:1px solid var(--hairline);
+    border-radius:16px;padding:18px 20px 8px;box-shadow:0 18px 44px -34px rgba(42,29,16,.5)}
+  .need-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .need-t{font-size:16px;color:var(--bark);font-weight:600}
+  .need-n{font-family:'Fraunces',serif;font-size:22px;color:var(--moss)} .need-n .of{font-size:13px;color:var(--muted)}
+  .need-list{list-style:none;display:flex;flex-direction:column}
+  .need-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--hairline);
+    font-size:13.5px;cursor:pointer;transition:color .14s}
+  .need-list li:hover{color:var(--terracotta)}
+  .need-list .nl-name{font-weight:500;color:var(--bark);white-space:nowrap}
+  .need-list .nl-val{color:#4a3a26;text-align:right}
+  .need-empty{font-size:13px;color:var(--muted);font-style:italic;padding:6px 0 12px}
 </style>
 </head>
 <body>
@@ -286,7 +327,7 @@
 <section id="gate" class="hidden">
   <div class="gate-card">
     <div class="gate-mark">The Living Village</div>
-    <h1 class="display">The keepers’ <em>room</em></h1>
+    <h1 class="display">Back<em>stage</em></h1>
     <p class="gate-sub">Pop in your email and a one-tap link will find you.</p>
     <form id="gate-form" class="field">
       <input type="email" id="gate-email" placeholder="you@email.com" autocomplete="email" required>
@@ -299,18 +340,21 @@
 <!-- APP -->
 <div id="app" class="hidden">
   <header class="bar">
-    <div class="brand"><span class="k">The Living Village</span><span class="n display">Keepers’ Room</span></div>
+    <div class="brand"><span class="k">The Living Village</span><span class="n display">Backstage</span></div>
     <div class="count" id="count"></div>
     <div class="toggle">
       <button id="t-timeline" class="on" onclick="setView('timeline')">Timeline</button>
       <button id="t-roles" onclick="setView('roles')">By role</button>
+      <button id="t-needs" onclick="setView('needs')">Needs</button>
     </div>
     <div class="who"><span id="me"></span><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
   </header>
   <main>
     <div class="loading display" id="loading">Reading the land…</div>
+    <div class="statbar hidden" id="statbar"></div>
     <div id="view-timeline" class="hidden"></div>
     <div id="view-roles" class="hidden"></div>
+    <div id="view-needs" class="hidden"></div>
   </main>
 </div>
 
@@ -323,20 +367,25 @@
   <div class="guide-card" role="dialog" aria-label="Guide">
     <button class="d-close g-x" onclick="closeGuide()" aria-label="Close">×</button>
     <div class="g-mark">The Living Village</div>
-    <h2 class="display">Welcome to the Keepers’ Room</h2>
+    <h2 class="display">Welcome <em>backstage</em></h2>
     <p class="g-lead">This is where we hold the <em>people</em> side of the village: who’s joining, what they’re drawn to, and who’s doing what. A shared map of our crew, so it doesn’t all live in one person’s head. It’s yours as much as ours.</p>
 
-    <h3 class="g-h">The two views</h3>
+    <h3 class="g-h">The three views</h3>
     <p class="g-p"><b>Timeline</b> — everyone who’s said yes, newest first, with when they applied and the roles they picked.</p>
     <p class="g-p"><b>By role</b> — the same people, grouped by role. Flip between <i>what they chose</i> (their pick on the form) and <i>what you assigned</i> (what we’ve actually given them) to watch the crew take shape.</p>
+    <p class="g-p"><b>Needs</b> — a roll-up of dietary needs, accessibility, who has a phone, and who we still can’t reach. The coordinators’ best friend.</p>
+
+    <h3 class="g-h">The counts bar + filter</h3>
+    <p class="g-p">Along the top: how many are confirmed, maybe, waitlisted, undecided, plus the solstice crew. Tap any of them to filter every view to just those people. <b>⤓ CSV</b> downloads a spreadsheet of whatever you’re currently looking at, perfect for a printout with walkie-talkies in hand.</p>
 
     <h3 class="g-h">Opening someone</h3>
-    <p class="g-p">Click any card to see their full answers: why they’re here, what they’d love to offer, dietary and access needs, and more.</p>
+    <p class="g-p">Click any card to see their full answers: why they’re here, what they’d love to offer, dietary and access needs, and more. Their <b>email and phone</b> sit right at the top, one tap to write or call.</p>
 
     <h3 class="g-h">Giving someone a role</h3>
     <ul class="g-ul">
       <li>Set a <b>status</b> — Confirmed, Maybe, Waitlist, or Not this time.</li>
       <li>Assign <b>roles</b> and <b>activities</b> (free text, with suggestions).</li>
+      <li>Add a <b>phone number</b> — the form doesn’t ask for one, so pop it in as you get it.</li>
       <li>Leave <b>private notes</b> — only the crew sees these, never the applicant.</li>
       <li>Hit <b>Save</b>. That’s it.</li>
     </ul>
@@ -386,7 +435,7 @@ const SLIDER_LABELS = {
   self:'Sense of self', curiosity:'Curiosity', contribute:'Eager to contribute',
 };
 
-let DATA = [], ROLES = [], view = 'timeline';
+let DATA = [], ROLES = [], view = 'timeline', filter = 'all';
 let ACTS = [], roleMode = 'chosen', edit = null;
 const STATUS_META = {
   confirmed:{label:'Confirmed', c:'var(--moss)'},
@@ -398,7 +447,7 @@ const STATUS_ORDER = ['confirmed','maybe','waitlist','declined'];
 const statusPill = s => { const m=STATUS_META[s]; return m?`<span class="spill" style="--sc:${m.c}">${m.label}</span>`:''; };
 const $ = s => document.querySelector(s);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const firstName = a => (a.name || a.vow || 'A keeper').split(/[\s,]+/)[0];
+const firstName = a => (a.name || a.vow || 'Someone').split(/[\s,]+/)[0];
 const fmtDay = iso => { const d=new Date(iso); return isNaN(d)?'' : d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
 const monthKey = iso => { const d=new Date(iso); return isNaN(d)?'' : d.toLocaleDateString('en-GB',{month:'long',year:'numeric'}); };
 function essence(a){
@@ -426,6 +475,7 @@ async function init(){
     $('#me').textContent = j.me||'';
     $('#count').innerHTML = `<b>${DATA.length}</b> ${DATA.length===1?'soul has':'souls have'} said yes`;
     $('#loading').classList.add('hidden');
+    renderStatbar();
     render();
   }catch(err){ showGate(); }
 }
@@ -450,21 +500,52 @@ $('#gate-form').addEventListener('submit', async e=>{
   }catch(err){ note.textContent='Something went wrong. Try again in a moment.'; note.className='gate-note err'; btn.disabled=false; btn.textContent='Send me a link'; }
 });
 
+/* ── stat bar + filter ── */
+function statusCounts(){
+  const c={all:DATA.length,confirmed:0,maybe:0,waitlist:0,declined:0,unset:0,solstice:0};
+  for(const a of DATA){ c[a.status||'unset']=(c[a.status||'unset']||0)+1; if(a.solsticeRsvp) c.solstice++; }
+  return c;
+}
+function renderStatbar(){
+  const c=statusCounts();
+  const chip=(key,label,colour)=>`<button class="stat ${filter===key?'on':''}" style="--sc:${colour}" onclick="setFilter('${key}')"><b>${c[key]||0}</b> ${label}</button>`;
+  $('#statbar').classList.remove('hidden');
+  $('#statbar').innerHTML =
+    chip('all','all','var(--bark)')+
+    chip('confirmed','confirmed','var(--moss)')+
+    chip('maybe','maybe','var(--gold)')+
+    chip('waitlist','waitlist','var(--terracotta)')+
+    chip('declined','not this time','var(--muted)')+
+    chip('unset','undecided','var(--muted)')+
+    `<span class="stat-sep"></span>`+
+    chip('solstice','◍ solstice','var(--sage)')+
+    `<button class="stat csv" onclick="exportCsv()" title="Download a spreadsheet of the current view">⤓ CSV</button>`;
+}
+function setFilter(f){ filter=(filter===f&&f!=='all')?'all':f; renderStatbar(); render(); }
+function applyFilter(list){
+  if(filter==='all') return list;
+  if(filter==='solstice') return list.filter(a=>a.solsticeRsvp);
+  if(filter==='unset') return list.filter(a=>!a.status);
+  return list.filter(a=>a.status===filter);
+}
+
 /* ── views ── */
 function setView(v){
   view=v;
   $('#t-timeline').classList.toggle('on',v==='timeline');
   $('#t-roles').classList.toggle('on',v==='roles');
+  $('#t-needs').classList.toggle('on',v==='needs');
   render();
 }
-function render(){ view==='timeline'?renderTimeline():renderRoles(); }
+function render(){ view==='timeline'?renderTimeline():view==='roles'?renderRoles():renderNeeds(); }
 
 function renderTimeline(){
-  $('#view-roles').classList.add('hidden');
+  $('#view-roles').classList.add('hidden'); $('#view-needs').classList.add('hidden');
   const el=$('#view-timeline'); el.classList.remove('hidden');
-  if(!DATA.length){ el.innerHTML='<div class="feedback display">No keepers yet.</div>'; return; }
+  const rows=applyFilter(DATA);
+  if(!rows.length){ el.innerHTML='<div class="feedback display">No-one here yet.</div>'; return; }
   let html='<div class="spine"></div>'; let lastMonth=''; let i=0;
-  for(const a of DATA){
+  for(const a of rows){
     const mk=monthKey(a.applied);
     if(mk && mk!==lastMonth){ html+=`<div class="month"><span class="display">${esc(mk)}</span></div>`; lastMonth=mk; }
     const sol = a.solsticeRsvp ? '<span class="sol">◍ solstice</span>' : '';
@@ -482,13 +563,14 @@ function renderTimeline(){
 }
 
 function renderRoles(){
-  $('#view-timeline').classList.add('hidden');
+  $('#view-timeline').classList.add('hidden'); $('#view-needs').classList.add('hidden');
   const el=$('#view-roles'); el.classList.remove('hidden');
   const field = roleMode==='assigned' ? 'assignedRoles' : 'roles';
+  const rows=applyFilter(DATA);
   let cols='';
   ROLES.forEach((role,ci)=>{
     const m=ROLE_META[role]||{c:'var(--muted)',g:'seed'};
-    const people=DATA.filter(a=>(a[field]||[]).includes(role));
+    const people=rows.filter(a=>(a[field]||[]).includes(role));
     cols+=`<div class="col stagger" style="animation-delay:${ci*55}ms">
       <div class="col-h"><span class="em" style="background:${m.c}">${glyphSvg(m.g)}</span>
         <span class="rn display">${esc(role)}</span><span class="rc display">${people.length}</span></div>
@@ -505,6 +587,58 @@ function renderRoles(){
     <div class="board">${cols}</div>`;
 }
 function setRoleMode(m){ roleMode=m; renderRoles(); }
+
+/* ── needs roll-up ── */
+function renderNeeds(){
+  $('#view-timeline').classList.add('hidden'); $('#view-roles').classList.add('hidden');
+  const el=$('#view-needs'); el.classList.remove('hidden');
+  const rows=applyFilter(DATA);
+  const diet=rows.filter(a=>a.dietary && a.dietary.trim());
+  const access=rows.filter(a=>a.accessibility && a.accessibility.trim());
+  const phones=rows.filter(a=>a.phone && a.phone.trim());
+  const noContact=rows.filter(a=>!a.email && !(a.phone&&a.phone.trim()));
+  const card=(title,count,total,body)=>`<div class="need-card">
+      <div class="need-h"><span class="need-t display">${title}</span><span class="need-n">${count}<span class="of">/${total}</span></span></div>
+      ${body}</div>`;
+  const list=(people,fmt)=>people.length
+    ? `<ul class="need-list">${people.map(a=>`<li onclick="openDetail('${esc(a.id)}')"><span class="nl-name">${esc(a.name||firstName(a))}</span><span class="nl-val">${fmt(a)}</span></li>`).join('')}</ul>`
+    : `<div class="need-empty">None noted.</div>`;
+  el.innerHTML = `
+    <div class="needs-grid">
+      ${card('Dietary needs', diet.length, rows.length, list(diet,a=>esc(a.dietary)))}
+      ${card('Accessibility', access.length, rows.length, list(access,a=>esc(a.accessibility)))}
+      ${card('Have a phone number', phones.length, rows.length, list(phones,a=>esc(a.phone)))}
+      ${card('No contact details yet', noContact.length, rows.length, noContact.length?list(noContact,()=>'add a phone in their card'):`<div class="need-empty">Everyone has a way to reach them. 🌿</div>`)}
+    </div>`;
+}
+
+/* ── CSV export (current filtered view) ── */
+function exportCsv(){
+  const rows=applyFilter(DATA);
+  const cols=[
+    ['Name',a=>a.name||firstName(a)],
+    ['Email',a=>a.email||''],
+    ['Phone',a=>a.phone||''],
+    ['Status',a=>a.status||''],
+    ['Solstice',a=>a.solsticeRsvp?'yes':''],
+    ['Chosen roles',a=>(a.roles||[]).join('; ')],
+    ['Assigned roles',a=>(a.assignedRoles||[]).join('; ')],
+    ['Activities',a=>(a.assignedActivities||[]).join('; ')],
+    ['Dietary',a=>a.dietary||''],
+    ['Accessibility',a=>a.accessibility||''],
+    ['Applied',a=>(a.applied||'').slice(0,10)],
+    ['Notes',a=>a.notes||''],
+  ];
+  const q=s=>`"${String(s==null?'':s).replace(/"/g,'""')}"`;
+  const lines=[cols.map(c=>q(c[0])).join(',')];
+  for(const a of rows) lines.push(cols.map(c=>q(c[1](a))).join(','));
+  const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const tag=filter==='all'?'all':filter;
+  const a=document.createElement('a');
+  a.href=url; a.download=`living-village-${tag}.csv`; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
 
 /* ── detail ── */
 function openDetail(id){
@@ -526,13 +660,19 @@ function openDetail(id){
       <button class="d-close" onclick="closeDetail()" aria-label="Close">×</button>
       <div class="dn display">${esc(a.name||firstName(a))}</div>
       <div class="d-meta">
-        <span>${esc(fmtDay(a.applied))}</span>
-        ${a.email?`<a href="mailto:${esc(a.email)}">${esc(a.email)}</a>`:''}
+        <span>Applied ${esc(fmtDay(a.applied))}</span>
         ${a.solsticeRsvp?'<span class="badge">◍ Solstice work-bee</span>':''}
       </div>
       <div class="chips" style="margin-top:12px">${a.roles.map(roleChip).join('')}</div>
     </div>
     <div class="d-body">
+      <div class="sec contact-sec">
+        <h3>Contact</h3>
+        <div class="contact-row">
+          ${a.email?`<a class="contact-btn email" href="mailto:${esc(a.email)}"><span class="ci">✉</span>${esc(a.email)}</a>`:'<span class="contact-none">No email on file</span>'}
+          <span class="contact-phone" id="contact-phone"></span>
+        </div>
+      </div>
       ${a.why?`<div class="sec"><h3>Why they’re here</h3><div class="quote">“${esc(a.why)}”</div></div>`:''}
       ${path?`<div class="sec"><h3>Where they are on the path</h3><div class="prose">${esc(path)}</div></div>`:''}
       ${block('What they’d offer', a.comment)}
@@ -554,7 +694,8 @@ function openDetail(id){
     </div>`;
   $('#scrim').classList.add('show'); $('#drawer').classList.add('show'); $('#drawer').setAttribute('aria-hidden','false');
   $('#drawer').scrollTop=0; document.body.style.overflow='hidden';
-  edit = { id:a.id, roles:new Set(a.assignedRoles||[]), chosen:new Set(a.roles||[]), acts:[...(a.assignedActivities||[])], status:a.status||'', notes:a.notes||'', _avail:[] };
+  edit = { id:a.id, roles:new Set(a.assignedRoles||[]), chosen:new Set(a.roles||[]), acts:[...(a.assignedActivities||[])], status:a.status||'', notes:a.notes||'', phone:a.phone||'', _avail:[] };
+  renderContactPhone();
   renderAssign();
 }
 
@@ -578,9 +719,19 @@ function renderAssign(){
       <div class="actchips">${chips}</div>
       <input type="text" id="act-input" placeholder="Add an activity, then press Enter" onkeydown="if(event.key==='Enter'){event.preventDefault();addActivity(this.value);this.value='';}">
       ${suggs?`<div class="suggest">${suggs}</div>`:''}</div>
+    <div class="af"><label>Phone number</label>
+      <input type="tel" id="phone-input" placeholder="Add a phone number" value="${esc(edit.phone)}" oninput="edit.phone=this.value;renderContactPhone();"></div>
     <div class="af"><label>Private notes</label>
-      <textarea id="notes-input" rows="3" placeholder="Just for you and Andre…" oninput="edit.notes=this.value">${esc(edit.notes)}</textarea></div>
-    <div class="save-row"><button class="btn save" onclick="saveAssignment()">Save assignment</button><span class="saved" id="saved-msg">Saved ✓</span></div>`;
+      <textarea id="notes-input" rows="3" placeholder="Just for the crew…" oninput="edit.notes=this.value">${esc(edit.notes)}</textarea></div>
+    <div class="save-row"><button class="btn save" onclick="saveAssignment()">Save</button><span class="saved" id="saved-msg">Saved ✓</span></div>`;
+}
+function renderContactPhone(){
+  const el=$('#contact-phone'); if(!el||!edit) return;
+  const p=(edit.phone||'').trim();
+  const tel=p.replace(/[^0-9+]/g,'');
+  el.innerHTML = p
+    ? `<a class="contact-btn phone" href="tel:${esc(tel)}"><span class="ci">☎</span>${esc(p)}</a>`
+    : `<span class="contact-none">No phone yet — add one below</span>`;
 }
 function setStatus(s){ edit.status=(edit.status===s?'':s); renderAssign(); }
 function toggleRole(r){ edit.roles.has(r)?edit.roles.delete(r):edit.roles.add(r); renderAssign(); }
@@ -592,9 +743,10 @@ async function saveAssignment(){
   const btn=document.querySelector('#assign-panel .btn.save'); if(btn){btn.disabled=true;btn.textContent='Saving…';}
   try{
     const r=await fetch('/api/admin/assign',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({id:edit.id,assignedRoles:[...edit.roles],assignedActivities:edit.acts,status:edit.status,notes:edit.notes})});
+      body:JSON.stringify({id:edit.id,assignedRoles:[...edit.roles],assignedActivities:edit.acts,status:edit.status,notes:edit.notes,phone:edit.phone})});
     if(!r.ok) throw new Error('save_failed');
     const j=await r.json(); const idx=DATA.findIndex(x=>x.id===edit.id); if(idx>=0) DATA[idx]=j.applicant;
+    renderStatbar();
     if(!ACTS.length||edit.acts.some(a=>!ACTS.includes(a))) ACTS=[...new Set([...ACTS,...edit.acts])].sort((a,b)=>a.localeCompare(b));
     const msg=$('#saved-msg'); if(btn){btn.disabled=false;btn.textContent='Save assignment';}
     if(msg){msg.textContent='Saved ✓';msg.style.color='var(--moss)';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2200);}
