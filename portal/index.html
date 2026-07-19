@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Village Space · The Living Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  :root{
+    --earth:#2A1D10; --bark:#4A3425; --moss:#3D5540; --sage:#7A9E7E; --fern:#A6C1A3;
+    --cream:#F6EDD9; --warm:#EFE3C8; --sand:#DCC9A3; --terracotta:#C4704B; --gold:#D9A441;
+    --deep:#14100A; --ink:#1A1208; --light-text:#F6EDD9; --muted-text:#9A8A73;
+    --hairline:rgba(42,29,16,0.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--earth);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:620px;margin:0 auto;padding:2.4rem 1.4rem 5rem}
+  .eyebrow{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--moss);font-weight:600;margin-bottom:1.1rem}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2.1rem,7vw,3rem);line-height:1.04;letter-spacing:-.01em;margin-bottom:1.4rem}
+  h2{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;margin-bottom:.9rem}
+  p{margin-bottom:1rem}
+  .lede p{font-size:1.06rem;color:var(--bark)}
+  .card{background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:1.8rem 1.5rem;margin-top:2.2rem;box-shadow:0 1px 0 rgba(42,29,16,.03),0 18px 40px -30px rgba(42,29,16,.4)}
+  .to-ability{font-size:.92rem;color:var(--muted-text);font-style:italic;margin-bottom:1.4rem}
+  /* amount display */
+  .amount-display{font-family:'Fraunces',serif;font-weight:900;font-size:3.2rem;line-height:1;text-align:center;color:var(--earth);letter-spacing:-.02em}
+  .amount-display .cur{font-size:1.6rem;vertical-align:.7rem;color:var(--sage);margin-right:.1rem}
+  .amount-phrase{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:1.12rem;color:var(--terracotta);min-height:1.6em;margin:.55rem 0 1.7rem;transition:opacity .15s}
+  /* slider */
+  .slider-shell{padding:0 .2rem}
+  .anchors{position:relative;height:1.2rem;margin-bottom:.1rem}
+  .anchor-tick{position:absolute;transform:translateX(-50%);font-size:.72rem;color:var(--muted-text);cursor:pointer;white-space:nowrap;padding:.1rem .25rem;border-radius:4px;transition:color .15s}
+  .anchor-tick:hover{color:var(--moss)}
+  .anchor-tick.on{color:var(--earth);font-weight:600}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--sage),var(--gold));outline:none;margin:.35rem 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:var(--cream);border:3px solid var(--moss);cursor:grab;box-shadow:0 3px 10px -2px rgba(42,29,16,.5);transition:transform .1s}
+  input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.08)}
+  input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--cream);border:3px solid var(--moss);cursor:grab;box-shadow:0 3px 10px -2px rgba(42,29,16,.5)}
+  .range-ends{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted-text);margin-top:.2rem}
+  .other-amount{margin-top:1.1rem;text-align:center}
+  .other-amount a{color:var(--moss);font-size:.9rem;text-decoration:underline;cursor:pointer}
+  .other-row{display:none;justify-content:center;align-items:center;gap:.5rem;margin-top:.7rem}
+  .other-row.show{display:flex}
+  .other-row input{width:130px}
+  /* fields */
+  label.fld{display:block;margin-top:1.1rem;font-size:.82rem;letter-spacing:.02em;color:var(--bark);font-weight:500}
+  input[type=text],input[type=email],input[type=number],textarea{width:100%;margin-top:.35rem;padding:.75rem .85rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);font-family:inherit;font-size:1rem;color:var(--earth)}
+  input:focus,textarea:focus{outline:none;border-color:var(--sage);background:#fff}
+  textarea{resize:vertical;min-height:60px}
+  .btn{display:block;width:100%;margin-top:1.6rem;padding:.95rem 1rem;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;background:var(--earth);color:var(--cream);cursor:pointer;transition:background .15s,transform .1s}
+  .btn:hover{background:var(--bark);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:default;transform:none}
+  .btn-ghost{background:transparent;color:var(--moss);border:1px solid var(--hairline);margin-top:.7rem}
+  .btn-ghost:hover{background:var(--warm);color:var(--earth)}
+  #payment-element{margin-top:1.3rem}
+  .pay-note,.err{font-size:.82rem;margin-top:.8rem;text-align:center}
+  .pay-note{color:var(--muted-text)}
+  .err{color:var(--terracotta);min-height:1em}
+  .step{display:none}
+  .step.on{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* offerings */
+  .offer-list{display:grid;gap:.5rem;margin-top:1rem}
+  .offer-list label{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem .85rem;border:1px solid var(--hairline);border-radius:9px;cursor:pointer;background:var(--warm);transition:border-color .15s,background .15s}
+  .offer-list label:hover{border-color:var(--sage)}
+  .offer-list input{margin-top:.28rem;flex-shrink:0;accent-color:var(--moss)}
+  .offer-name{font-weight:500}
+  .offer-blurb{display:block;font-size:.83rem;color:var(--muted-text);margin-top:.1rem}
+  .thanks{text-align:center;padding:1rem 0}
+  .thanks .mark{font-size:2.4rem}
+  .divider{height:1px;background:var(--hairline);margin:3rem 0 0}
+  .foot{text-align:center;font-size:.8rem;color:var(--muted-text);margin-top:3rem}
+  .preview-flag{background:var(--gold);color:var(--ink);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;text-align:center;padding:.4rem;border-radius:6px;margin-bottom:1.6rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="preview-flag" id="previewFlag">Preview · not yet live · copy + amounts still being tuned</div>
+
+  <div class="eyebrow">Your village space</div>
+  <h1>The Reciprocity&nbsp;Pool</h1>
+
+  <div class="lede">
+    <p>This gathering is already well resourced. The land, the food, the fire, the storytelling, the people holding it, all of it is covered, thanks to those who gave generously to bring it to life.</p>
+    <p>So this isn't a ticket, and it isn't a gap we need you to fill. It's an invitation. If you feel called, you can add to the pool, in the same spirit of abundance that carried us this far. What you give won't pay a bill, it plants a seed for what the Living Village grows into beyond this weekend.</p>
+  </div>
+
+  <!-- STEP 1: choose -->
+  <div class="card step on" id="step-choose">
+    <div class="to-ability">Give to your ability. An invitation, not an expectation, every amount adds to the pool.</div>
+
+    <div class="amount-display"><span class="cur">$</span><span id="amtNum">50</span></div>
+    <div class="amount-phrase" id="amtPhrase"></div>
+
+    <div class="slider-shell">
+      <div class="anchors" id="anchorRow"></div>
+      <input type="range" id="slider" min="10" max="250" step="1" value="50">
+      <div class="range-ends"><span>$10</span><span>$250</span></div>
+    </div>
+
+    <div class="other-amount">
+      <a id="otherToggle">give another amount</a>
+      <div class="other-row" id="otherRow">
+        <span>$</span><input type="number" id="otherInput" min="1" step="1" placeholder="0">
+      </div>
+    </div>
+
+    <label class="fld">Your name<input type="text" id="fName" autocomplete="name"></label>
+    <label class="fld">Your email<input type="email" id="fEmail" autocomplete="email"></label>
+    <label class="fld">A word to the circle (optional)<textarea id="fNote" placeholder="anything you'd like us to know"></textarea></label>
+
+    <button class="btn" id="toPayBtn">Continue to give $<span id="btnAmt1">50</span></button>
+    <div class="err" id="chooseErr"></div>
+  </div>
+
+  <!-- STEP 2: pay -->
+  <div class="card step" id="step-pay">
+    <h2>Add $<span id="payAmt">50</span> to the pool</h2>
+    <p style="color:var(--bark);font-size:.95rem">A one-time gift in Canadian dollars. Your card is handled securely by Stripe.</p>
+    <div id="payment-element"></div>
+    <button class="btn" id="payBtn">Give $<span id="btnAmt2">50</span></button>
+    <button class="btn btn-ghost" id="backBtn">Back</button>
+    <div class="err" id="payErr"></div>
+    <div class="pay-note" id="payNote"></div>
+  </div>
+
+  <!-- STEP 3: thanks -->
+  <div class="card step" id="step-thanks">
+    <div class="thanks">
+      <div class="mark">🌱</div>
+      <h2>Thank you for feeding the village</h2>
+      <p style="color:var(--bark)">Your gift has been received into the pool. It plants a seed for what we grow next. A receipt is on its way to your inbox.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OFFERINGS -->
+  <div style="margin-top:2.4rem">
+    <div class="eyebrow">Another way to give</div>
+    <h2>What you're bringing</h2>
+    <p style="color:var(--bark)">Money is only one way to feed a village. If yours flows elsewhere, a role you'll hold, a dish, an hour of hands, that's just as welcome. Add to what you're already bringing.</p>
+
+    <div class="offer-list" id="roleList"></div>
+    <div class="offer-list" id="microList" style="margin-top:.8rem"></div>
+    <button class="btn btn-ghost" id="offerBtn" style="margin-top:1.3rem">Add these to what I'm bringing</button>
+    <div class="pay-note" id="offerNote"></div>
+  </div>
+
+  <div class="foot">The Living Village · a Journeyland gathering · Aug 15–16, 2026</div>
+</div>
+
+<script>
+// ---- config (anchors are WIP; swap freely) ----
+const ANCHORS = [
+  { amount: 22,  label: "a seed for what's next" },
+  { amount: 50,  label: "help it take root" },
+  { amount: 100, label: "help us gather again" },
+  { amount: 200, label: "honour the land and its keepers" },
+];
+const ROLES = [
+  ["Fire Keeper","Tends to what is sacred. The energy of ritual and intentional coming together."],
+  ["Story Weaver","The village memory. Captures moments, voices, fragments that would otherwise disappear."],
+  ["Nourishment Steward","Makes sure no one goes hungry. Mealtime feels like communion, not logistics."],
+  ["Basecamp Steward","Keeps the foundation steady. The unseen hands that make everything work."],
+  ["Threshold Keeper","Holds the portal. The first face someone sees, the last energy they carry home."],
+  ["Exchange Guide","Bridges concept and people. Helps everyone trust the shared stewardship model."],
+  ["Flow Facilitator","Notices who is isolated. Holds space for the emergent. Keeps the schedule alive."],
+  ["Not sure yet","Place me where I am needed. I will learn the village by being in it."],
+];
+const MICRO = [
+  "Bring a dish for the opening night potluck","Bring a salad ingredient for salad club",
+  "Take an hour on dish duty","Bring firewood","Sweep the lodge before we leave",
+  "Hold the welcome table for an hour","Lead a morning walk on the land","Help with setup or teardown",
+];
+const MIN = 10, MAX = 250;
+
+// ---- slider + anchors ----
+const slider = document.getElementById('slider');
+const amtNum = document.getElementById('amtNum');
+const amtPhrase = document.getElementById('amtPhrase');
+const anchorRow = document.getElementById('anchorRow');
+let amount = 50;
+
+ANCHORS.forEach(a=>{
+  const pct = ((a.amount - MIN)/(MAX - MIN))*100;
+  const el = document.createElement('div');
+  el.className='anchor-tick'; el.style.left = pct+'%';
+  el.textContent = '$'+a.amount; el.dataset.amt = a.amount;
+  el.onclick = ()=>{ slider.value = a.amount; setAmount(a.amount); };
+  anchorRow.appendChild(el);
+});
+
+function nearestPhrase(v){
+  let best = ANCHORS[0], d = Infinity;
+  ANCHORS.forEach(a=>{ const dd=Math.abs(a.amount-v); if(dd<d){ d=dd; best=a; } });
+  // show the phrase only when reasonably close to an anchor, else a gentle default
+  return Math.abs(best.amount - v) <= 14 ? best.label : "give what feels right";
+}
+function setAmount(v){
+  amount = Math.max(1, Math.round(v));
+  amtNum.textContent = amount;
+  document.getElementById('btnAmt1').textContent = amount;
+  document.getElementById('btnAmt2').textContent = amount;
+  document.getElementById('payAmt').textContent = amount;
+  amtPhrase.textContent = nearestPhrase(amount);
+  document.querySelectorAll('.anchor-tick').forEach(t=>{
+    t.classList.toggle('on', Math.abs(+t.dataset.amt - amount) <= 6);
+  });
+}
+slider.addEventListener('input', e=>{ document.getElementById('otherRow').classList.remove('show'); setAmount(+e.target.value); });
+
+// other amount
+document.getElementById('otherToggle').onclick = ()=>{
+  document.getElementById('otherRow').classList.toggle('show');
+  document.getElementById('otherInput').focus();
+};
+document.getElementById('otherInput').addEventListener('input', e=>{
+  const v = +e.target.value; if(v>0){ setAmount(v); amtPhrase.textContent = nearestPhrase(v); }
+});
+
+setAmount(50);
+
+// ---- offerings (visual for now; persistence is Phase 2) ----
+const roleList = document.getElementById('roleList');
+ROLES.forEach(([n,b])=>{
+  roleList.insertAdjacentHTML('beforeend',
+   `<label><input type="checkbox" name="role" value="${n}"><span class="offer-name">${n}<span class="offer-blurb">${b}</span></span></label>`);
+});
+const microList = document.getElementById('microList');
+MICRO.forEach(m=>{
+  microList.insertAdjacentHTML('beforeend',
+   `<label><input type="checkbox" name="micro" value="${m}"><span class="offer-name">${m}</span></label>`);
+});
+document.getElementById('offerBtn').onclick = ()=>{
+  document.getElementById('offerNote').textContent = "Saved for now, this will attach to your signup once the portal is fully wired up.";
+};
+
+// ---- steps ----
+function show(id){ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// ---- payment (Stripe) ----
+let stripe, elements;
+document.getElementById('toPayBtn').onclick = async ()=>{
+  const name = document.getElementById('fName').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const err = document.getElementById('chooseErr');
+  if(!email || !/.+@.+\..+/.test(email)){ err.textContent = "Please add an email so we can send your receipt."; return; }
+  if(amount < 1){ err.textContent = "Please choose an amount."; return; }
+  err.textContent = "";
+  const btn = document.getElementById('toPayBtn'); btn.disabled = true; btn.textContent = "One moment…";
+  try{
+    const r = await fetch('/api/checkout', {method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({amount, email, name, note: document.getElementById('fNote').value.trim()})});
+    const data = await r.json();
+    if(!r.ok || !data.clientSecret){ throw new Error(data.error||'could not start payment'); }
+    stripe = Stripe(data.publishableKey);
+    elements = stripe.elements({clientSecret:data.clientSecret, appearance:{theme:'flat',variables:{colorPrimary:'#3D5540',fontFamily:'Inter, sans-serif',borderRadius:'9px',colorBackground:'#EFE3C8'}}});
+    elements.create('payment').mount('#payment-element');
+    show('step-pay');
+  }catch(e){ err.textContent = e.message==='stripe_not_configured' ? "Payments aren't switched on yet (Stripe keys)." : ("Sorry, "+e.message+"."); }
+  finally{ btn.disabled=false; btn.innerHTML='Continue to give $<span id="btnAmt1">'+amount+'</span>'; }
+};
+document.getElementById('backBtn').onclick = ()=> show('step-choose');
+document.getElementById('payBtn').onclick = async ()=>{
+  const btn=document.getElementById('payBtn'); const err=document.getElementById('payErr'); err.textContent="";
+  btn.disabled=true; btn.textContent="Giving…";
+  const {error} = await stripe.confirmPayment({elements, redirect:'if_required'});
+  if(error){ err.textContent = error.message; btn.disabled=false; btn.innerHTML='Give $<span id="btnAmt2">'+amount+'</span>'; }
+  else{ show('step-thanks'); }
+};
+</script>
+</body>
+</html>

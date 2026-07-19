@@ -9,8 +9,8 @@
 // Fail-loud pattern matches signup.js: 502 on upstream errors, 500 on
 // unexpected, 400 on bad input. Never silently succeed.
 
-const MIN_AMOUNT = 22;
-const MAX_AMOUNT = 222;
+const MIN_AMOUNT = 10;
+const MAX_AMOUNT = 5000;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { amount, email } = req.body || {};
+  const { amount, email, name, note } = req.body || {};
   const intAmount = Number.parseInt(amount, 10);
   if (!Number.isFinite(intAmount) || intAmount < MIN_AMOUNT || intAmount > MAX_AMOUNT) {
     return res.status(400).json({ error: 'invalid_amount', min: MIN_AMOUNT, max: MAX_AMOUNT });
@@ -38,10 +38,12 @@ export default async function handler(req, res) {
       currency: 'cad',
       'automatic_payment_methods[enabled]': 'true',
       description: 'The Living Village · Reciprocity Pool contribution',
-      'metadata[source]': 'living-village-join-flow',
+      'metadata[source]': 'living-village-portal',
       'metadata[event]': 'living-village-2026-08',
     });
     if (email) params.append('receipt_email', email);
+    if (name) params.append('metadata[contributor_name]', String(name).slice(0, 200));
+    if (note) params.append('metadata[note]', String(note).slice(0, 480));
 
     const piRes = await fetch('https://api.stripe.com/v1/payment_intents', {
       method: 'POST',
