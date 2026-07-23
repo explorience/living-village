@@ -319,6 +319,36 @@
   .need-list .nl-name{font-weight:500;color:var(--bark);white-space:nowrap}
   .need-list .nl-val{color:#4a3a26;text-align:right}
   .need-empty{font-size:13px;color:var(--muted);font-style:italic;padding:6px 0 12px}
+
+  /* ───────────────────────── SELECT + COMPOSE ───────────────────────── */
+  .selbox{position:absolute;top:12px;left:12px;z-index:3;display:inline-flex}
+  .selbox input{width:19px;height:19px;accent-color:var(--moss);cursor:pointer}
+  .card.picked{border-color:var(--moss);box-shadow:0 0 0 2px color-mix(in srgb,var(--moss) 45%,transparent),0 12px 30px -24px rgba(42,29,16,.6)}
+  @media(min-width:680px){.selbox{left:auto;right:14px;top:14px}}
+  #email-btn .eb-n{color:var(--terracotta);font-weight:600}
+  #compose-wrap{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:24px;
+    background:rgba(20,16,10,.55);backdrop-filter:blur(2px);overflow-y:auto}
+  .cx-field{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+  .cx-field label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .cx-field input,.cx-field textarea{width:100%;padding:12px 14px;border-radius:11px;border:1px solid var(--hairline);
+    background:var(--cream);font-family:inherit;font-size:14.5px;color:var(--earth)}
+  .cx-field textarea{resize:vertical;min-height:150px;line-height:1.6}
+  .cx-field input:focus,.cx-field textarea:focus{outline:none;border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(196,112,75,.12)}
+  .cx-hint{font-size:12.5px;color:var(--muted);font-style:italic}
+  .cx-recip{margin-top:18px;background:rgba(94,138,107,.09);border:1px solid var(--hairline);border-radius:13px;padding:14px 16px}
+  .cx-recip .rh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--bark)}
+  .cx-recip .rh b{font-family:'Fraunces',serif;color:var(--moss);font-size:17px}
+  .cx-mini{font-size:12px;padding:5px 11px;border-radius:999px;border:1px dashed var(--hairline);color:var(--moss);background:transparent}
+  .cx-mini:hover{border-style:solid;border-color:var(--moss)}
+  .cx-names{margin-top:10px;max-height:120px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:5px}
+  .cx-name{font-size:11.5px;padding:3px 9px;border-radius:999px;background:var(--cream);border:1px solid var(--hairline);color:#4a3a26}
+  .cx-warn{color:var(--terracotta);font-size:12.5px;margin-top:8px}
+  .cx-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .cx-actions .btn.ghost{background:transparent;color:var(--moss);border:1px solid var(--hairline);box-shadow:none}
+  .cx-actions .btn.ghost:hover{background:color-mix(in srgb,var(--moss) 8%,transparent);transform:translateY(-1px)}
+  .cx-actions .btn[disabled]{opacity:.5}
+  .cx-status{font-size:13.5px;color:var(--moss);min-height:20px;margin-top:14px}
+  .cx-status.err{color:var(--terracotta)}
 </style>
 </head>
 <body>
@@ -347,7 +377,7 @@
       <button id="t-roles" onclick="setView('roles')">By role</button>
       <button id="t-needs" onclick="setView('needs')">Needs</button>
     </div>
-    <div class="who"><span id="me"></span><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
+    <div class="who"><span id="me"></span><button class="glink" id="email-btn" onclick="openCompose()">✉ Email</button><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
   </header>
   <main>
     <div class="loading display" id="loading">Reading the land…</div>
@@ -411,6 +441,39 @@
   </div>
 </div>
 
+<!-- COMPOSE EMAIL -->
+<div id="compose-wrap" class="hidden" onclick="if(event.target===this)closeCompose()">
+  <div class="guide-card" role="dialog" aria-label="Send an email" style="max-width:600px">
+    <button class="d-close g-x" onclick="closeCompose()" aria-label="Close">×</button>
+    <div class="g-mark">The Living Village</div>
+    <h2 class="display">Send an <em>email</em></h2>
+    <p class="g-lead" style="margin-bottom:2px">Each person gets your message with their <em>own</em> one-tap sign-in link added to the bottom.</p>
+
+    <div class="cx-recip">
+      <div class="rh"><span><b id="cx-count">0</b> selected</span>
+        <button class="cx-mini" id="cx-all" onclick="selectAllInView()"></button>
+        <button class="cx-mini" onclick="clearSelection()">clear</button>
+      </div>
+      <div class="cx-names" id="cx-names"></div>
+      <div class="cx-warn hidden" id="cx-warn"></div>
+    </div>
+
+    <div class="cx-field"><label>Reply-To (where replies land)</label>
+      <input type="email" id="cx-replyto" value="hayesrsavannah@gmail.com"></div>
+    <div class="cx-field"><label>Subject</label>
+      <input type="text" id="cx-subject" placeholder="Your village space is ready 🌱"></div>
+    <div class="cx-field"><label>Message</label>
+      <textarea id="cx-body" placeholder="Hi there,&#10;&#10;Write your message here…"></textarea>
+      <span class="cx-hint">Sent from The Living Village &lt;hello@livingvillage.ca&gt;. The “Enter your village space” button is added automatically.</span></div>
+
+    <div class="cx-actions">
+      <button class="btn" id="cx-send" onclick="sendCompose(false)">Send to <span id="cx-sendn">0</span></button>
+      <button class="btn ghost" onclick="sendCompose(true)">Send a test to me</button>
+    </div>
+    <div class="cx-status" id="cx-status"></div>
+  </div>
+</div>
+
 <script>
 const ROLE_META = {
   'Fire Keeper':     {c:'var(--r-fire)',   g:'flame'},
@@ -437,6 +500,7 @@ const SLIDER_LABELS = {
 
 let DATA = [], ROLES = [], view = 'timeline', filter = 'all';
 let ACTS = [], roleMode = 'chosen', edit = null;
+let selected = new Set();
 const STATUS_META = {
   confirmed:{label:'Confirmed', c:'var(--moss)'},
   maybe:{label:'Maybe', c:'var(--gold)'},
@@ -477,6 +541,7 @@ async function init(){
     $('#loading').classList.add('hidden');
     renderStatbar();
     render();
+    updateEmailBtn();
   }catch(err){ showGate(); }
 }
 function showGate(){
@@ -552,7 +617,8 @@ function renderTimeline(){
     const ess = essence(a);
     html+=`<div class="entry stagger" style="animation-delay:${Math.min(i,14)*45}ms">
       <span class="when">${esc(fmtDay(a.applied))}</span>
-      <div class="card" onclick="openDetail('${esc(a.id)}')">
+      <div class="card${selected.has(a.id)?' picked':''}" onclick="openDetail('${esc(a.id)}')">
+        <label class="selbox" onclick="event.stopPropagation()" title="Select for email"><input type="checkbox" ${selected.has(a.id)?'checked':''} onchange="toggleSelect('${esc(a.id)}',this.checked);this.closest('.card').classList.toggle('picked',this.checked)"></label>
         <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
         ${ess?`<div class="essence">${esc(ess)}</div>`:''}
         <div class="chips">${a.roles.map(roleChip).join('')}${sol}</div>
@@ -638,6 +704,55 @@ function exportCsv(){
   const a=document.createElement('a');
   a.href=url; a.download=`living-village-${tag}.csv`; document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+/* ── select + compose email ── */
+function toggleSelect(id, on){ if(on) selected.add(id); else selected.delete(id); updateEmailBtn(); if(!$('#compose-wrap').classList.contains('hidden')) renderComposeRecipients(); }
+function updateEmailBtn(){ const n=selected.size; const b=$('#email-btn'); if(b) b.innerHTML = n ? `✉ Email <span class="eb-n">(${n})</span>` : '✉ Email'; }
+function selectAllInView(){ applyFilter(DATA).forEach(a=>{ if(a.email) selected.add(a.id); }); updateEmailBtn(); renderComposeRecipients(); if(view==='timeline') render(); }
+function clearSelection(){ selected.clear(); updateEmailBtn(); renderComposeRecipients(); if(view==='timeline') render(); }
+function openCompose(){ $('#compose-wrap').classList.remove('hidden'); document.body.style.overflow='hidden'; renderComposeRecipients(); }
+function closeCompose(){ $('#compose-wrap').classList.add('hidden'); document.body.style.overflow=''; }
+function renderComposeRecipients(){
+  const chosen = DATA.filter(a=>selected.has(a.id));
+  const withEmail = chosen.filter(a=>a.email);
+  const noEmail = chosen.filter(a=>!a.email);
+  $('#cx-count').textContent = withEmail.length;
+  $('#cx-sendn').textContent = withEmail.length;
+  const inView = applyFilter(DATA).filter(a=>a.email).length;
+  $('#cx-all').textContent = `select all in current view (${inView})`;
+  $('#cx-names').innerHTML = withEmail.length
+    ? withEmail.map(a=>`<span class="cx-name">${esc(a.name||firstName(a))}</span>`).join('')
+    : `<span class="cx-name" style="opacity:.6">no one selected yet</span>`;
+  const warn=$('#cx-warn');
+  if(noEmail.length){ warn.classList.remove('hidden'); warn.textContent = `${noEmail.length} selected ${noEmail.length===1?'person has':'people have'} no email on file — they’ll be skipped.`; }
+  else warn.classList.add('hidden');
+  $('#cx-send').disabled = withEmail.length===0;
+}
+async function sendCompose(test){
+  const status=$('#cx-status'); status.className='cx-status';
+  const subject=$('#cx-subject').value.trim();
+  const body=$('#cx-body').value;
+  const replyTo=$('#cx-replyto').value.trim();
+  if(!subject){ status.className='cx-status err'; status.textContent='Add a subject.'; return; }
+  if(!body.trim()){ status.className='cx-status err'; status.textContent='Write a message.'; return; }
+  const ids=[...selected];
+  const n=DATA.filter(a=>selected.has(a.id)&&a.email).length;
+  if(!test){
+    if(!n){ status.className='cx-status err'; status.textContent='Select at least one person with an email (or send a test to yourself).'; return; }
+    if(!confirm(`Send this email to ${n} ${n===1?'person':'people'}? This can’t be undone.`)) return;
+  }
+  const btns=document.querySelectorAll('.cx-actions .btn'); btns.forEach(b=>b.disabled=true);
+  status.textContent = test ? 'Sending you a test…' : `Sending to ${n}…`;
+  try{
+    const r=await fetch('/api/admin/send-email',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ids, subject, body, replyTo, test})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('http '+r.status));
+    if(test){ status.className='cx-status'; status.textContent=`Test sent to you. Check your inbox 🌱`; }
+    else { status.className='cx-status'; status.textContent=`Sent to ${j.sent} ${j.sent===1?'person':'people'}${j.failed&&j.failed.length?`, ${j.failed.length} failed (retry those)`:''}. 🌱`; }
+  }catch(e){ status.className='cx-status err'; status.textContent='Could not send: '+e.message; }
+  finally{ btns.forEach(b=>b.disabled=false); renderComposeRecipients(); }
 }
 
 /* ── detail ── */
@@ -764,7 +879,9 @@ function openGuide(){ $('#guide-wrap').classList.remove('hidden'); document.body
 function closeGuide(){ $('#guide-wrap').classList.add('hidden'); document.body.style.overflow=''; }
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
-  if(!$('#guide-wrap').classList.contains('hidden')) closeGuide(); else closeDetail();
+  if(!$('#compose-wrap').classList.contains('hidden')) closeCompose();
+  else if(!$('#guide-wrap').classList.contains('hidden')) closeGuide();
+  else closeDetail();
 });
 </script>
 </body>
