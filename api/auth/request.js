@@ -1,7 +1,8 @@
 // POST { email } -> emails a magic login link if the address is on the allowlist.
 // Always responds 200 so the page can't be used to probe who's allowed.
 
-import { isAllowed, makeLoginToken } from '../_lib/auth.js';
+import { isAllowed, makeLoginToken, makeAttendeeToken } from '../_lib/auth.js';
+import { ensureSchema, isSignup } from '../_lib/db.js';
 
 // The admin lives at livingvillage.ca and the sign-in email is sent FROM livingvillage.ca,
 // so the sender domain matches the link domain. That alignment, plus plain transactional
@@ -16,10 +17,18 @@ export default async function handler(req, res) {
   const email = String((req.body || {}).email || '').trim().toLowerCase();
   const ok = { ok: true, message: 'If that address is on the list, a sign-in link is on its way.' };
 
-  if (!isAllowed(email)) return res.status(200).json(ok);
+  // Crew get a short-lived link; anyone who signed up gets a long-lived attendee link.
+  // Everyone else gets a silent 200 (never reveal who's on the list).
+  let token = null;
+  if (isAllowed(email)) {
+    token = makeLoginToken(email);
+  } else if (email) {
+    try { await ensureSchema(); if (await isSignup(email)) token = makeAttendeeToken(email); }
+    catch (err) { console.error('signup lookup failed:', err.message); }
+  }
+  if (!token) return res.status(200).json(ok);
 
   try {
-    const token = makeLoginToken(email);
     const link = `${BASE_URL}/api/auth/callback?token=${encodeURIComponent(token)}`;
     await sendLink(email, link);
   } catch (err) {

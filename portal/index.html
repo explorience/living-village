@@ -79,6 +79,8 @@
   .divider{height:1px;background:var(--hairline);margin:3rem 0 0}
   .foot{text-align:center;font-size:.8rem;color:var(--muted-text);margin-top:3rem}
   .preview-flag{background:var(--gold);color:var(--ink);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;text-align:center;padding:.4rem;border-radius:6px;margin-bottom:1.6rem}
+  .identity{font-size:.9rem;color:var(--muted-text);margin-top:1.1rem;padding:.6rem .8rem;background:var(--warm);border-radius:8px}
+  .identity strong{color:var(--earth)}
 </style>
 </head>
 <body>
@@ -92,6 +94,18 @@
     <p>This gathering is already well resourced. The land, the food, the fire, the storytelling, the people holding it, all of it is covered, thanks to those who gave generously to bring it to life.</p>
     <p>So this isn't a ticket, and it isn't a gap we need you to fill. It's an invitation. If you feel called, you can add to the pool, in the same spirit of abundance that carried us this far. What you give won't pay a bill, it plants a seed for what the Living Village grows into beyond this weekend.</p>
   </div>
+
+  <!-- LOGIN GATE (shown when not signed in) -->
+  <div class="card" id="gate" style="display:none">
+    <h2>Step into your village space</h2>
+    <p style="color:var(--bark)">Pop in the email you signed up with and we'll send you a one-tap link to come in.</p>
+    <label class="fld">Your email<input type="email" id="gateEmail" autocomplete="email" placeholder="you@example.com"></label>
+    <button class="btn" id="gateBtn">Email me a link</button>
+    <div class="pay-note" id="gateNote"></div>
+  </div>
+
+  <!-- everything below requires a session -->
+  <div id="authed" style="display:none">
 
   <!-- STEP 1: choose -->
   <div class="card step on" id="step-choose">
@@ -113,8 +127,7 @@
       </div>
     </div>
 
-    <label class="fld">Your name<input type="text" id="fName" autocomplete="name"></label>
-    <label class="fld">Your email<input type="email" id="fEmail" autocomplete="email"></label>
+    <div class="identity" id="identity"></div>
     <label class="fld">A word to the circle (optional)<textarea id="fNote" placeholder="anything you'd like us to know"></textarea></label>
 
     <button class="btn" id="toPayBtn">Continue to give $<span id="btnAmt1">44</span></button>
@@ -158,19 +171,21 @@
     <div class="pay-note" id="offerNote"></div>
   </div>
 
+  </div><!-- /authed -->
+
   <div class="foot">The Living Village · a Journeyland gathering · Aug 15–16, 2026</div>
 </div>
 
 <script>
 // ---- config (anchors are WIP; swap freely) ----
-// NOTE: labels are PLACEHOLDERS — final anchor names still being decided with Heenal.
+// Anchor labels — "The long walk" ladder (chosen with Heenal).
 const ANCHORS = [
-  { amount: 11,  label: "a first seed" },
-  { amount: 22,  label: "help it take root" },
-  { amount: 44,  label: "help it grow" },
-  { amount: 88,  label: "help us gather again" },
-  { amount: 108, label: "carry the fire forward" },
-  { amount: 161, label: "hold the vision for the year ahead" },
+  { amount: 11,  label: "a first step" },
+  { amount: 22,  label: "walk with us a while" },
+  { amount: 44,  label: "help us gather again" },
+  { amount: 88,  label: "hold the circle open" },
+  { amount: 108, label: "carry the village onward" },
+  { amount: 161, label: "help build what comes after" },
 ];
 const ROLES = [
   ["Fire Keeper","Tends to what is sacred. The energy of ritual and intentional coming together."],
@@ -245,9 +260,64 @@ MICRO.forEach(m=>{
   grid.insertAdjacentHTML('beforeend',
    `<label><input type="checkbox" name="micro" value="${m}"><span>${m}</span></label>`);
 });
-document.getElementById('offerBtn').onclick = ()=>{
-  document.getElementById('offerNote').textContent = "Noted for the preview, saving to your signup switches on with the login step (coming next).";
+document.getElementById('offerBtn').onclick = async ()=>{
+  const note = document.getElementById('offerNote');
+  const offerings = [...document.querySelectorAll('#offerGrid input:checked')].map(c=>c.value);
+  const gifts = document.getElementById('fGifts').value.trim();
+  const btn = document.getElementById('offerBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+  try{
+    const r = await fetch('/api/portal/offerings', {method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({offerings, gifts})});
+    if(r.ok){ note.textContent = "Saved 🌱 added to what you're bringing. Thank you."; }
+    else if(r.status===401){ note.textContent = "Please sign in first."; }
+    else if(r.status===404){ note.textContent = "We couldn't find your signup to attach this to — reach out and we'll sort it."; }
+    else { note.textContent = "Sorry, couldn't save just now. Try again in a moment."; }
+  }catch(e){ note.textContent = "Sorry, couldn't save just now. Try again in a moment."; }
+  btn.disabled = false; btn.textContent = "Add these to what I'm bringing";
 };
+
+// ---- session gate ----
+function showGate(msg){
+  document.getElementById('gate').style.display = 'block';
+  document.getElementById('authed').style.display = 'none';
+  if(msg) document.getElementById('gateNote').textContent = msg;
+}
+function showAuthed(me){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('authed').style.display = 'block';
+  const first = (me.name||'').trim().split(/\s+/)[0];
+  document.querySelector('.eyebrow').textContent = first ? ('Welcome, '+first) : 'Your village space';
+  document.getElementById('identity').innerHTML = me.name
+    ? ('Giving as <strong>'+me.name+'</strong> · '+me.email)
+    : ('Giving as <strong>'+me.email+'</strong>');
+  const chosen = new Set([...(me.roles||[]), ...(me.micro||[]), ...(me.portalOfferings||[])]);
+  document.querySelectorAll('#offerGrid input[type=checkbox]').forEach(cb=>{ if(chosen.has(cb.value)) cb.checked = true; });
+  if(me.portalGifts){ document.getElementById('fGifts').value = me.portalGifts; }
+}
+document.getElementById('gateBtn').onclick = async ()=>{
+  const email = document.getElementById('gateEmail').value.trim();
+  const note = document.getElementById('gateNote');
+  if(!/.+@.+\..+/.test(email)){ note.textContent = "Please enter a valid email."; return; }
+  const btn = document.getElementById('gateBtn'); btn.disabled = true; btn.textContent = 'Sending…';
+  try{ await fetch('/api/auth/request', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}); }catch(e){}
+  note.textContent = "If you're on the list, a sign-in link is on its way. Check your inbox (and spam).";
+  btn.disabled = false; btn.textContent = 'Email me a link';
+};
+async function loadMe(){
+  const params = new URLSearchParams(location.search);
+  const errMsg = params.get('error')==='notfound'
+    ? "We couldn't find a signup for that link. Use the email you registered with."
+    : params.get('error')==='link' ? "That link didn't work or has expired. Request a fresh one below."
+    : "";
+  try{
+    const r = await fetch('/api/portal/me');
+    if(r.status === 401){ showGate(errMsg); return; }
+    const me = await r.json();
+    window.ME = me;
+    showAuthed(me);
+  }catch(e){ showGate(errMsg); }
+}
+loadMe();
 
 // ---- steps ----
 function show(id){ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo({top:0,behavior:'smooth'}); }
@@ -255,16 +325,15 @@ function show(id){ document.querySelectorAll('.step').forEach(s=>s.classList.rem
 // ---- payment (Stripe) ----
 let stripe, elements;
 document.getElementById('toPayBtn').onclick = async ()=>{
-  const name = document.getElementById('fName').value.trim();
-  const email = document.getElementById('fEmail').value.trim();
   const err = document.getElementById('chooseErr');
-  if(!email || !/.+@.+\..+/.test(email)){ err.textContent = "Please add an email so we can send your receipt."; return; }
+  const me = window.ME || {};
+  if(!me.email){ err.textContent = "Please sign in first."; return; }
   if(amount < 1){ err.textContent = "Please choose an amount."; return; }
   err.textContent = "";
   const btn = document.getElementById('toPayBtn'); btn.disabled = true; btn.textContent = "One moment…";
   try{
     const r = await fetch('/api/checkout', {method:'POST',headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({amount, email, name, note: document.getElementById('fNote').value.trim()})});
+      body: JSON.stringify({amount, email: me.email, name: me.name||'', note: document.getElementById('fNote').value.trim()})});
     const data = await r.json();
     if(!r.ok || !data.clientSecret){ throw new Error(data.error||'could not start payment'); }
     stripe = Stripe(data.publishableKey);

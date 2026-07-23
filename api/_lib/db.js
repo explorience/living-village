@@ -58,6 +58,12 @@ export async function ensureSchema() {
   )`;
   // Migrate tables created before the crew-editable phone column existed.
   await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT ''`;
+  // Attendee self-service (Portal): what a person adds to their offerings + a free-text
+  // "how I want to show up". Kept in dedicated columns so a sheet sync (which overwrites
+  // `data`) never clobbers them — same principle as the assignment layer.
+  await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_offerings jsonb NOT NULL DEFAULT '[]'::jsonb`;
+  await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_gifts text NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_updated_at timestamptz`;
   _schemaReady = true;
 }
 
@@ -83,13 +89,17 @@ function rowToApplicant(row) {
     notes: row.notes || '',
     phone: row.phone || '',
     assignedUpdatedAt: row.assigned_updated_at || null,
+    portalOfferings: Array.isArray(row.portal_offerings) ? row.portal_offerings : [],
+    portalGifts: row.portal_gifts || '',
+    portalUpdatedAt: row.portal_updated_at || null,
   };
 }
 
 export async function getAllApplicants() {
   const sql = db();
   const rows = await sql`
-    SELECT id, data, assigned_roles, assigned_activities, status, notes, phone, assigned_updated_at
+    SELECT id, data, assigned_roles, assigned_activities, status, notes, phone, assigned_updated_at,
+           portal_offerings, portal_gifts, portal_updated_at
     FROM applicants ORDER BY applied DESC NULLS LAST`;
   return rows.map(rowToApplicant);
 }
@@ -112,4 +122,41 @@ export async function getActivitySuggestions() {
   const rows = await sql`SELECT DISTINCT jsonb_array_elements_text(assigned_activities) AS a FROM applicants`;
   const used = rows.map(r => r.a).filter(Boolean);
   return [...new Set([...SEED_ACTIVITIES, ...used])].sort((a, b) => a.localeCompare(b));
+}
+
+// --- Attendee Portal (self-service) ---
+
+// Does this email belong to someone who signed up? (case-insensitive)
+export async function isSignup(email) {
+  if (!email) return false;
+  const sql = db();
+  const rows = await sql`SELECT 1 FROM applicants WHERE lower(email) = lower(${email}) LIMIT 1`;
+  return rows.length > 0;
+}
+
+// One applicant by email, with their chosen data (roles/micro live in `data`) + portal additions.
+export async function getApplicantByEmail(email) {
+  if (!email) return null;
+  const sql = db();
+  const rows = await sql`
+    SELECT id, data, assigned_roles, assigned_activities, status, notes, phone, assigned_updated_at,
+           portal_offerings, portal_gifts, portal_updated_at
+    FROM applicants WHERE lower(email) = lower(${email}) LIMIT 1`;
+  return rows.length ? rowToApplicant(rows[0]) : null;
+}
+
+// Append the roles/offerings an attendee adds (add-only: union with what's there) and set
+// their free-text gifts (replaced with the latest, since the form is prefilled with it).
+export async function addPortalOfferings(email, { offerings = [], gifts = '' }) {
+  const sql = db();
+  const rows = await sql`SELECT id, portal_offerings FROM applicants WHERE lower(email) = lower(${email}) LIMIT 1`;
+  if (!rows.length) return null;
+  const existing = Array.isArray(rows[0].portal_offerings) ? rows[0].portal_offerings : [];
+  const merged = [...new Set([...existing, ...offerings.filter(Boolean)])];
+  await sql`UPDATE applicants SET
+      portal_offerings = ${JSON.stringify(merged)}::jsonb,
+      portal_gifts = ${String(gifts || '')},
+      portal_updated_at = now(), updated_at = now()
+    WHERE id = ${rows[0].id}`;
+  return { offerings: merged, gifts: String(gifts || '') };
 }

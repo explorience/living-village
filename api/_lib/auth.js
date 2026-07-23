@@ -7,8 +7,9 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
 const COOKIE = 'lv_admin';
-const SESSION_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days
-const LINK_TTL = 20 * 60 * 1000;              // 20 minutes
+const SESSION_TTL = 30 * 24 * 60 * 60 * 1000;   // 30 days
+const LINK_TTL = 20 * 60 * 1000;                // 20 minutes (crew)
+const ATTENDEE_LINK_TTL = 45 * 24 * 60 * 60 * 1000; // ~6 weeks, through the event (attendees)
 
 export function allowlist() {
   const raw = process.env.ADMIN_ALLOWLIST
@@ -56,9 +57,22 @@ export function makeLoginToken(email) {
   return sign({ email: email.trim().toLowerCase(), purpose: 'login', exp: Date.now() + LINK_TTL });
 }
 
+// Long-lived login link for attendees (delivered in the invite email / on request).
+export function makeAttendeeToken(email) {
+  return sign({ email: email.trim().toLowerCase(), purpose: 'login', exp: Date.now() + ATTENDEE_LINK_TTL });
+}
+
 export function verifyLoginToken(token) {
   const p = verify(token, 'login');
   return p && isAllowed(p.email) ? p.email : null;
+}
+
+// Verify a login token WITHOUT the crew allowlist gate — returns the email for any
+// validly-signed, unexpired login token. The caller decides crew vs attendee. Used by
+// the callback so both crew and attendee links resolve.
+export function verifyMagicToken(token) {
+  const p = verify(token, 'login');
+  return p ? p.email : null;
 }
 
 export function sessionCookie(email) {
@@ -79,6 +93,17 @@ export function getSession(req) {
   const token = match.slice(COOKIE.length + 1);
   const p = verify(token, 'session');
   return p && isAllowed(p.email) ? { email: p.email } : null;
+}
+
+// Like getSession but WITHOUT the crew gate — returns the email for any valid session
+// cookie. Portal endpoints use this; crew endpoints keep using getSession (crew-only),
+// so an attendee session can never reach /api/admin/*.
+export function readSessionEmail(req) {
+  const raw = req.headers.cookie || '';
+  const match = raw.split(';').map(s => s.trim()).find(s => s.startsWith(`${COOKIE}=`));
+  if (!match) return null;
+  const p = verify(match.slice(COOKIE.length + 1), 'session');
+  return p ? p.email : null;
 }
 
 export function baseUrl(req) {
