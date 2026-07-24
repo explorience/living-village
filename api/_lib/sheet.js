@@ -21,13 +21,11 @@ const COLS = [
 
 // The role set the live form actually offers (distinct from the older framework doc).
 export const ROLES = [
-  'Fire Keeper',
-  'Story Weaver',
-  'Basecamp Steward',
-  'Threshold Keeper',
-  'Exchange Guide',
-  'Flow Facilitator',
-  'Not sure yet',
+  'Food related',
+  'Firewood',
+  'Games',
+  'Instruments',
+  'Arts and crafts',
 ];
 
 async function getAccessToken() {

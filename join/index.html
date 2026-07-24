@@ -773,36 +773,19 @@
 
         <h1 class="display">What you might bring.</h1>
 
-        <p>Two parts. The role or roles you'd want to hold during the gathering, and the smaller offerings that keep a village running. Pick what calls to you. None is fine if your contribution lives elsewhere.</p>
+        <p>A few simple ways you might help hold the village together over the weekend. Pick whatever calls to you. None is fine too, if your contribution lives elsewhere.</p>
 
         <div class="roles-section">
-            <h3>Tend a fire of the village.</h3>
-            <p class="quiet">These are interests, not assignments. We may ask you to swap if a role gets full.</p>
-            <div class="role-list" id="role-list">
-                <label><input type="checkbox" name="roles" value="Fire Keeper"><span><span class="role-name">Fire Keeper</span><span class="role-blurb">Tends to what is sacred. The energy of ritual, transition, and intentional coming together.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Story Weaver"><span><span class="role-name">Story Weaver</span><span class="role-blurb">The village memory. Captures moments, voices, fragments that would otherwise disappear.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Nourishment Steward"><span><span class="role-name">Nourishment Steward</span><span class="role-blurb">Makes sure no one goes hungry. Mealtime feels like communion, not logistics.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Basecamp Steward"><span><span class="role-name">Basecamp Steward</span><span class="role-blurb">Keeps the foundation steady. The unseen hands that make everything work.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Threshold Keeper"><span><span class="role-name">Threshold Keeper</span><span class="role-blurb">Holds the portal. The first face someone sees. The last energy they carry home.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Exchange Guide"><span><span class="role-name">Exchange Guide</span><span class="role-blurb">Bridges concept and people. Helps everyone trust the shared stewardship model.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Flow Facilitator"><span><span class="role-name">Flow Facilitator</span><span class="role-blurb">Notices who is isolated. Holds space for the emergent. Keeps the schedule alive.</span></span></label>
-                <label><input type="checkbox" name="roles" value="Not sure yet"><span><span class="role-name">Not sure yet</span><span class="role-blurb">Place me where I am needed. I will learn the village by being in it.</span></span></label>
+            <h3>Ways to show up.</h3>
+            <p class="quiet">Pick any. It helps us plan the weekend.</p>
+            <div class="role-list micro-list" id="role-list">
+                <label><input type="checkbox" name="roles" value="Food related"><span><span class="micro-name">Food related</span></span></label>
+                <label><input type="checkbox" name="roles" value="Firewood"><span><span class="micro-name">Firewood</span></span></label>
+                <label><input type="checkbox" name="roles" value="Games"><span><span class="micro-name">Games</span></span></label>
+                <label><input type="checkbox" name="roles" value="Instruments"><span><span class="micro-name">Instruments</span></span></label>
+                <label><input type="checkbox" name="roles" value="Arts and crafts"><span><span class="micro-name">Arts and crafts</span></span></label>
             </div>
-        </div>
-
-        <div class="roles-section">
-            <h3>Smaller offerings.</h3>
-            <p class="quiet">The everyday things that make a village run. Pick any.</p>
-            <div class="role-list micro-list" id="micro-list">
-                <label><input type="checkbox" name="micro" value="Bring a salad ingredient"><span><span class="micro-name">Bring a salad ingredient for salad club</span></span></label>
-                <label><input type="checkbox" name="micro" value="Bring a dish for opening night potluck"><span><span class="micro-name">Bring a dish for the opening night potluck</span></span></label>
-                <label><input type="checkbox" name="micro" value="An hour on dish duty"><span><span class="micro-name">Take an hour on dish duty</span></span></label>
-                <label><input type="checkbox" name="micro" value="Sweep the lodge"><span><span class="micro-name">Sweep the lodge before we leave</span></span></label>
-                <label><input type="checkbox" name="micro" value="Bring firewood"><span><span class="micro-name">Bring firewood</span></span></label>
-                <label><input type="checkbox" name="micro" value="Hold the welcome table for an hour"><span><span class="micro-name">Hold the welcome table for an hour</span></span></label>
-                <label><input type="checkbox" name="micro" value="Lead a morning walk"><span><span class="micro-name">Lead a morning walk on the land</span></span></label>
-                <label><input type="checkbox" name="micro" value="Help with setup or teardown"><span><span class="micro-name">Help with setup or teardown</span></span></label>
-            </div>
+            <p class="quiet" style="margin-top:1.25rem;">Thank you for taking on a role in the village for the weekend. However you choose to show up, it helps hold the whole thing together.</p>
         </div>
 
         <div class="field" style="margin-top: 1.75rem;">
@@ -1240,6 +1223,7 @@
 
             // ---------- moment 5: bring ----------
             function wireCheckboxes(container) {
+                if (!container) return;
                 container.querySelectorAll('label').forEach(label => {
                     const cb = label.querySelector('input[type="checkbox"]');
                     if (!cb) return;
@@ -1249,7 +1233,6 @@
                 });
             }
             wireCheckboxes(document.getElementById('role-list'));
-            wireCheckboxes(document.getElementById('micro-list'));
 
             state.roles.forEach(r => {
                 const cb = document.querySelector('input[name="roles"][value="' + cssEscape(r) + '"]');
