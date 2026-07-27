@@ -64,6 +64,16 @@ export async function ensureSchema() {
   await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_offerings jsonb NOT NULL DEFAULT '[]'::jsonb`;
   await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_gifts text NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_updated_at timestamptz`;
+  // Crew-editable copy for the app's automated emails (RSVP confirmation, sign-in link).
+  // One row per template key; a missing row means "use the built-in default" (see _lib/emails.js).
+  await sql`CREATE TABLE IF NOT EXISTS email_templates (
+    key         text PRIMARY KEY,
+    subject     text NOT NULL DEFAULT '',
+    body        text NOT NULL DEFAULT '',
+    reply_to    text NOT NULL DEFAULT '',
+    updated_at  timestamptz NOT NULL DEFAULT now(),
+    updated_by  text NOT NULL DEFAULT ''
+  )`;
   _schemaReady = true;
 }
 
@@ -159,4 +169,34 @@ export async function addPortalOfferings(email, { offerings = [], gifts = '' }) 
       portal_updated_at = now(), updated_at = now()
     WHERE id = ${rows[0].id}`;
   return { offerings: merged, gifts: String(gifts || '') };
+}
+
+// --- Editable email templates (raw storage; the registry + rendering live in _lib/emails.js) ---
+
+export async function getEmailTemplateRow(key) {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    SELECT key, subject, body, reply_to, updated_at, updated_by
+    FROM email_templates WHERE key = ${key} LIMIT 1`;
+  return rows.length ? rows[0] : null;
+}
+
+export async function getAllEmailTemplateRows() {
+  await ensureSchema();
+  const sql = db();
+  return sql`SELECT key, subject, body, reply_to, updated_at, updated_by FROM email_templates`;
+}
+
+export async function saveEmailTemplateRow(key, { subject, body, replyTo }, email) {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    INSERT INTO email_templates (key, subject, body, reply_to, updated_by, updated_at)
+    VALUES (${key}, ${subject}, ${body}, ${replyTo}, ${email || ''}, now())
+    ON CONFLICT (key) DO UPDATE SET
+      subject = EXCLUDED.subject, body = EXCLUDED.body, reply_to = EXCLUDED.reply_to,
+      updated_by = EXCLUDED.updated_by, updated_at = now()
+    RETURNING key, subject, body, reply_to, updated_at, updated_by`;
+  return rows[0];
 }

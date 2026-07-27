@@ -349,6 +349,20 @@
   .cx-actions .btn[disabled]{opacity:.5}
   .cx-status{font-size:13.5px;color:var(--moss);min-height:20px;margin-top:14px}
   .cx-status.err{color:var(--terracotta)}
+  #emails-wrap{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:24px;
+    background:rgba(20,16,10,.55);backdrop-filter:blur(2px);overflow-y:auto}
+  .em-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .em-tab{font-size:13px;padding:8px 15px;border-radius:999px;border:1px solid var(--hairline);
+    background:transparent;color:var(--bark);cursor:pointer}
+  .em-tab:hover{border-color:var(--moss)}
+  .em-tab.on{background:var(--moss);border-color:var(--moss);color:#fff}
+  .em-desc{font-size:13px;color:var(--muted);margin:12px 2px 2px;min-height:18px}
+  .em-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .em-meta{font-size:12px;color:var(--muted);font-style:italic}
+  .em-reset{font-size:12px;padding:5px 11px;border-radius:999px;border:1px dashed var(--hairline);
+    color:var(--terracotta);background:transparent;cursor:pointer}
+  .em-reset:hover{border-style:solid;border-color:var(--terracotta)}
+  .em-reset[disabled]{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -377,7 +391,7 @@
       <button id="t-roles" onclick="setView('roles')">By role</button>
       <button id="t-needs" onclick="setView('needs')">Needs</button>
     </div>
-    <div class="who"><span id="me"></span><button class="glink" id="email-btn" onclick="openCompose()">✉ Email</button><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
+    <div class="who"><span id="me"></span><button class="glink" id="email-btn" onclick="openCompose()">✉ Email</button><button class="glink" onclick="openEmails()">✎ Emails</button><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
   </header>
   <main>
     <div class="loading display" id="loading">Reading the land…</div>
@@ -474,6 +488,38 @@
   </div>
 </div>
 
+<!-- EDIT AUTOMATED EMAILS -->
+<div id="emails-wrap" class="hidden" onclick="if(event.target===this)closeEmails()">
+  <div class="guide-card" role="dialog" aria-label="Edit automated emails" style="max-width:600px">
+    <button class="d-close g-x" onclick="closeEmails()" aria-label="Close">×</button>
+    <div class="g-mark">The Living Village</div>
+    <h2 class="display">Automated <em>emails</em></h2>
+    <p class="g-lead" style="margin-bottom:2px">The copy the app sends on its own. Edit it here and it goes live for everyone, no code needed.</p>
+
+    <div class="em-tabs" id="em-tabs"></div>
+    <p class="em-desc" id="em-desc"></p>
+
+    <div class="cx-field"><label>Reply-To (where replies land)</label>
+      <input type="email" id="em-replyto" placeholder="hello@journeyland.ca"></div>
+    <div class="cx-field"><label>Subject</label>
+      <input type="text" id="em-subject"></div>
+    <div class="cx-field"><label>Message</label>
+      <textarea id="em-body" style="min-height:230px"></textarea>
+      <span class="cx-hint" id="em-hint"></span></div>
+
+    <div class="em-foot">
+      <span class="em-meta" id="em-meta"></span>
+      <button class="em-reset" id="em-reset" onclick="resetEmailToDefault()">Reset to default</button>
+    </div>
+
+    <div class="cx-actions">
+      <button class="btn" id="em-save" onclick="saveEmailTemplate()">Save</button>
+      <button class="btn ghost" onclick="testEmailTemplate()">Send a test to me</button>
+    </div>
+    <div class="cx-status" id="em-status"></div>
+  </div>
+</div>
+
 <script>
 const ROLE_META = {
   'Fire Keeper':     {c:'var(--r-fire)',   g:'flame'},
@@ -501,6 +547,7 @@ const SLIDER_LABELS = {
 let DATA = [], ROLES = [], view = 'timeline', filter = 'all';
 let ACTS = [], roleMode = 'chosen', edit = null;
 let selected = new Set();
+let EMAIL_TPLS = [], emKey = null;
 const STATUS_META = {
   confirmed:{label:'Confirmed', c:'var(--moss)'},
   maybe:{label:'Maybe', c:'var(--gold)'},
@@ -753,6 +800,93 @@ async function sendCompose(test){
     else { status.className='cx-status'; status.textContent=`Sent to ${j.sent} ${j.sent===1?'person':'people'}${j.failed&&j.failed.length?`, ${j.failed.length} failed (retry those)`:''}. 🌱`; }
   }catch(e){ status.className='cx-status err'; status.textContent='Could not send: '+e.message; }
   finally{ btns.forEach(b=>b.disabled=false); renderComposeRecipients(); }
+}
+
+/* ── edit automated emails ── */
+function openEmails(){ $('#emails-wrap').classList.remove('hidden'); document.body.style.overflow='hidden'; loadEmailTemplates(); }
+function closeEmails(){ $('#emails-wrap').classList.add('hidden'); document.body.style.overflow=''; }
+async function loadEmailTemplates(){
+  const status=$('#em-status'); status.className='cx-status'; status.textContent='Loading…';
+  try{
+    const r=await fetch('/api/admin/emails',{headers:{'Accept':'application/json'}});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('http '+r.status));
+    EMAIL_TPLS=j.templates||[];
+    status.textContent='';
+    renderEmailTabs();
+    selectEmailTemplate(EMAIL_TPLS.some(t=>t.key===emKey)?emKey:(EMAIL_TPLS[0]&&EMAIL_TPLS[0].key));
+  }catch(e){ status.className='cx-status err'; status.textContent='Could not load templates: '+e.message; }
+}
+function renderEmailTabs(){
+  $('#em-tabs').innerHTML = EMAIL_TPLS.map(t=>
+    `<button class="em-tab${t.key===emKey?' on':''}" onclick="selectEmailTemplate('${t.key}')">${esc(t.label)}</button>`).join('');
+}
+const curEmailTpl = () => EMAIL_TPLS.find(t=>t.key===emKey);
+function selectEmailTemplate(key){
+  emKey=key; const t=curEmailTpl(); if(!t) return;
+  renderEmailTabs();
+  $('#em-desc').textContent=t.description||'';
+  $('#em-subject').value=t.subject||'';
+  $('#em-body').value=t.body||'';
+  $('#em-replyto').value=t.replyTo||'';
+  const toks=(t.tokens||[]).map(tk=>`<b>{${tk.name}}</b> — ${esc(tk.help)}`).join(' · ');
+  $('#em-hint').innerHTML = toks ? ('You can use: '+toks) : 'Sent from '+esc(t.from||'')+'.';
+  renderEmailMeta();
+  $('#em-status').className='cx-status'; $('#em-status').textContent='';
+}
+function renderEmailMeta(){
+  const t=curEmailTpl(); if(!t) return;
+  const meta=$('#em-meta');
+  if(t.customized){
+    const when=t.updatedAt?fmtDay(t.updatedAt):''; const who=t.updatedBy||'';
+    meta.textContent = 'Edited'+(who?(' by '+who):'')+(when?(' · '+when):'');
+    $('#em-reset').disabled=false;
+  } else {
+    meta.textContent='Using the built-in default.';
+    $('#em-reset').disabled=true;
+  }
+}
+function resetEmailToDefault(){
+  const t=curEmailTpl(); if(!t||!t.defaults) return;
+  $('#em-subject').value=t.defaults.subject||'';
+  $('#em-body').value=t.defaults.body||'';
+  $('#em-replyto').value=t.defaults.replyTo||'';
+  const s=$('#em-status'); s.className='cx-status'; s.textContent='Default copy loaded — hit Save to make it live.';
+}
+async function saveEmailTemplate(){
+  const status=$('#em-status'); status.className='cx-status';
+  const key=emKey, subject=$('#em-subject').value.trim(), body=$('#em-body').value, replyTo=$('#em-replyto').value.trim();
+  if(!subject){ status.className='cx-status err'; status.textContent='Add a subject.'; return; }
+  if(!body.trim()){ status.className='cx-status err'; status.textContent='Write a message.'; return; }
+  const btns=document.querySelectorAll('#emails-wrap .cx-actions .btn'); btns.forEach(b=>b.disabled=true);
+  status.textContent='Saving…';
+  try{
+    const r=await fetch('/api/admin/emails',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({key,subject,body,replyTo})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('http '+r.status));
+    const t=curEmailTpl(); if(t){ t.subject=subject; t.body=body; t.replyTo=replyTo; t.customized=true;
+      t.updatedAt=j.saved&&j.saved.updated_at; t.updatedBy=j.saved&&j.saved.updated_by; }
+    renderEmailMeta();
+    status.className='cx-status'; status.textContent='Saved — this is now live. 🌱';
+  }catch(e){ status.className='cx-status err'; status.textContent='Could not save: '+e.message; }
+  finally{ btns.forEach(b=>b.disabled=false); }
+}
+async function testEmailTemplate(){
+  const status=$('#em-status'); status.className='cx-status';
+  const key=emKey, subject=$('#em-subject').value.trim(), body=$('#em-body').value, replyTo=$('#em-replyto').value.trim();
+  if(!subject){ status.className='cx-status err'; status.textContent='Add a subject.'; return; }
+  if(!body.trim()){ status.className='cx-status err'; status.textContent='Write a message.'; return; }
+  const btns=document.querySelectorAll('#emails-wrap .cx-actions .btn'); btns.forEach(b=>b.disabled=true);
+  status.textContent='Sending you a test…';
+  try{
+    const r=await fetch('/api/admin/emails',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({key,subject,body,replyTo,test:true})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('http '+r.status));
+    status.className='cx-status'; status.textContent='Test sent to '+(j.to||'you')+' (unsaved draft). Check your inbox 🌱';
+  }catch(e){ status.className='cx-status err'; status.textContent='Could not send test: '+e.message; }
+  finally{ btns.forEach(b=>b.disabled=false); }
 }
 
 /* ── detail ── */

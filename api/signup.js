@@ -1,3 +1,5 @@
+import { renderTemplate, fromAddrFor } from './_lib/emails.js';
+
 const SHEET_ID = '16TL2Bqa4gl8H5R8nQe0JvhQa2IwajeuzLvlcka8l3dI';
 
 export default async function handler(req, res) {
@@ -185,34 +187,11 @@ async function sendApplicantConfirmation(payload) {
   if (!apiKey) return { ok: false, reason: 'not_configured' };
   if (!payload.email) return { ok: false, reason: 'no_recipient' };
 
-  const fromAddr = process.env.RESEND_FROM || 'The Living Village <onboarding@resend.dev>';
-  const replyToRaw = process.env.RESEND_TO || 'hello@journeyland.ca';
-  const replyTo = Array.isArray(replyToRaw) ? replyToRaw[0] : replyToRaw;
-
-  const firstName = firstNameFrom(payload);
-  const greeting = firstName ? `Hi ${firstName},` : 'Hi,';
-
-  const text = [
-    greeting,
-    '',
-    'Your yes landed. Thank you for the care you put into your answers — we read every one.',
-    '',
-    'The Living Village gathers on the land, August 15–16, 2026. Hold the dates. We’ll be in touch before then with arrival details, what to bring, and how the two days will flow.',
-    '',
-    'Until then: this isn’t a ticket you bought, it’s a village you’re helping make. If something stirs, or you think of something you’d love to bring, just reply to this email — it reaches us directly.',
-    '',
-    'See you on the land,',
-    'The Living Village',
-  ].join('\n');
-
-  const greetingHtml = firstName ? `Hi ${escapeHtml(firstName)},` : 'Hi,';
-  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#2c2a26;line-height:1.6;font-size:16px;">
-  <p>${greetingHtml}</p>
-  <p>Your <strong>yes</strong> landed. Thank you for the care you put into your answers — we read every one.</p>
-  <p><strong>The Living Village</strong> gathers on the land, <strong>August&nbsp;15&ndash;16,&nbsp;2026.</strong> Hold the dates. We&rsquo;ll be in touch before then with arrival details, what to bring, and how the two days will flow.</p>
-  <p>Until then: this isn&rsquo;t a ticket you bought, it&rsquo;s a village you&rsquo;re helping make. If something stirs, or you think of something you&rsquo;d love to bring, just reply to this email — it reaches us directly.</p>
-  <p style="margin-top:24px;">See you on the land,<br><strong>The Living Village</strong></p>
-</div>`;
+  // Copy is crew-editable (see _lib/emails.js); the sender stays in env, replies go to
+  // whatever the template's reply-to is (default hello@journeyland.ca, a real inbox).
+  const { subject, text, html, replyTo } = await renderTemplate('rsvp_confirmation', {
+    firstName: firstNameFrom(payload),
+  });
 
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -221,10 +200,10 @@ async function sendApplicantConfirmation(payload) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: fromAddr,
+      from: fromAddrFor('rsvp_confirmation'),
       to: [payload.email],
-      reply_to: replyTo,
-      subject: 'Your yes is received 🌱 — The Living Village, Aug 15–16',
+      reply_to: replyTo || undefined,
+      subject,
       text,
       html,
     }),
@@ -242,10 +221,6 @@ function firstNameFrom(p) {
   const raw = String(p.vow || p.name || '').trim();
   if (!raw) return '';
   return raw.split(/[\s,]+/)[0];
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function buildSubject(p) {
