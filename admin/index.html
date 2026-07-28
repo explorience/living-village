@@ -101,6 +101,19 @@
   .who a{color:var(--terracotta);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
   .who a:hover{border-color:var(--terracotta)}
 
+  /* Freshness. The roster is fetched once on load, so a tab left open overnight will
+     happily show yesterday's village. Say out loud how old the data is. */
+  .stamp{font-size:11.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .stamp.stale{color:var(--terracotta);font-weight:500}
+  .stamp.stale::before{content:"⚠ ";}
+
+  /* Same human, two email addresses: usually someone who thought their signup vanished
+     and filled the form in again. Two records, one person, wrong headcount. */
+  .dupe-flag{margin-left:8px;font-size:11.5px;font-weight:500;color:var(--terracotta);
+    border-bottom:1px dashed var(--terracotta)}
+  .dupe-pill{margin-left:7px;font-size:10.5px;font-weight:600;letter-spacing:.03em;
+    padding:2px 7px;border-radius:999px;color:#fff;background:var(--terracotta);vertical-align:middle}
+
   main{max-width:1180px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,40px) 120px}
   .loading,.feedback{text-align:center;color:var(--muted);padding:80px 0;font-family:'Fraunces',serif;font-size:18px}
 
@@ -391,7 +404,7 @@
       <button id="t-roles" onclick="setView('roles')">By role</button>
       <button id="t-needs" onclick="setView('needs')">Needs</button>
     </div>
-    <div class="who"><span id="me"></span><button class="glink" id="email-btn" onclick="openCompose()">✉ Email</button><button class="glink" onclick="openEmails()">✎ Emails</button><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
+    <div class="who"><span class="stamp" id="stamp"></span><button class="glink" id="refresh-btn" onclick="loadRoster({quiet:true})">↻ Refresh</button><span id="me"></span><button class="glink" id="email-btn" onclick="openCompose()">✉ Email</button><button class="glink" onclick="openEmails()">✎ Emails</button><button class="glink" onclick="openGuide()">Guide</button><a href="/api/auth/logout">Sign out</a></div>
   </header>
   <main>
     <div class="loading display" id="loading">Reading the land…</div>
@@ -574,23 +587,65 @@ function roleChip(role){
 }
 
 /* ── boot ── */
-init();
-async function init(){
+let loadedAt = null;
+loadRoster();
+
+// Also used by the Refresh button, so the roster can be pulled again without losing
+// the current view, filter or selection.
+async function loadRoster({quiet=false}={}){
+  const btn=$('#refresh-btn');
+  if(quiet&&btn){ btn.disabled=true; btn.textContent='Refreshing…'; }
   try{
     const r = await fetch('/api/admin/applicants',{headers:{'Accept':'application/json'}});
     if(r.status===401){ showGate(); return; }
     if(!r.ok){ const e=await r.json().catch(()=>({})); showApp(); fail(e.detail||'Could not read the sheet.'); return; }
     const j = await r.json();
     DATA = j.applicants||[]; ROLES = j.roles||Object.keys(ROLE_META); ACTS = j.activities||[];
+    loadedAt = new Date();
     showApp();
     $('#me').textContent = j.me||'';
-    $('#count').innerHTML = `<b>${DATA.length}</b> ${DATA.length===1?'soul has':'souls have'} said yes`;
+    renderCount();
     $('#loading').classList.add('hidden');
     renderStatbar();
     render();
     updateEmailBtn();
-  }catch(err){ showGate(); }
+    renderStamp();
+  }catch(err){ if(!quiet) showGate(); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent='↻ Refresh'; } }
 }
+
+function renderCount(){
+  const n=DATA.length, d=dupeGroups().length;
+  $('#count').innerHTML = `<b>${n}</b> ${n===1?'soul has':'souls have'} said yes`
+    + (d?` <button class="dupe-flag" onclick="setView('needs')">⚠ ${d} possible duplicate${d===1?'':'s'}</button>`:'');
+}
+
+function renderStamp(){
+  const el=$('#stamp'); if(!el||!loadedAt) return;
+  const mins=Math.floor((Date.now()-loadedAt.getTime())/60000);
+  const hh=String(loadedAt.getHours()).padStart(2,'0'), mm=String(loadedAt.getMinutes()).padStart(2,'0');
+  el.textContent = mins<1 ? 'loaded just now' : `loaded ${hh}:${mm}, ${mins}m ago`;
+  el.classList.toggle('stale', mins>=15);
+  el.title = mins>=15
+    ? 'This roster was loaded a while ago and may be out of date. Hit Refresh.'
+    : 'This roster is fresh.';
+}
+setInterval(renderStamp, 30000);
+
+/* ── same person, two email addresses ── */
+// Records are keyed on email, so anyone who re-registers with a different address
+// becomes a second person in the roster. Surface it rather than quietly counting them twice.
+function dupeGroups(){
+  const m=new Map();
+  for(const a of DATA){
+    const k=(a.name||firstName(a)||'').trim().toLowerCase().replace(/\s+/g,' ');
+    if(!k||k==='someone') continue;
+    if(!m.has(k)) m.set(k,[]);
+    m.get(k).push(a);
+  }
+  return [...m.values()].filter(g=>g.length>1);
+}
+function dupeIds(){ return new Set(dupeGroups().flat().map(a=>a.id)); }
 function showGate(){
   $('#app').classList.add('hidden'); $('#gate').classList.remove('hidden');
   const p = new URLSearchParams(location.search);
@@ -657,6 +712,7 @@ function renderTimeline(){
   const rows=applyFilter(DATA);
   if(!rows.length){ el.innerHTML='<div class="feedback display">No-one here yet.</div>'; return; }
   let html='<div class="spine"></div>'; let lastMonth=''; let i=0;
+  const dups=dupeIds();
   for(const a of rows){
     const mk=monthKey(a.applied);
     if(mk && mk!==lastMonth){ html+=`<div class="month"><span class="display">${esc(mk)}</span></div>`; lastMonth=mk; }
@@ -666,7 +722,7 @@ function renderTimeline(){
       <span class="when">${esc(fmtDay(a.applied))}</span>
       <div class="card${selected.has(a.id)?' picked':''}" onclick="openDetail('${esc(a.id)}')">
         <label class="selbox" onclick="event.stopPropagation()" title="Select for email"><input type="checkbox" ${selected.has(a.id)?'checked':''} onchange="toggleSelect('${esc(a.id)}',this.checked);this.closest('.card').classList.toggle('picked',this.checked)"></label>
-        <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
+        <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}${dups.has(a.id)?'<span class="dupe-pill" title="Someone else in the roster has this name with a different email. Probably one person who signed up twice.">dupe?</span>':''}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
         ${ess?`<div class="essence">${esc(ess)}</div>`:''}
         <div class="chips">${a.roles.map(roleChip).join('')}${sol}</div>
       </div></div>`;
@@ -710,6 +766,8 @@ function renderNeeds(){
   const access=rows.filter(a=>a.accessibility && a.accessibility.trim());
   const phones=rows.filter(a=>a.phone && a.phone.trim());
   const noContact=rows.filter(a=>!a.email && !(a.phone&&a.phone.trim()));
+  // Duplicates are a whole-roster hygiene problem, so they ignore the status filter.
+  const dgs=dupeGroups();
   const card=(title,count,total,body)=>`<div class="need-card">
       <div class="need-h"><span class="need-t display">${title}</span><span class="need-n">${count}<span class="of">/${total}</span></span></div>
       ${body}</div>`;
@@ -722,6 +780,9 @@ function renderNeeds(){
       ${card('Accessibility', access.length, rows.length, list(access,a=>esc(a.accessibility)))}
       ${card('Have a phone number', phones.length, rows.length, list(phones,a=>esc(a.phone)))}
       ${card('No contact details yet', noContact.length, rows.length, noContact.length?list(noContact,()=>'add a phone in their card'):`<div class="need-empty">Everyone has a way to reach them. 🌿</div>`)}
+      ${card('Possible duplicates', dgs.length, DATA.length, dgs.length
+        ? `<ul class="need-list">${dgs.map(g=>`<li onclick="openDetail('${esc(g[0].id)}')"><span class="nl-name">${esc(g[0].name||firstName(g[0]))}</span><span class="nl-val">${g.map(a=>esc(a.email||'no email')).join(' · ')}</span></li>`).join('')}</ul>`
+        : `<div class="need-empty">No-one appears twice. 🌿</div>`)}
     </div>`;
 }
 

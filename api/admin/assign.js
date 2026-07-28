@@ -3,7 +3,6 @@
 
 import { getSession } from '../_lib/auth.js';
 import { ensureSchema, updateAssignment } from '../_lib/db.js';
-import { ROLES } from '../_lib/sheet.js';
 
 const STATUSES = ['', 'confirmed', 'maybe', 'waitlist', 'declined'];
 
@@ -15,8 +14,14 @@ export default async function handler(req, res) {
   const b = req.body || {};
   if (!b.id || typeof b.id !== 'string') return res.status(400).json({ error: 'missing_id' });
 
+  // Sanitise, never validate against a vocabulary. This used to filter against ROLES,
+  // which meant that editing that list retroactively deleted any saved role no longer in
+  // it: a crew member opening someone's card and hitting save would silently drop their
+  // real picks. The roster UI only ever offers real roles, so the vocabulary buys nothing
+  // here, and the cost of getting it wrong is other people's data. Treat it like
+  // assignedActivities: trim, dedupe, cap, keep.
   const assignedRoles = Array.isArray(b.assignedRoles)
-    ? b.assignedRoles.filter(r => ROLES.includes(r)) : [];
+    ? [...new Set(b.assignedRoles.map(s => String(s).trim()).filter(Boolean))].slice(0, 30) : [];
   const assignedActivities = Array.isArray(b.assignedActivities)
     ? [...new Set(b.assignedActivities.map(s => String(s).trim()).filter(Boolean))].slice(0, 30) : [];
   const status = STATUSES.includes(b.status) ? b.status : '';

@@ -21,8 +21,16 @@ const COLS = [
 
 // Every role/offering value that has ever been saved, across both vocabularies:
 // the eight named village roles (the join form) and the five practical offerings
-// (the portal). This is a superset on purpose. Backstage filters saved assignments
-// against it, so dropping a value here silently deletes it from people's records.
+// (the portal). This is a superset on purpose.
+//
+// This list is the COLUMN SET for Backstage's "By role" board. A value missing here has
+// no column, so everyone who picked it disappears from that view even though their record
+// is fine. That is exactly what happened 24-28 Jul: this was trimmed to the five practical
+// offerings, the board lost its eight named columns, and people reported their signups as
+// "deleted". Add to this list; don't prune it.
+//
+// It is no longer used to validate saves (see api/admin/assign.js), so a stale entry here
+// can hide people but can no longer destroy anything.
 export const ROLES = [
   // Named village roles — chosen at signup on the join form.
   'Fire Keeper',
@@ -123,7 +131,11 @@ function mergeGroup(rows) {
   return {
     id: (rows.find(r => r.email)?.email || longestScalar('name') || appliedIso).toLowerCase(),
     email: rows.find(r => r.email)?.email || '',
-    name: longestScalar('name'),
+    // The name field is optional on the join form, but the vow is signed by hand and is
+    // always a real name. Falling back to it here (rather than only in the roster UI) keeps
+    // a person findable everywhere downstream: the DB name column, CSV export, the email
+    // compose list. Without it they read as blank and look like a lost signup.
+    name: longestScalar('name') || longestScalar('vow'),
     applied: appliedIso,
     appliedMs: appliedIso ? Date.parse(appliedIso) : 0,
     roles: longestList('roles'),
