@@ -187,20 +187,15 @@ const ANCHORS = [
   { amount: 108, label: "carry the village onward" },
   { amount: 161, label: "help build what comes after" },
 ];
-const ROLES = [
-  ["Fire Keeper","Tends to what is sacred. The energy of ritual and intentional coming together."],
-  ["Story Weaver","The village memory. Captures moments, voices, fragments that would otherwise disappear."],
-  ["Nourishment Steward","Makes sure no one goes hungry. Mealtime feels like communion, not logistics."],
-  ["Basecamp Steward","Keeps the foundation steady. The unseen hands that make everything work."],
-  ["Threshold Keeper","Holds the portal. The first face someone sees, the last energy they carry home."],
-  ["Exchange Guide","Bridges concept and people. Helps everyone trust the shared stewardship model."],
-  ["Flow Facilitator","Notices who is isolated. Holds space for the emergent. Keeps the schedule alive."],
-  ["Not sure yet","Place me where I am needed. I will learn the village by being in it."],
-];
-const MICRO = [
-  "Bring a dish for the opening night potluck","Bring a salad ingredient for salad club",
-  "Take an hour on dish duty","Bring firewood","Sweep the lodge before we leave",
-  "Hold the welcome table for an hour","Lead a morning walk on the land","Help with setup or teardown",
+// The portal deliberately does NOT repeat the eight named village roles: people
+// already chose those on the join form. These are the practical, additional
+// offerings on top of whatever role they already hold.
+const OFFERINGS = [
+  "Food related",
+  "Firewood",
+  "Games",
+  "Instruments",
+  "Arts and crafts",
 ];
 const MIN = 11, MAX = 200;
 
@@ -252,13 +247,9 @@ setAmount(44);
 
 // ---- offerings (visual only in this preview; saving arrives with the login step) ----
 const grid = document.getElementById('offerGrid');
-ROLES.forEach(([n,b])=>{
+OFFERINGS.forEach(o=>{
   grid.insertAdjacentHTML('beforeend',
-   `<label title="${b}"><input type="checkbox" name="role" value="${n}"><span>${n}</span></label>`);
-});
-MICRO.forEach(m=>{
-  grid.insertAdjacentHTML('beforeend',
-   `<label><input type="checkbox" name="micro" value="${m}"><span>${m}</span></label>`);
+   `<label><input type="checkbox" name="offering" value="${o}"><span>${o}</span></label>`);
 });
 document.getElementById('offerBtn').onclick = async ()=>{
   const note = document.getElementById('offerNote');

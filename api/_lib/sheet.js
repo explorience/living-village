@@ -19,8 +19,21 @@ const COLS = [
   'spectrums', 'bravePrompt', 'bigQuestion', 'solsticeRsvp', 'orientation', 'stage',
 ];
 
-// The role set the live form actually offers (distinct from the older framework doc).
+// Every role/offering value that has ever been saved, across both vocabularies:
+// the eight named village roles (the join form) and the five practical offerings
+// (the portal). This is a superset on purpose. Backstage filters saved assignments
+// against it, so dropping a value here silently deletes it from people's records.
 export const ROLES = [
+  // Named village roles — chosen at signup on the join form.
+  'Fire Keeper',
+  'Story Weaver',
+  'Nourishment Steward',
+  'Basecamp Steward',
+  'Threshold Keeper',
+  'Exchange Guide',
+  'Flow Facilitator',
+  'Not sure yet',
+  // Practical offerings — added later in the portal.
   'Food related',
   'Firewood',
   'Games',
