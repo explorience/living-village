@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Your Village Space · The Living Village</title>
+<title>The Reciprocity Pool · The Living Village</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -26,11 +26,9 @@
   .lede p{font-size:1.06rem;color:var(--bark)}
   .card{background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:1.8rem 1.5rem;margin-top:2.2rem;box-shadow:0 1px 0 rgba(42,29,16,.03),0 18px 40px -30px rgba(42,29,16,.4)}
   .to-ability{font-size:.92rem;color:var(--muted-text);font-style:italic;margin-bottom:1.4rem}
-  /* amount display */
   .amount-display{font-family:'Fraunces',serif;font-weight:900;font-size:3.2rem;line-height:1;text-align:center;color:var(--earth);letter-spacing:-.02em}
   .amount-display .cur{font-size:1.6rem;vertical-align:.7rem;color:var(--sage);margin-right:.1rem}
   .amount-phrase{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:1.12rem;color:var(--terracotta);min-height:1.6em;margin:.55rem 0 1.7rem;transition:opacity .15s}
-  /* slider */
   .slider-shell{padding:0 .2rem}
   .anchors{position:relative;height:1.2rem;margin-bottom:.1rem}
   .anchor-tick{position:absolute;transform:translateX(-50%);font-size:.72rem;color:var(--muted-text);cursor:pointer;white-space:nowrap;padding:.1rem .25rem;border-radius:4px;transition:color .15s}
@@ -51,7 +49,6 @@
   .other-row{display:none;justify-content:center;align-items:center;gap:.5rem;margin-top:.7rem}
   .other-row.show{display:flex}
   .other-row input{width:130px}
-  /* fields */
   label.fld{display:block;margin-top:1.1rem;font-size:.82rem;letter-spacing:.02em;color:var(--bark);font-weight:500}
   input[type=text],input[type=email],input[type=number],textarea{width:100%;margin-top:.35rem;padding:.75rem .85rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);font-family:inherit;font-size:1rem;color:var(--earth)}
   input:focus,textarea:focus{outline:none;border-color:var(--sage);background:#fff}
@@ -68,55 +65,21 @@
   .step{display:none}
   .step.on{display:block;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  /* offerings */
-  .offer-list{display:grid;gap:.5rem;margin-top:1rem}
-  .offer-list label{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem .85rem;border:1px solid var(--hairline);border-radius:9px;cursor:pointer;background:var(--warm);transition:border-color .15s,background .15s}
-  .offer-list label:hover{border-color:var(--sage)}
-  .offer-list input{margin-top:.28rem;flex-shrink:0;accent-color:var(--moss)}
-  .offer-name{font-weight:500}
-  .offer-blurb{display:block;font-size:.83rem;color:var(--muted-text);margin-top:.1rem}
-  .offer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-top:.9rem}
-  .offer-grid label{display:flex;gap:.55rem;align-items:center;padding:.6rem .7rem;border:1px solid var(--hairline);border-radius:9px;cursor:pointer;background:var(--warm);font-size:.9rem;line-height:1.3;transition:border-color .15s}
-  .offer-grid label:hover{border-color:var(--sage)}
-  .offer-grid input{accent-color:var(--moss);flex-shrink:0}
   .thanks{text-align:center;padding:1rem 0}
   .thanks .mark{font-size:2.4rem}
-  .divider{height:1px;background:var(--hairline);margin:3rem 0 0}
   .foot{text-align:center;font-size:.8rem;color:var(--muted-text);margin-top:3rem}
-  .identity{font-size:.9rem;color:var(--muted-text);margin-top:1.1rem;padding:.6rem .8rem;background:var(--warm);border-radius:8px}
-  .identity strong{color:var(--earth)}
+  .cash-note{margin-top:1.4rem;padding:.75rem .9rem;background:var(--warm);border-radius:8px;font-size:.88rem;color:var(--bark)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">Your village space</div>
+  <div class="eyebrow">The Living Village</div>
   <h1>The Reciprocity&nbsp;Pool</h1>
 
   <div class="lede">
     <p>This gathering is already well resourced. The land, the food, the fire, the storytelling, the people holding it, all of it is covered, thanks to those who gave generously to bring it to life.</p>
     <p>So this isn't a ticket, and it isn't a gap we need you to fill. It's an invitation. If you feel called, you can add to the pool, in the same spirit of abundance that carried us this far. What you give won't pay a bill, it plants a seed for what the Living Village grows into beyond this weekend.</p>
   </div>
-
-  <!-- LOGIN GATE (shown when not signed in) -->
-  <!-- The "add to the pool" invitation in the emails points here, so giving must be
-       reachable from this screen WITHOUT a sign-in round trip. Signing in is only needed
-       to edit the offerings we already hold against your name. -->
-  <div class="card" id="gate" style="display:none">
-    <h2>Add to the Reciprocity Pool</h2>
-    <p style="color:var(--bark)">No sign-in needed. Choose an amount and give in under a minute.</p>
-    <a class="btn" id="gateGiveBtn" href="/give" style="text-decoration:none;text-align:center">Add to the pool</a>
-
-    <div style="height:1px;background:var(--hairline);margin:1.9rem 0 1.4rem"></div>
-
-    <h2 style="font-size:1.15rem">Or step into your village space</h2>
-    <p style="color:var(--bark);font-size:.95rem">To add offerings or update what you're bringing, pop in the email you signed up with and we'll send you a one-tap link.</p>
-    <label class="fld">Your email<input type="email" id="gateEmail" autocomplete="email" placeholder="you@example.com"></label>
-    <button class="btn btn-ghost" id="gateBtn">Email me a link</button>
-    <div class="pay-note" id="gateNote"></div>
-  </div>
-
-  <!-- everything below requires a session -->
-  <div id="authed" style="display:none">
 
   <!-- STEP 1: choose -->
   <div class="card step on" id="step-choose">
@@ -138,22 +101,23 @@
       </div>
     </div>
 
-    <div class="identity" id="identity"></div>
+    <label class="fld">Your name<input type="text" id="fName" autocomplete="name" placeholder="so we know who to thank"></label>
+    <label class="fld">Your email<input type="email" id="fEmail" autocomplete="email" placeholder="you@example.com"></label>
     <label class="fld">A word to the circle (optional)<textarea id="fNote" placeholder="anything you'd like us to know"></textarea></label>
 
     <button class="btn" id="toPayBtn">Continue to give $<span id="btnAmt1">44</span></button>
     <div class="err" id="chooseErr"></div>
+    <div class="pay-note">Your receipt goes to that email. No account, no sign-in.</div>
   </div>
 
   <!-- STEP 2: pay -->
   <div class="card step" id="step-pay">
     <h2>Add $<span id="payAmt">44</span> to the pool</h2>
-    <p style="color:var(--bark);font-size:.95rem">A one-time gift in Canadian dollars. Your card is handled securely by Stripe.</p>
     <div id="payment-element"></div>
     <button class="btn" id="payBtn">Give $<span id="btnAmt2">44</span></button>
     <button class="btn btn-ghost" id="backBtn">Back</button>
     <div class="err" id="payErr"></div>
-    <div class="pay-note" id="payNote"></div>
+    <div class="pay-note">Payments are handled by Stripe. We never see your card details.</div>
   </div>
 
   <!-- STEP 3: thanks -->
@@ -161,35 +125,20 @@
     <div class="thanks">
       <div class="mark">🌱</div>
       <h2>Thank you for feeding the village</h2>
-      <p style="color:var(--bark)">Your gift has been received into the pool. It plants a seed for what we grow next. A receipt is on its way to your inbox.</p>
+      <p>Your gift is in the pool. A receipt is on its way to your inbox.</p>
+      <p style="color:var(--muted-text);font-size:.92rem">See you on the land.</p>
     </div>
   </div>
 
-  <div class="divider"></div>
-
-  <!-- OFFERINGS -->
-  <div style="margin-top:2.4rem">
-    <div class="eyebrow">In the spirit of abundance</div>
-    <h2>Ways to show up</h2>
-    <p style="color:var(--bark)">A village is built from what we each carry, our presence, our gifts, our skills, a role we'll hold, a dish, an hour of hands, a song, an idea. However you feel called to show up, there is a place for it here.</p>
-
-    <label class="fld" style="margin-top:1.4rem">How do you want to show up? Gifts, skills, offerings, anything.<textarea id="fGifts" placeholder="e.g. I'd love to lead a dawn meditation · I can bring my sound bowls · I'm handy with knots and tarps…"></textarea></label>
-
-    <p style="color:var(--bark);margin-top:1.7rem;font-size:.95rem">Or pick from some of the ways the village needs holding:</p>
-    <div class="offer-grid" id="offerGrid"></div>
-
-    <button class="btn btn-ghost" id="offerBtn" style="margin-top:1.4rem">Add these to what I'm bringing</button>
-    <div class="pay-note" id="offerNote"></div>
+  <div class="cash-note">
+    Prefer to give in cash or by e-transfer? Find any of the crew at the welcome desk over the weekend, or reply to the email that brought you here. Both are just as welcome.
   </div>
 
-  </div><!-- /authed -->
-
-  <div class="foot">The Living Village · a Journeyland gathering · Aug 15–16, 2026</div>
+  <div class="foot">The Living Village · August 15–16, 2026 · The Living Centre</div>
 </div>
 
 <script>
-// ---- config (anchors are WIP; swap freely) ----
-// Anchor labels — "The long walk" ladder (chosen with Heenal).
+// Anchor labels — "The long walk" ladder (same as the portal).
 const ANCHORS = [
   { amount: 11,  label: "a first step" },
   { amount: 22,  label: "walk with us a while" },
@@ -198,24 +147,13 @@ const ANCHORS = [
   { amount: 108, label: "carry the village onward" },
   { amount: 161, label: "help build what comes after" },
 ];
-// The portal deliberately does NOT repeat the eight named village roles: people
-// already chose those on the join form. These are the practical, additional
-// offerings on top of whatever role they already hold.
-const OFFERINGS = [
-  "Food related",
-  "Firewood",
-  "Games",
-  "Instruments",
-  "Arts and crafts",
-];
 const MIN = 11, MAX = 200;
 
-// ---- slider + anchors ----
 const slider = document.getElementById('slider');
 const amtNum = document.getElementById('amtNum');
 const amtPhrase = document.getElementById('amtPhrase');
 const anchorRow = document.getElementById('anchorRow');
-let amount = 50;
+let amount = 44;
 
 ANCHORS.forEach(a=>{
   const pct = ((a.amount - MIN)/(MAX - MIN))*100;
@@ -245,7 +183,6 @@ function setAmount(v){
 }
 slider.addEventListener('input', e=>{ document.getElementById('otherRow').classList.remove('show'); setAmount(+e.target.value); });
 
-// other amount
 document.getElementById('otherToggle').onclick = ()=>{
   document.getElementById('otherRow').classList.toggle('show');
   document.getElementById('otherInput').focus();
@@ -253,96 +190,47 @@ document.getElementById('otherToggle').onclick = ()=>{
 document.getElementById('otherInput').addEventListener('input', e=>{
   const v = +e.target.value; if(v>0){ setAmount(v); }
 });
-
 setAmount(44);
 
-// ---- offerings (visual only in this preview; saving arrives with the login step) ----
-const grid = document.getElementById('offerGrid');
-OFFERINGS.forEach(o=>{
-  grid.insertAdjacentHTML('beforeend',
-   `<label><input type="checkbox" name="offering" value="${o}"><span>${o}</span></label>`);
-});
-document.getElementById('offerBtn').onclick = async ()=>{
-  const note = document.getElementById('offerNote');
-  const offerings = [...document.querySelectorAll('#offerGrid input:checked')].map(c=>c.value);
-  const gifts = document.getElementById('fGifts').value.trim();
-  const btn = document.getElementById('offerBtn'); btn.disabled = true; btn.textContent = 'Saving…';
-  try{
-    const r = await fetch('/api/portal/offerings', {method:'POST',headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({offerings, gifts})});
-    if(r.ok){ note.textContent = "Saved 🌱 added to what you're bringing. Thank you."; }
-    else if(r.status===401){ note.textContent = "Please sign in first."; }
-    else if(r.status===404){ note.textContent = "We couldn't find your signup to attach this to — reach out and we'll sort it."; }
-    else { note.textContent = "Sorry, couldn't save just now. Try again in a moment."; }
-  }catch(e){ note.textContent = "Sorry, couldn't save just now. Try again in a moment."; }
-  btn.disabled = false; btn.textContent = "Add these to what I'm bringing";
-};
+// Prefill from the link if we were given details (?name=&email=), so a personal
+// email can drop someone straight onto a filled-in form.
+const qs = new URLSearchParams(location.search);
+if(qs.get('name'))  document.getElementById('fName').value  = qs.get('name');
+if(qs.get('email')) document.getElementById('fEmail').value = qs.get('email');
 
-// ---- session gate ----
-function showGate(msg){
-  document.getElementById('gate').style.display = 'block';
-  document.getElementById('authed').style.display = 'none';
-  if(msg) document.getElementById('gateNote').textContent = msg;
+function show(id){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-function showAuthed(me){
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('authed').style.display = 'block';
-  const first = (me.name||'').trim().split(/\s+/)[0];
-  document.querySelector('.eyebrow').textContent = first ? ('Welcome, '+first) : 'Your village space';
-  document.getElementById('identity').innerHTML = me.name
-    ? ('Giving as <strong>'+me.name+'</strong> · '+me.email)
-    : ('Giving as <strong>'+me.email+'</strong>');
-  const chosen = new Set([...(me.roles||[]), ...(me.micro||[]), ...(me.portalOfferings||[])]);
-  document.querySelectorAll('#offerGrid input[type=checkbox]').forEach(cb=>{ if(chosen.has(cb.value)) cb.checked = true; });
-  if(me.portalGifts){ document.getElementById('fGifts').value = me.portalGifts; }
-}
-document.getElementById('gateBtn').onclick = async ()=>{
-  const email = document.getElementById('gateEmail').value.trim();
-  const note = document.getElementById('gateNote');
-  if(!/.+@.+\..+/.test(email)){ note.textContent = "Please enter a valid email."; return; }
-  const btn = document.getElementById('gateBtn'); btn.disabled = true; btn.textContent = 'Sending…';
-  try{ await fetch('/api/auth/request', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}); }catch(e){}
-  note.textContent = "If you're on the list, a sign-in link is on its way. Check your inbox (and spam).";
-  btn.disabled = false; btn.textContent = 'Email me a link';
-};
-async function loadMe(){
-  const params = new URLSearchParams(location.search);
-  const errMsg = params.get('error')==='notfound'
-    ? "We couldn't find a signup for that link. Use the email you registered with."
-    : params.get('error')==='link' ? "That link didn't work or has expired. Request a fresh one below."
-    : "";
-  try{
-    const r = await fetch('/api/portal/me');
-    if(r.status === 401){ showGate(errMsg); return; }
-    const me = await r.json();
-    window.ME = me;
-    showAuthed(me);
-  }catch(e){ showGate(errMsg); }
-}
-loadMe();
 
-// ---- steps ----
-function show(id){ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo({top:0,behavior:'smooth'}); }
-
-// ---- payment (Stripe) ----
 let stripe, elements;
 document.getElementById('toPayBtn').onclick = async ()=>{
   const err = document.getElementById('chooseErr');
-  const me = window.ME || {};
-  if(!me.email){ err.textContent = "Please sign in first."; return; }
+  const name  = document.getElementById('fName').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    err.textContent = "Please add an email so we can send your receipt."; return;
+  }
   if(amount < 1){ err.textContent = "Please choose an amount."; return; }
   err.textContent = "";
   const btn = document.getElementById('toPayBtn'); btn.disabled = true; btn.textContent = "One moment…";
   try{
     const r = await fetch('/api/checkout', {method:'POST',headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({amount, email: me.email, name: me.name||'', note: document.getElementById('fNote').value.trim()})});
+      body: JSON.stringify({amount, email, name, note: document.getElementById('fNote').value.trim()})});
     const data = await r.json();
     if(!r.ok || !data.clientSecret){ throw new Error(data.error||'could not start payment'); }
     stripe = Stripe(data.publishableKey);
     elements = stripe.elements({clientSecret:data.clientSecret, appearance:{theme:'flat',variables:{colorPrimary:'#3D5540',fontFamily:'Inter, sans-serif',borderRadius:'9px',colorBackground:'#EFE3C8'}}});
     elements.create('payment').mount('#payment-element');
     show('step-pay');
-  }catch(e){ err.textContent = e.message==='stripe_not_configured' ? "Payments aren't switched on yet (Stripe keys)." : ("Sorry, "+e.message+"."); }
+  }catch(e){
+    err.textContent = e.message==='stripe_not_configured'
+      ? "Payments aren't switched on yet (Stripe keys)."
+      : e.message==='invalid_amount'
+        ? "Please choose an amount between $10 and $5000."
+        : ("Sorry, "+e.message+".");
+  }
   finally{ btn.disabled=false; btn.innerHTML='Continue to give $<span id="btnAmt1">'+amount+'</span>'; }
 };
 document.getElementById('backBtn').onclick = ()=> show('step-choose');

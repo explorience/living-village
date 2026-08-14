@@ -66,6 +66,28 @@ export async function ensureSchema() {
   await sql`ALTER TABLE applicants ADD COLUMN IF NOT EXISTS portal_updated_at timestamptz`;
   // Crew-editable copy for the app's automated emails (RSVP confirmation, sign-in link).
   // One row per template key; a missing row means "use the built-in default" (see _lib/emails.js).
+  // Signed participant waivers. Deliberately NOT a column on `applicants`: people who must
+  // sign include walk-ins, plus-ones, crew, facilitators and land hosts who were never in the
+  // roster, and a guardian signs on behalf of minors. Each row also snapshots the exact
+  // wording that person agreed to (`waiver_text`), so a later edit to the copy can never
+  // change what an existing signature means.
+  await sql`CREATE TABLE IF NOT EXISTS waivers (
+    id              text PRIMARY KEY,
+    name            text NOT NULL DEFAULT '',
+    email           text NOT NULL DEFAULT '',
+    phone           text NOT NULL DEFAULT '',
+    emergency_name  text NOT NULL DEFAULT '',
+    emergency_phone text NOT NULL DEFAULT '',
+    medical         text NOT NULL DEFAULT '',
+    minors          jsonb NOT NULL DEFAULT '[]'::jsonb,
+    photo_consent   boolean NOT NULL DEFAULT true,
+    signature       text NOT NULL DEFAULT '',
+    waiver_version  text NOT NULL DEFAULT '',
+    waiver_text     text NOT NULL DEFAULT '',
+    user_agent      text NOT NULL DEFAULT '',
+    signed_at       timestamptz NOT NULL DEFAULT now()
+  )`;
+  await sql`CREATE INDEX IF NOT EXISTS waivers_email_idx ON waivers (lower(email))`;
   await sql`CREATE TABLE IF NOT EXISTS email_templates (
     key         text PRIMARY KEY,
     subject     text NOT NULL DEFAULT '',
@@ -169,6 +191,39 @@ export async function addPortalOfferings(email, { offerings = [], gifts = '' }) 
       portal_updated_at = now(), updated_at = now()
     WHERE id = ${rows[0].id}`;
   return { offerings: merged, gifts: String(gifts || '') };
+}
+
+// --- Participant waivers ---
+
+// Record one signature. Re-signing with the same email is allowed and creates a NEW row:
+// the history is append-only, so nothing that was already agreed to is ever overwritten.
+export async function saveWaiver(w) {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    INSERT INTO waivers (id, name, email, phone, emergency_name, emergency_phone, medical,
+                         minors, photo_consent, signature, waiver_version, waiver_text, user_agent)
+    VALUES (${w.id}, ${w.name}, ${w.email}, ${w.phone}, ${w.emergencyName}, ${w.emergencyPhone},
+            ${w.medical}, ${JSON.stringify(w.minors || [])}::jsonb, ${w.photoConsent},
+            ${w.signature}, ${w.waiverVersion}, ${w.waiverText}, ${w.userAgent})
+    RETURNING id, name, email, signed_at`;
+  return rows[0];
+}
+
+export async function getAllWaivers() {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    SELECT id, name, email, phone, emergency_name, emergency_phone, medical, minors,
+           photo_consent, signature, waiver_version, signed_at
+    FROM waivers ORDER BY signed_at DESC`;
+  return rows.map(r => ({
+    id: r.id, name: r.name, email: r.email, phone: r.phone,
+    emergencyName: r.emergency_name, emergencyPhone: r.emergency_phone,
+    medical: r.medical, minors: Array.isArray(r.minors) ? r.minors : [],
+    photoConsent: r.photo_consent, signature: r.signature,
+    waiverVersion: r.waiver_version, signedAt: r.signed_at,
+  }));
 }
 
 // --- Editable email templates (raw storage; the registry + rendering live in _lib/emails.js) ---
