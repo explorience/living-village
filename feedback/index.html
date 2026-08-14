@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback · The Living Village</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --earth:#2A1D10; --moss:#3D5540; --sage:#7A9E7E;
+    --cream:#F6EDD9; --warm:#EFE3C8; --sand:#DCC9A3; --gold:#D9A441;
+    --ink:#1A1208; --hairline:rgba(42,29,16,0.14);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--cream); color:var(--ink);
+    font-family:'Inter',-apple-system,sans-serif; font-size:16px; line-height:1.55;
+    min-height:100vh; display:flex; align-items:flex-start; justify-content:center}
+  .card{width:100%; max-width:480px; padding:40px 22px 60px}
+  h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:2rem; line-height:1.05;
+    margin:0 0 8px; color:var(--earth)}
+  .sub{color:var(--moss); margin:0 0 22px; font-size:.98rem}
+  label{display:block; font-size:.78rem; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--moss); font-weight:600; margin:16px 0 6px}
+  textarea, input[type=text]{width:100%; border:1px solid var(--sand); border-radius:10px;
+    background:#FFFDF6; color:var(--ink); padding:12px 14px; font-family:inherit; font-size:1rem}
+  textarea{min-height:150px; resize:vertical}
+  textarea:focus, input:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold)}
+  .hp{position:absolute; left:-9999px; opacity:0; pointer-events:none; height:0; width:0; overflow:hidden}
+  button{margin-top:20px; width:100%; border:none; border-radius:999px; background:var(--moss);
+    color:var(--cream); font-family:inherit; font-weight:600; font-size:1.05rem; padding:14px 20px; cursor:pointer}
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.6; cursor:wait}
+  .msg{margin-top:14px; font-size:.95rem; display:none}
+  .msg.err{color:#8C3B2A; display:block}
+  .done{display:none; text-align:center; padding-top:8vh}
+  .done h1{font-size:2.2rem}
+  .done p{color:var(--moss)}
+</style>
+</head>
+<body>
+<main class="card">
+  <form id="f" novalidate>
+    <h1>Tell us anything.</h1>
+    <p class="sub">A thought, a thank-you, something that isn't working, an idea for the village. It goes straight to the hosts. Name optional.</p>
+    <label for="message">Your feedback</label>
+    <textarea id="message" name="message" required maxlength="2000" placeholder="Write it as it comes..."></textarea>
+    <label for="name">Your name (optional)</label>
+    <input type="text" id="name" name="name" maxlength="100" autocomplete="name" placeholder="Anonymous is fine">
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button id="send" type="submit">Send to the hosts</button>
+    <p class="msg err" id="err">That didn't go through (signal on the land is patchy). Your words are still here, try once more.</p>
+  </form>
+  <div class="done" id="done">
+    <h1>Received.</h1>
+    <p>Thank you for helping the village learn. Your words are with the hosts now.</p>
+  </div>
+</main>
+<script>
+  var form = document.getElementById('f');
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var msg = document.getElementById('message').value.trim();
+    var err = document.getElementById('err');
+    if(!msg){ err.textContent = 'Write something first, even one word counts.'; err.style.display='block'; return; }
+    var btn = document.getElementById('send');
+    btn.disabled = true; btn.textContent = 'Sending...'; err.style.display='none';
+    try{
+      var res = await fetch('/api/feedback', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          message: msg,
+          name: document.getElementById('name').value.trim(),
+          website: form.website.value
+        })
+      });
+      if(!res.ok) throw new Error('bad status');
+      form.style.display='none';
+      document.getElementById('done').style.display='block';
+    }catch(_){
+      err.textContent = "That didn't go through (signal on the land is patchy). Your words are still here, try once more.";
+      err.style.display='block';
+      btn.disabled=false; btn.textContent='Send to the hosts';
+    }
+  });
+</script>
+</body>
+</html>
