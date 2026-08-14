@@ -4,40 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Participant Agreement · The Living Village</title>
+<title>Participant Waiver · The Living Village</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --earth:#2A1D10; --bark:#4A3425; --moss:#3D5540; --sage:#7A9E7E;
-    --cream:#F6EDD9; --warm:#EFE3C8; --terracotta:#C4704B; --gold:#D9A441;
+    --cream:#F6EDD9; --warm:#EFE3C8; --terracotta:#C4704B;
     --muted-text:#9A8A73; --hairline:rgba(42,29,16,0.14);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--earth);line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:640px;margin:0 auto;padding:2.2rem 1.4rem 5rem}
+  .wrap{max-width:660px;margin:0 auto;padding:2.2rem 1.4rem 5rem}
   .eyebrow{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--moss);font-weight:600;margin-bottom:1rem}
-  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.06;margin-bottom:1.1rem}
-  h2{font-family:'Fraunces',serif;font-weight:700;font-size:1.3rem;margin:1.8rem 0 .7rem}
-  h3{font-family:'Inter',sans-serif;font-weight:600;font-size:.95rem;margin:1.3rem 0 .4rem;color:var(--bark)}
-  p{margin-bottom:.85rem}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(1.7rem,5.4vw,2.35rem);line-height:1.08;margin-bottom:.6rem}
+  .sub{color:var(--bark);margin-bottom:.3rem}
+  h2{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;margin:1.9rem 0 .6rem}
+  h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;margin:1.5rem 0 .5rem}
+  p{margin-bottom:.8rem}
   .card{background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:1.7rem 1.4rem;margin-top:1.8rem;box-shadow:0 1px 0 rgba(42,29,16,.03),0 18px 40px -30px rgba(42,29,16,.4)}
-  .terms{font-size:.93rem;color:var(--bark)}
-  .terms ul{margin:0 0 .9rem 1.1rem}
-  .terms li{margin-bottom:.35rem}
-  .terms strong{color:var(--earth)}
+  .terms{font-size:.9rem;color:var(--bark)}
+  .terms ul{margin:0 0 .85rem 1.15rem}
+  .terms li{margin-bottom:.3rem}
+  .terms .caps{text-transform:uppercase;font-size:.83rem;letter-spacing:.01em;font-weight:500;color:var(--earth);background:var(--warm);padding:.75rem .85rem;border-radius:8px;margin-bottom:.7rem}
+  .terms .defn{font-size:.86rem;color:var(--muted-text);border-left:2px solid var(--hairline);padding-left:.8rem;margin-bottom:.9rem}
+  .affirm{background:var(--warm);border-radius:8px;padding:.75rem .85rem;margin-bottom:.8rem}
+  .affirm .who{font-family:'Fraunces',serif;font-weight:700;border-bottom:1px solid var(--muted-text);padding:0 .3rem;color:var(--earth)}
+  .scrollbox{max-height:370px;overflow-y:auto;border:1px solid var(--hairline);border-radius:10px;padding:1.1rem 1.1rem .4rem;background:#fff}
   label.fld{display:block;margin-top:1.05rem;font-size:.82rem;letter-spacing:.02em;color:var(--bark);font-weight:500}
   .req{color:var(--terracotta)}
   input[type=text],input[type=email],input[type=tel],textarea{width:100%;margin-top:.35rem;padding:.75rem .85rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);font-family:inherit;font-size:1rem;color:var(--earth)}
   input:focus,textarea:focus{outline:none;border-color:var(--sage);background:#fff}
-  textarea{resize:vertical;min-height:60px}
+  textarea{resize:vertical;min-height:58px}
   .hint{font-size:.78rem;color:var(--muted-text);margin-top:.25rem}
-  .check{display:flex;gap:.7rem;align-items:flex-start;margin-top:1.2rem;padding:.8rem .9rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);cursor:pointer}
-  .check input{margin-top:.3rem;flex-shrink:0;accent-color:var(--moss);width:18px;height:18px}
+  .choice{display:flex;gap:.7rem;align-items:flex-start;margin-top:.6rem;padding:.8rem .9rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);cursor:pointer}
+  .choice input{margin-top:.25rem;flex-shrink:0;accent-color:var(--moss);width:18px;height:18px}
+  .choice span{font-size:.89rem}
+  .choice:has(input:checked){border-color:var(--sage);background:#fff}
+  .check{display:flex;gap:.7rem;align-items:flex-start;margin-top:1.3rem;padding:.85rem .9rem;border:1px solid var(--sage);border-radius:9px;background:#fff;cursor:pointer}
+  .check input{margin-top:.28rem;flex-shrink:0;accent-color:var(--moss);width:18px;height:18px}
   .check span{font-size:.9rem}
-  .check.agree{border-color:var(--sage);background:#fff}
-  .sig input{font-family:'Fraunces',serif;font-size:1.25rem;font-style:italic}
+  .sig input{font-family:'Fraunces',serif;font-size:1.25rem}
   .btn{display:block;width:100%;margin-top:1.6rem;padding:.95rem 1rem;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;background:var(--earth);color:var(--cream);cursor:pointer;transition:background .15s}
   .btn:hover{background:var(--bark)}
   .btn:disabled{opacity:.5;cursor:default}
@@ -45,105 +53,116 @@
   .err{color:var(--terracotta);font-size:.85rem;margin-top:.8rem;text-align:center;min-height:1em}
   .minor-row{display:flex;gap:.5rem;margin-top:.4rem}
   .minor-row input{margin-top:0}
+  .minor-row .mname{flex:1 1 auto}
+  .minor-row .mage{width:92px;flex:0 0 auto}
   .minor-row button{flex-shrink:0;background:transparent;border:1px solid var(--hairline);border-radius:9px;padding:0 .8rem;color:var(--muted-text);cursor:pointer;font-size:1.1rem}
-  #addMinor{background:transparent;border:none;color:var(--moss);text-decoration:underline;cursor:pointer;font-size:.85rem;margin-top:.5rem;padding:0;font-family:inherit}
+  #addMinor{background:transparent;border:none;color:var(--moss);text-decoration:underline;cursor:pointer;font-size:.85rem;margin-top:.55rem;padding:0;font-family:inherit}
   .step{display:none} .step.on{display:block}
-  .done{text-align:center;padding:1.5rem 0}
+  .done{text-align:center;padding:1.4rem 0}
   .done .mark{font-size:2.6rem}
   .foot{text-align:center;font-size:.8rem;color:var(--muted-text);margin-top:2.5rem}
-  .scrollbox{max-height:340px;overflow-y:auto;border:1px solid var(--hairline);border-radius:10px;padding:1.1rem 1.1rem .4rem;background:var(--warm)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">The Living Village · August 15–16, 2026</div>
-  <h1>Participant Agreement</h1>
-  <p style="color:var(--bark)">Please read this before you arrive, then sign at the bottom. It takes about two minutes. Everyone coming onto the land needs to sign, including day visitors and crew.</p>
+  <div class="eyebrow">The Living Village · 15 and 16 August 2026</div>
+  <h1>Waiver, Release of Liability and Assumption of Risk</h1>
+  <p class="sub">The Living Centre, 5871 Bells Rd, London, Ontario N6P 1P3</p>
+  <p class="hint">Everyone coming onto the Land signs this, including day visitors, facilitators and crew. It takes about two minutes.</p>
 
-  <!-- STEP 1: the agreement + form -->
   <div class="step on" id="step-form">
 
     <div class="card">
       <div class="scrollbox terms" id="termsBox">
+        <p>This event is hosted by The Institute for Community Sustainability, through its Journeyland programme, on land held by The Living Centre and managed by The Vibe Collective.</p>
+        <p class="defn">In this form, "the Organisers" means The Institute for Community Sustainability, The Vibe Collective and The Living Centre, together with their owners, directors, officers, agents, managers, contractors, employees, volunteers and assigns. "the Land" means The Living Centre at 5871 Bells Rd, London, Ontario.</p>
 
-        <h3>Where we are gathering</h3>
-        <p>The Living Village takes place at The Living Centre, 5871 Bells Rd, London, Ontario, on private rural land, hosted by Journeyland (a program of the Institute for Community Sustainability) together with The Vibe Collective.</p>
-
-        <h3>What I understand about the land</h3>
-        <p>This is a working piece of countryside, not a serviced venue. I understand that it includes:</p>
+        <h3>Assumption of risk</h3>
+        <p>The Organisers have taken all reasonable precautions to make spaces on the Land safe for facilitators and participants. However, facilitation and participation in any outdoor activity is potentially dangerous. You may be exposed to risks of property loss or damage and personal injury while on the Land.</p>
+        <p>We ask that you accept all risks and responsibility for any physical injury to yourself, damage to your property, or other losses to you of any kind, which might occur while you are on the Land, regardless of whether such risks are connected in any way with your participation in any activities offered at The Living Village.</p>
+        <p class="affirm">I, <span class="who" id="whoName">___________________________</span>, hereby affirm that I have been well advised of the inherent risks associated with visiting the Land and taking part in The Living Village. I understand those risks include, but are not limited to:</p>
         <ul>
-          <li>uneven ground, long grass, tree roots, and paths without lighting after dark</li>
-          <li>ponds and other water on the property</li>
-          <li>open fire, and cooking equipment</li>
-          <li>outdoor camping, outhouses, and an outdoor cold-water shower</li>
-          <li>weather that can change quickly, including heat, storms, wind and rain</li>
-          <li>insects and ticks, and wild animals</li>
-          <li><strong>tap water that is not drinkable.</strong> Drinking water is only at the marked water stations</li>
-          <li>patchy mobile phone reception, and a distance from the nearest hospital</li>
+          <li>exposure to potentially poisonous plants, insects and wildlife</li>
+          <li>uneven and slippery walking surfaces, and unlit paths after dark</li>
+          <li>open fire at the fire circle, and the handling of firewood</li>
+          <li>a pond on the Land</li>
+          <li>camping outdoors overnight, and exposure to weather</li>
+          <li>outhouses and a cold outdoor shower rather than indoor plumbing</li>
+          <li>no drinking water from the taps</li>
+          <li>shared preparation and consumption of food, including food brought by other participants</li>
+          <li>physical work outdoors, including any activity in which participants give back to the Land</li>
         </ul>
-        <p>I accept that being outdoors in a place like this carries risk that cannot be fully removed, and I am choosing to take part anyway.</p>
+        <p>and other risks which may result in property damage, personal injury or even death.</p>
+        <p>I understand that injuries can occur even where the Organisers have taken all reasonable precautions. I further understand that due to the rural location of The Living Centre and the limited mobile phone signal there, medical treatment for such injuries could be delayed. Nonetheless, I choose to attend The Living Village and to facilitate and participate in the spaces and activities that it offers.</p>
 
-        <h3>Looking after myself and each other</h3>
+        <p class="caps">I hereby personally assume all risks which may occur while at The Living Centre for any harm, injury, illness, death or damage that may befall me as a result of visiting The Living Centre and attending, facilitating or participating in The Living Village, whether foreseen or unforeseen. I wish to attend and to facilitate and participate in its activities in spite of those risks and the possible delay in medical assistance.</p>
+
+        <p class="caps">I agree that I will assume all responsibility for any injury, illness or damage and related costs, medical expenses and damages of any kind that I may incur arising out of or in any way related to visiting The Living Centre or the activities offered there.</p>
+
+        <p class="caps">I further agree that I hold The Institute for Community Sustainability, The Vibe Collective and The Living Centre, their owners, officers, agents, managers, contractors, employees, volunteers and assigns free of any and all claims for liability, injury, illness, death, costs, medical bills or other damages incurred by me or my family, heirs or assigns, no matter how caused, including damages, injuries, illness or death alleged to be partially or solely caused by their omissions, commissions, carelessness, negligence or liability without fault.</p>
+
+        <p class="caps">I expressly do not give up the rights and remedies that may be available to me under Canadian law, which may arise due to the gross negligence or wilful misconduct of any of the Organisers.</p>
+
+        <p>I understand that this waiver and release of liability applies whether or not such injury, damage or loss is in any way connected with the facilitation of or participation in any activities offered on the Land, and whether such injuries result from my own negligent acts or from the acts of other participants. I also understand these terms are contractual and not a mere recital. I have signed this document of my own free will.</p>
+        <p>I further agree that in the event of any dispute whatsoever between me and any of the Organisers concerning my facilitation of or participation in The Living Village, I will first initiate a fair and equitable alternative dispute resolution procedure such as mediation.</p>
+
+        <h3>Care for each other and the Land</h3>
+        <p>I understand that The Living Village is a shared, co-created gathering and that I hold personal responsibility for myself, for others and for the Land. I agree to follow the site rules I have been given, which include:</p>
         <ul>
-          <li>I take responsibility for my own choices, my own body, and my own belongings.</li>
-          <li>I will stay within the marked event areas. <strong>Crossing the bridges and entering the forest are not permitted.</strong> The Stone People Pond is for looking at only, no swimming.</li>
-          <li>This is a <strong>sober space</strong>. No alcohol, smoking, vaping or other substances on the property.</li>
-          <li>I will respect quiet hours between 10pm and 8am, for the sake of our neighbours.</li>
-          <li>I will store my food in sealed containers, and leave no trace of my stay.</li>
-          <li>If I am bringing a child, they remain my responsibility at all times, and I will supervise them.</li>
-          <li>I will follow reasonable directions from the organisers, especially about fire, water and safety.</li>
-          <li>I will treat everyone here with care and respect. Harassment of any kind means being asked to leave.</li>
+          <li>no swimming in the pond</li>
+          <li>crossing the bridges and entering the forest are not permitted</li>
+          <li>no smoking, vaping, alcohol or other substances on the property</li>
+          <li>quiet hours between 10pm and 8am</li>
+          <li>no food left in tents, the straw bale area or the cabins</li>
+          <li>following the instructions of the Organisers and their volunteers, including in an emergency</li>
         </ul>
+        <p>I will let the Organisers know of any allergy, medical condition or access need that they should be aware of in an emergency.</p>
 
-        <h3>Release of liability</h3>
-        <p>In exchange for being allowed to take part, I agree that I take part <strong>at my own risk</strong>. To the fullest extent permitted by Ontario law, I release Journeyland, the Institute for Community Sustainability, The Vibe Collective, The Living Centre, the owners of the land, and their organisers, facilitators, staff and volunteers from claims for injury, illness, loss or damage to property arising from my taking part, except where it is caused by their own gross negligence or deliberate wrongdoing.</p>
-        <p>I confirm I am 18 or older, or that I am the parent or legal guardian signing on behalf of the child or children named below.</p>
-
-        <h3>Medical</h3>
-        <p>I confirm I am well enough to take part. If I cannot speak for myself in an emergency, I consent to the organisers arranging first aid or medical care for me, and I accept responsibility for the cost of any treatment or transport.</p>
-
-        <h3>Photography and film</h3>
-        <p>This gathering is being documented on camera. Unless I opt out below, I agree that photographs and video that include me may be used by Journeyland and the Institute for Community Sustainability to share the story of the Living Village, without payment to me. If I opt out, I will let the crew and the videographer know on arrival so they can avoid filming me.</p>
-
-        <h3>Privacy</h3>
-        <p>The details I give here are used for running this event safely, including emergency contact and any medical needs. They are not sold or shared beyond the organising crew.</p>
-
+        <h3>Photography and video</h3>
+        <p>The Living Village will be filmed and photographed before, during and after the event. Your choice is recorded below.</p>
       </div>
-      <p class="hint" style="margin-top:.7rem">Scroll inside the box to read it all.</p>
+      <p class="hint" style="margin-top:.7rem">Scroll inside the box to read the whole form.</p>
     </div>
 
     <div class="card">
       <h2>Your details</h2>
 
-      <label class="fld">Your full name <span class="req">*</span><input type="text" id="fName" autocomplete="name" placeholder="First and last name"></label>
+      <label class="fld">Name <span class="req">*</span><input type="text" id="fName" autocomplete="name" placeholder="First and last name"></label>
+      <label class="fld">Address<input type="text" id="fAddress" autocomplete="street-address" placeholder="Street, city"></label>
       <label class="fld">Email <span class="req">*</span><input type="email" id="fEmail" autocomplete="email" placeholder="you@example.com"></label>
-      <label class="fld">Mobile number<input type="tel" id="fPhone" autocomplete="tel" placeholder="in case we need to reach you on the land"></label>
+      <label class="fld">Phone<input type="tel" id="fPhone" autocomplete="tel" placeholder="Mobile number"></label>
 
-      <h2 style="font-size:1.1rem;margin-top:1.8rem">Emergency contact</h2>
-      <p class="hint" style="margin-top:-.4rem">Someone not attending, who we can call if something happens.</p>
+      <h2 style="font-size:1.08rem;margin-top:1.9rem">Emergency contact</h2>
+      <p class="hint" style="margin-top:-.35rem">Someone not attending, who we can call if something happens.</p>
       <label class="fld">Their name<input type="text" id="fEmName" placeholder="Name"></label>
       <label class="fld">Their phone<input type="tel" id="fEmPhone" placeholder="Phone number"></label>
 
-      <label class="fld">Allergies, medical conditions or anything a first aider should know<textarea id="fMedical" placeholder="e.g. severe nut allergy, carries an EpiPen. Leave blank if nothing applies."></textarea></label>
+      <label class="fld">Any allergy, medical condition or access need we should know about in an emergency<textarea id="fMedical" placeholder="e.g. severe nut allergy, carries an EpiPen. Leave blank if nothing applies."></textarea></label>
 
-      <h2 style="font-size:1.1rem;margin-top:1.8rem">Children</h2>
-      <p class="hint" style="margin-top:-.4rem">If you are signing for children under 18, add their names. Leave empty if none.</p>
-      <div id="minorList"></div>
-      <button type="button" id="addMinor">+ add a child</button>
-
-      <label class="check">
-        <input type="checkbox" id="fPhoto" checked>
-        <span>I'm happy to appear in photos and video from the weekend. <span style="color:var(--muted-text)">Untick to opt out.</span></span>
+      <h2 style="font-size:1.08rem;margin-top:1.9rem">Photography and video <span class="req">*</span></h2>
+      <label class="choice">
+        <input type="radio" name="photo" id="photoYes" value="yes">
+        <span>I consent to having my photograph taken and to being included in any video that may be recorded. These photographs or videos may be used by the Organisers on their websites and in other communications about the event.</span>
+      </label>
+      <label class="choice">
+        <input type="radio" name="photo" id="photoNo" value="no">
+        <span>I DO NOT consent to having my photograph taken or to being included in any video.</span>
       </label>
 
-      <label class="check agree">
+      <h2 style="font-size:1.08rem;margin-top:1.9rem">Participants under 18</h2>
+      <p class="hint" style="margin-top:-.35rem">Only if you are signing for children. Leave empty if none.</p>
+      <div id="minorList"></div>
+      <button type="button" id="addMinor">+ add a child</button>
+      <p class="hint" id="minorNote" style="display:none;margin-top:.7rem">By signing, you confirm you are the parent or legal guardian of the children named, that you agree to this form on their behalf and your own, and that you accept responsibility for their supervision and wellbeing throughout the event.</p>
+
+      <label class="check">
         <input type="checkbox" id="fAgree">
-        <span>I have read the agreement above, I understand the risks, and I agree to it for myself and for any children named.</span>
+        <span>I have read this form carefully and completely, and I understand and agree to all of its terms.</span>
       </label>
 
       <div class="sig">
-        <label class="fld">Sign by typing your full name <span class="req">*</span><input type="text" id="fSig" placeholder="Type your name"></label>
-        <div class="hint">This counts as your signature. It needs to match the name you gave above.</div>
+        <label class="fld">Signature <span class="req">*</span><input type="text" id="fSig" placeholder="Type your full name"></label>
+        <div class="hint">Typing your name here counts as your signature. It needs to match the name you gave above.</div>
       </div>
 
       <button class="btn" id="submitBtn">Sign and send</button>
@@ -151,13 +170,12 @@
     </div>
   </div>
 
-  <!-- STEP 2: done -->
   <div class="step" id="step-done">
     <div class="card">
       <div class="done">
         <div class="mark">✓</div>
         <h2>Signed. Thank you.</h2>
-        <p>We have your agreement on file, <span id="doneName"></span>. Nothing else to do, just come and find the welcome desk when you arrive.</p>
+        <p>We have your waiver on file, <span id="doneName"></span>. Nothing else to do, just find the welcome desk when you arrive.</p>
         <p style="color:var(--muted-text);font-size:.9rem">Signed <span id="doneAt"></span></p>
         <a class="btn btn-ghost" href="/give" style="text-decoration:none;text-align:center">Add to the Reciprocity Pool</a>
       </div>
@@ -168,36 +186,58 @@
 </div>
 
 <script>
-const WAIVER_VERSION = '2026-08-15-v1';
+const WAIVER_VERSION = '2026-08-15-tvc-v1';
+
+// Mirror the typed name into the "I, ______, hereby affirm" line so the signed
+// snapshot reads as the document does on paper.
+const nameInput = document.getElementById('fName');
+const whoName = document.getElementById('whoName');
+nameInput.addEventListener('input', ()=>{
+  whoName.textContent = nameInput.value.trim() || '___________________________';
+});
 
 // --- children rows ---
 const minorList = document.getElementById('minorList');
+const minorNote = document.getElementById('minorNote');
+function syncMinorNote(){
+  minorNote.style.display = minorList.children.length ? 'block' : 'none';
+}
 function addMinorRow(){
   const row = document.createElement('div');
   row.className = 'minor-row';
-  const input = document.createElement('input');
-  input.type = 'text'; input.placeholder = "Child's full name"; input.className = 'minor-input';
+  const name = document.createElement('input');
+  name.type='text'; name.placeholder="Child's full name"; name.className='mname minor-name';
+  const age = document.createElement('input');
+  age.type='text'; age.placeholder='Age'; age.className='mage minor-age'; age.inputMode='numeric';
   const del = document.createElement('button');
-  del.type = 'button'; del.textContent = '×'; del.title = 'remove';
-  del.onclick = ()=> row.remove();
-  row.append(input, del); minorList.appendChild(row); input.focus();
+  del.type='button'; del.textContent='×'; del.title='remove';
+  del.onclick = ()=>{ row.remove(); syncMinorNote(); };
+  row.append(name, age, del); minorList.appendChild(row); syncMinorNote(); name.focus();
 }
 document.getElementById('addMinor').onclick = addMinorRow;
 
-// --- submit ---
 const err = document.getElementById('err');
 document.getElementById('submitBtn').onclick = async ()=>{
-  const name  = document.getElementById('fName').value.trim();
+  const name  = nameInput.value.trim();
   const email = document.getElementById('fEmail').value.trim();
   const sig   = document.getElementById('fSig').value.trim();
   const agree = document.getElementById('fAgree').checked;
+  const yes = document.getElementById('photoYes').checked;
+  const no  = document.getElementById('photoNo').checked;
 
-  if(!name){ err.textContent = 'Please add your full name.'; return; }
+  if(!name){ err.textContent = 'Please add your name.'; return; }
   if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Please add a valid email.'; return; }
+  if(!yes && !no){ err.textContent = 'Please choose one of the two photography options.'; return; }
   if(!agree){ err.textContent = 'Please tick the box to agree before signing.'; return; }
   if(!sig){ err.textContent = 'Please type your name to sign.'; return; }
   const norm = s => s.toLowerCase().replace(/[^a-z]/g,'');
   if(norm(sig) !== norm(name)){ err.textContent = 'Your signature needs to match the name you gave above.'; return; }
+
+  const minors = [...minorList.querySelectorAll('.minor-row')].map(r=>{
+    const n = r.querySelector('.minor-name').value.trim();
+    const a = r.querySelector('.minor-age').value.trim();
+    return n ? (a ? n + ' (' + a + ')' : n) : '';
+  }).filter(Boolean);
 
   err.textContent = '';
   const btn = document.getElementById('submitBtn');
@@ -205,15 +245,16 @@ document.getElementById('submitBtn').onclick = async ()=>{
 
   const payload = {
     name, email, signature: sig, agreed: true,
+    address: document.getElementById('fAddress').value.trim(),
     phone: document.getElementById('fPhone').value.trim(),
     emergencyName: document.getElementById('fEmName').value.trim(),
     emergencyPhone: document.getElementById('fEmPhone').value.trim(),
     medical: document.getElementById('fMedical').value.trim(),
-    minors: [...document.querySelectorAll('.minor-input')].map(i=>i.value.trim()).filter(Boolean),
-    photoConsent: document.getElementById('fPhoto').checked,
+    minors,
+    photoConsent: yes,
     waiverVersion: WAIVER_VERSION,
-    // Snapshot exactly what was on screen, so later edits to the copy can't change
-    // what this person agreed to.
+    // Snapshot exactly what was on screen, so later edits to the wording can never
+    // change what this person agreed to.
     waiverText: document.getElementById('termsBox').innerText.replace(/\s+\n/g,'\n').trim(),
   };
 

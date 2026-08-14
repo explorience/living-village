@@ -76,6 +76,7 @@ export async function ensureSchema() {
     name            text NOT NULL DEFAULT '',
     email           text NOT NULL DEFAULT '',
     phone           text NOT NULL DEFAULT '',
+    address         text NOT NULL DEFAULT '',
     emergency_name  text NOT NULL DEFAULT '',
     emergency_phone text NOT NULL DEFAULT '',
     medical         text NOT NULL DEFAULT '',
@@ -87,6 +88,8 @@ export async function ensureSchema() {
     user_agent      text NOT NULL DEFAULT '',
     signed_at       timestamptz NOT NULL DEFAULT now()
   )`;
+  // Added after the first signatures were possible; the live table predates it.
+  await sql`ALTER TABLE waivers ADD COLUMN IF NOT EXISTS address text NOT NULL DEFAULT ''`;
   await sql`CREATE INDEX IF NOT EXISTS waivers_email_idx ON waivers (lower(email))`;
   await sql`CREATE TABLE IF NOT EXISTS email_templates (
     key         text PRIMARY KEY,
@@ -201,9 +204,9 @@ export async function saveWaiver(w) {
   await ensureSchema();
   const sql = db();
   const rows = await sql`
-    INSERT INTO waivers (id, name, email, phone, emergency_name, emergency_phone, medical,
+    INSERT INTO waivers (id, name, email, phone, address, emergency_name, emergency_phone, medical,
                          minors, photo_consent, signature, waiver_version, waiver_text, user_agent)
-    VALUES (${w.id}, ${w.name}, ${w.email}, ${w.phone}, ${w.emergencyName}, ${w.emergencyPhone},
+    VALUES (${w.id}, ${w.name}, ${w.email}, ${w.phone}, ${w.address}, ${w.emergencyName}, ${w.emergencyPhone},
             ${w.medical}, ${JSON.stringify(w.minors || [])}::jsonb, ${w.photoConsent},
             ${w.signature}, ${w.waiverVersion}, ${w.waiverText}, ${w.userAgent})
     RETURNING id, name, email, signed_at`;
@@ -214,11 +217,11 @@ export async function getAllWaivers() {
   await ensureSchema();
   const sql = db();
   const rows = await sql`
-    SELECT id, name, email, phone, emergency_name, emergency_phone, medical, minors,
+    SELECT id, name, email, phone, address, emergency_name, emergency_phone, medical, minors,
            photo_consent, signature, waiver_version, signed_at
     FROM waivers ORDER BY signed_at DESC`;
   return rows.map(r => ({
-    id: r.id, name: r.name, email: r.email, phone: r.phone,
+    id: r.id, name: r.name, email: r.email, phone: r.phone, address: r.address,
     emergencyName: r.emergency_name, emergencyPhone: r.emergency_phone,
     medical: r.medical, minors: Array.isArray(r.minors) ? r.minors : [],
     photoConsent: r.photo_consent, signature: r.signature,

@@ -11,7 +11,7 @@
 import { getSession } from './_lib/auth.js';
 import { saveWaiver, getAllWaivers } from './_lib/db.js';
 
-const MAX = { name: 200, email: 320, phone: 60, medical: 2000, text: 20000, minor: 200 };
+const MAX = { name: 200, email: 320, phone: 60, address: 400, medical: 2000, text: 30000, minor: 200 };
 const clip = (v, n) => String(v ?? '').trim().slice(0, n);
 
 export default async function handler(req, res) {
@@ -41,6 +41,11 @@ export default async function handler(req, res) {
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return res.status(400).json({ error: 'email_required' });
   }
+  // The form offers consent and refusal as two separate boxes, so an unanswered
+  // photography question is not the same as consent and must not be stored as one.
+  if (typeof b.photoConsent !== 'boolean') {
+    return res.status(400).json({ error: 'photo_choice_required' });
+  }
 
   // The signature is a typed name; it has to actually match the person signing.
   const norm = s => s.toLowerCase().replace(/[^a-z]/g, '');
@@ -56,11 +61,12 @@ export default async function handler(req, res) {
       name,
       email,
       phone: clip(b.phone, MAX.phone),
+      address: clip(b.address, MAX.address),
       emergencyName: clip(b.emergencyName, MAX.name),
       emergencyPhone: clip(b.emergencyPhone, MAX.phone),
       medical: clip(b.medical, MAX.medical),
       minors,
-      photoConsent: b.photoConsent !== false,
+      photoConsent: b.photoConsent,
       signature,
       waiverVersion: clip(b.waiverVersion, 40) || 'unknown',
       waiverText: clip(b.waiverText, MAX.text),
