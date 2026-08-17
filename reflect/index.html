@@ -24,7 +24,6 @@
   .lede p{font-size:1.05rem;color:var(--bark)}
   a{color:var(--moss)}
 
-  /* progress */
   .prog{position:sticky;top:0;z-index:5;background:var(--cream);padding:.7rem 0 .6rem;margin-bottom:.4rem}
   .prog-bar{height:5px;border-radius:5px;background:var(--sand);overflow:hidden}
   .prog-fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--sage),var(--gold));transition:width .35s ease}
@@ -37,28 +36,64 @@
   .step.on{display:block;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-  .q{margin-top:1.9rem}
+  .q{margin-top:2rem}
   .q:first-child{margin-top:0}
   .q-label{font-family:'Fraunces',serif;font-weight:700;font-size:1.12rem;line-height:1.3;color:var(--earth);margin-bottom:.3rem}
-  .q-help{font-size:.88rem;color:var(--muted-text);margin-bottom:.75rem;line-height:1.5}
+  .q-help{font-size:.88rem;color:var(--muted-text);margin-bottom:.9rem;line-height:1.5}
   .req{color:var(--terracotta);font-weight:400}
-  .opt-tag{font-size:.72rem;color:var(--muted-text);font-weight:400;letter-spacing:.04em;text-transform:uppercase}
 
-  /* choices */
-  .choices{display:flex;flex-direction:column;gap:.4rem}
-  .choice{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .8rem;border:1px solid var(--hairline);border-radius:10px;background:var(--warm);cursor:pointer;transition:border-color .12s,background .12s;font-size:.97rem}
-  .choice:hover{border-color:var(--sage);background:#fff}
-  .choice.on{border-color:var(--moss);background:#fff;box-shadow:inset 0 0 0 1px var(--moss)}
-  .choice input{margin:.32rem 0 0;accent-color:var(--moss);flex:none;width:16px;height:16px}
-  .choice span{flex:1}
-  .choices.compact{flex-direction:row;flex-wrap:wrap}
-  .choices.compact .choice{flex:0 0 auto;padding:.5rem .85rem}
+  /* ---- sliders ---------------------------------------------------------
+     One control language for the whole form, matching the giving page. The
+     gradient must live on the track pseudo-element: setting it on the input
+     lets WebKit paint its default track over the top, which blanks the rail
+     out on Safari and iOS as soon as the control repaints. */
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;outline:none;margin:.3rem 0}
+  input[type=range]::-webkit-slider-runnable-track{height:7px;border-radius:7px;background:linear-gradient(90deg,var(--sage),var(--gold))}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;box-sizing:border-box;width:26px;height:26px;margin-top:-9.5px;border-radius:50%;background:var(--cream);border:3px solid var(--moss);cursor:grab;box-shadow:0 3px 10px -2px rgba(42,29,16,.5);transition:transform .1s}
+  input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.1)}
+  input[type=range]::-moz-range-track{height:7px;border-radius:7px;background:linear-gradient(90deg,var(--sage),var(--gold))}
+  input[type=range]::-moz-range-thumb{box-sizing:border-box;width:26px;height:26px;border-radius:50%;background:var(--cream);border:3px solid var(--moss);cursor:grab;box-shadow:0 3px 10px -2px rgba(42,29,16,.5)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--gold);outline-offset:2px}
+  /* Untouched controls are greyed and record nothing. A slider that defaults to
+     the middle would otherwise put an answer in the data that nobody gave. */
+  .untouched input[type=range]::-webkit-slider-runnable-track{background:var(--sand)}
+  .untouched input[type=range]::-moz-range-track{background:var(--sand)}
+  .untouched input[type=range]::-webkit-slider-thumb{border-color:var(--sand);background:var(--warm)}
+  .untouched input[type=range]::-moz-range-thumb{border-color:var(--sand);background:var(--warm)}
+
+  /* scale: one slider across named positions */
+  .scale-read{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;color:var(--moss);text-align:center;min-height:1.5em;margin-bottom:.2rem;line-height:1.25}
+  .untouched .scale-read{color:var(--muted-text);font-weight:400;font-style:italic;font-size:1rem}
+  .scale-ends{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted-text);margin-top:.1rem;gap:1rem}
+  .scale-ends span:last-child{text-align:right}
+
+  /* rate: a compact slider per item */
+  .rate-head{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted-text);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.5rem;gap:1rem;padding-bottom:.4rem;border-bottom:1px solid var(--hairline)}
+  .rate-head span:last-child{text-align:right}
+  .rate-row{padding:.55rem 0}
+  .rate-row + .rate-row{border-top:1px solid rgba(42,29,16,.06)}
+  .rate-top{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem}
+  .rate-name{font-size:.97rem;color:var(--earth)}
+  .rate-val{font-size:.8rem;color:var(--muted-text);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .rate-row.set .rate-name{font-weight:600}
+  .rate-row.set .rate-val{color:var(--moss);font-weight:600}
+  .rate-row input[type=range]{margin:.15rem 0 0}
+  .rate-row.zero input[type=range]::-webkit-slider-runnable-track{background:var(--sand)}
+  .rate-row.zero input[type=range]::-moz-range-track{background:var(--sand)}
 
   textarea,input[type=text],input[type=email]{width:100%;padding:.75rem .85rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);font-family:inherit;font-size:1rem;color:var(--earth);line-height:1.5}
-  textarea:focus,input:focus{outline:none;border-color:var(--sage);background:#fff}
+  textarea:focus,input[type=text]:focus,input[type=email]:focus{outline:none;border-color:var(--sage);background:#fff}
   textarea{resize:vertical;min-height:110px}
-  .other-wrap{margin-top:.5rem}
+  .other-wrap{margin-top:.7rem}
   .other-wrap input{background:#fff}
+
+  /* choices, kept for the few genuinely categorical questions */
+  .choices{display:flex;flex-wrap:wrap;gap:.45rem}
+  .choice{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;border:1px solid var(--hairline);border-radius:999px;background:var(--warm);cursor:pointer;font-size:.93rem;transition:border-color .12s,background .12s}
+  .choice:hover{border-color:var(--sage);background:#fff}
+  .choice.on{background:var(--moss);color:var(--cream);border-color:var(--moss)}
+  .choice input{position:absolute;width:1px;height:1px;opacity:0;margin:0}
+  .choice:has(input:focus-visible){outline:2px solid var(--gold);outline-offset:2px}
 
   .panel{background:var(--warm);border-left:3px solid var(--sage);border-radius:0 10px 10px 0;padding:1rem 1.1rem;margin:1.4rem 0 0;font-size:.95rem;color:var(--bark)}
   .panel p:last-child{margin-bottom:0}
@@ -67,7 +102,7 @@
   .visit{display:inline-block;padding:.6rem 1.1rem;background:var(--moss);color:var(--cream);border-radius:9px;text-decoration:none;font-size:.95rem;font-weight:600}
   .visit:hover{background:var(--earth);color:var(--cream)}
 
-  .nav{display:flex;gap:.7rem;margin-top:2rem}
+  .nav{display:flex;gap:.7rem;margin-top:2.2rem}
   .btn{flex:1;padding:.9rem 1rem;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;background:var(--earth);color:var(--cream);cursor:pointer;transition:background .15s,transform .1s}
   .btn:hover{background:var(--bark);transform:translateY(-1px)}
   .btn:disabled{opacity:.5;cursor:default;transform:none}
@@ -101,7 +136,7 @@
     <h1>How was it for you?</h1>
     <div class="lede">
       <p>The fire is out, the tents are down, and the land is quiet again. Before the weekend blurs into everything else, we would love to hear what it was actually like for you.</p>
-      <p>It takes about six minutes. Andre and Heenal read every word.</p>
+      <p>Most of it is sliders, so it moves quickly. About six minutes. Andre and Heenal read every word.</p>
       <p>There are no wrong answers here, including the critical ones. Especially the critical ones.</p>
     </div>
     <div class="card">
@@ -113,7 +148,6 @@
     <div class="foot">The Living Village &middot; August 15 and 16, 2026 &middot; The Living Centre</div>
   </div>
 
-  <!-- Steps 1..6 render here -->
   <div id="steps"></div>
 
   <!-- DONE -->
@@ -142,23 +176,29 @@
 
 <script>
 // ---------------------------------------------------------------------------
-// Question spec. Everything on the page is rendered from this, so a wording
-// change is a one-line edit and cannot desync the form from what gets stored.
-// Deliberately NOT naming individual Open Space sessions: the schedule was
-// co-created on index cards on the day and we do not have a reliable list, so
-// the tick boxes stay broad and the specifics come from the free text.
+// Question spec. Everything on the page renders from this, so a wording change
+// is a one-line edit and cannot desync the form from what gets stored.
+//
+// Types:
+//   rate   list of items, each with its own 0..5 slider (replaces tick lists)
+//   scale  one slider stepping across named positions (replaces radio lists)
+//   long / text / email / visit
+//
+// Open Space sessions are deliberately not named: the schedule was co-created
+// on index cards on the day and we have no reliable list, so the tick items
+// stay broad and the specifics come from the free text.
 // ---------------------------------------------------------------------------
 const STEPS = [
   {
     title: "The weekend",
     questions: [
-      { id:'enjoyed', type:'multi', label:'What did you enjoy most?',
-        help:'Tick as many as are true.',
-        options:['The land itself','The people I met','The conversations','The open space sessions',
-                 'The fire','The food and the potlucks','The ceremonies','Staying overnight',
-                 'The music, the dance and the singing','The quiet and the rest',
-                 'Being outside for two whole days','Being there with children'],
-        other:'Something else' },
+      { id:'enjoyed', type:'rate', label:'How much did you enjoy each of these?',
+        help:'Leave anything at zero if it was not your thing, or if you did not do it.',
+        low:'Not for me', high:'Loved it',
+        options:['The land','The people','The conversations','The open space sessions',
+                 'The fire','The food','The ceremonies','Staying overnight',
+                 'Music and dance','The quiet','Being outside','Being there with children'],
+        other:'Something else you loved' },
 
       { id:'stayed', type:'long', required:true, label:'Of everything, what stayed with you most?',
         help:'One moment, one conversation, one thing you saw. The specific things are what we learn from.' },
@@ -166,15 +206,16 @@ const STEPS = [
       { id:'least', type:'long', required:true, label:'What did you enjoy least, or what would you change?',
         help:'Please be honest. This is the most useful box on the page and nothing in it will offend us.' },
 
-      { id:'practical', type:'multi', label:'Did anything not work for you practically?',
+      { id:'practical', type:'rate', label:'Did any of this cause you trouble?',
+        help:'Zero means it was fine. If everything was fine, leave them all at zero.',
+        low:'No trouble', high:'A real problem',
         options:['Getting there and back','Food','Sleeping and camping','Washrooms and water',
-                 'Knowing where to be and when','Accessibility or getting around the site',
-                 'Noise, or not enough quiet','Feeling included','Having my children looked after',
-                 'Nothing, it all worked'],
-        other:'Something else' },
+                 'Knowing where to be and when','Getting around the site',
+                 'Noise, or not enough quiet','Feeling included','Childcare'],
+        other:'Something else that was hard' },
 
-      { id:'again', type:'single', label:'If we do this again, would you come?',
-        options:['Yes, and I would bring people with me','Yes','Probably','Maybe','Probably not','No'] },
+      { id:'again', type:'scale', label:'If we do this again, would you come?',
+        options:['No','Probably not','Maybe','Probably','Yes','Yes, and I would bring people'] },
     ],
   },
 
@@ -182,49 +223,42 @@ const STEPS = [
     title: "Journeyland",
     intro: "<p>The Living Village grew out of a longer project called Journeyland. We have realised we were not loud enough about that, so this part is us checking rather than assuming.</p>",
     questions: [
-      { id:'jl_knew', type:'single', label:'Before this weekend, how well did you know Journeyland?',
-        help:'Genuinely no wrong answer. If the honest answer is "not at all", that is our doing, not yours.',
-        options:['I had read the site and knew the vision',
-                 'I knew Journeyland existed but not what it stands for',
-                 'I heard the name for the first time over the weekend',
-                 'This is the first I am hearing of it'] },
+      { id:'jl_knew', type:'scale', label:'Before this weekend, how well did you know Journeyland?',
+        help:'Genuinely no wrong answer. If the honest answer is the far left, that is our doing and not yours.',
+        options:['Never heard of it','Heard the name this weekend','Knew it existed, not what it stands for',
+                 'Had a rough sense of the vision','Had read the site and knew the vision'] },
 
       { id:'jl_visit', type:'visit' },
 
       { id:'jl_think', type:'long', required:true, label:'Now that you have looked, what do you think of the vision?',
         help:'What lands, what does not, what is missing, what you would want to ask us.' },
 
-      { id:'jl_sits', type:'single', label:'How does it sit with you?',
-        options:['This is what I have been looking for',
-                 'I am drawn to it and want to know more',
-                 'Interested, with questions',
-                 'Not sure yet',
-                 'It is not for me, but I am glad it exists'] },
+      { id:'jl_sits', type:'scale', label:'How does it sit with you?',
+        options:['Not for me, but glad it exists','Not sure yet','Interested, with questions',
+                 'Drawn to it, want to know more','This is what I have been looking for'] },
     ],
   },
 
   {
     title: "Where you are",
     questions: [
-      { id:'ladder', type:'single', label:'Where are you right now on this journey?',
-        help:'Pick the one that is most true today. Nobody is held to it.',
-        options:['Curious, glad it exists, happy to watch for now',
-                 'I want to keep coming to gatherings like this one',
-                 'I want to help build this between the gatherings',
-                 'I want to help lead this',
+      { id:'ladder', type:'scale', label:'Where are you right now on this journey?',
+        help:'Wherever is most true today. Nobody is held to it.',
+        options:['Curious, happy to watch for now','I want to keep coming to gatherings',
+                 'I want to help build it between gatherings','I want to help lead it',
                  'I want to live on the land'] },
 
-      { id:'rhythm_all', type:'single', label:'How often would you want the whole group to gather?',
-        options:['Monthly','Every six to eight weeks','Quarterly','Twice a year','Once a year is enough'] },
+      { id:'rhythm_all', type:'scale', label:'How often would you want the whole group to gather?',
+        options:['Once a year','Twice a year','Quarterly','Every six to eight weeks','Monthly'] },
 
-      { id:'rhythm_small', type:'single', label:'And smaller working sessions in between, online or in person?',
-        options:['Weekly','Every two weeks','Monthly','Now and then','Not for me'] },
+      { id:'rhythm_small', type:'scale', label:'And smaller working sessions in between, online or in person?',
+        options:['Not for me','Now and then','Monthly','Every two weeks','Weekly'] },
 
-      { id:'membership', type:'single', label:'We are exploring an actual membership. Would that interest you?',
-        options:['Yes','Maybe, it depends what it includes','Probably not','No'] },
+      { id:'membership', type:'scale', label:'We are exploring an actual membership. Would that interest you?',
+        options:['No','Probably not','Maybe, depending what it includes','Yes'] },
 
-      { id:'membership_what', type:'long', label:'If yes or maybe: what would you want a membership to give you, and what would feel fair to pay?',
-        help:'We have not decided any of this yet, which is why we are asking first.' },
+      { id:'membership_what', type:'long', label:'What would you want a membership to give you, and what would feel fair to pay?',
+        help:'We have not decided any of this yet, which is exactly why we are asking first.' },
     ],
   },
 
@@ -232,40 +266,43 @@ const STEPS = [
     title: "What you could put in",
     intro: "<div class='panel mapping'><p><strong>This part is mapping, not asking.</strong> Nothing here is a commitment and nothing here is a request for anything today.</p><p>Land costs money and takes work. We would much rather build on a real picture than a hopeful one, so every honest answer helps us, including the ones that are zero.</p></div>",
     questions: [
-      { id:'hours_meet', type:'single',
+      { id:'hours_meet', type:'scale',
         label:'Meetings and building trust: how many hours a month?',
         help:'Living alongside people takes a lot of time together first, on calls and in person. Separately from any actual project work, and honestly, given your life as it is now.',
-        options:['0','1','2','3 to 5','6 to 10','11 to 15','16 or more'], compact:true },
+        options:['0','1','2','3 to 5','6 to 10','11 to 15','16 or more'],
+        low:'None', high:'A lot' },
 
-      { id:'money', type:'single',
+      { id:'money', type:'scale',
         label:'Imagine the right property, with the right people, and we could move in within six months. What could you realistically contribute financially over those six months?',
         help:'A hypothetical, to help us understand what is actually possible. Nobody will be held to their answer and nobody will be chased about it.',
         options:['Nothing right now','Under $1,000','$1,000 to $5,000','$5,000 to $15,000',
-                 '$15,000 to $50,000','More than $50,000','It depends'] },
+                 '$15,000 to $50,000','More than $50,000'] },
 
       { id:'money_depends', type:'long', label:'What would it depend on?',
         help:'Whatever the number above, this is the useful part. Selling something, a partner agreeing, the location, the legal structure, who else is in, timing.' },
 
-      { id:'money_other', type:'multi', label:'Any other way you could help on the money side?',
-        options:['I could lend money to the project','I could help someone else contribute',
-                 'I could help with grants and fundraising',
-                 'I know people who might invest or donate',
-                 'I know about co-ops, land trusts or shared mortgages',
-                 'None of these'] },
+      { id:'money_other', type:'rate', label:'Any other way you could help on the money side?',
+        low:'Not me', high:'Definitely',
+        options:['I could lend to the project','I could help someone else contribute',
+                 'Grants and fundraising','I know people who might invest or donate',
+                 'I know about co-ops, land trusts or shared mortgages'] },
 
-      { id:'hours_work', type:'single',
+      { id:'hours_work', type:'scale',
         label:'Over those same six months, how many hours of actual work could you give in total?',
-        help:'This is separate from the meetings question. Hands and hours on the real thing: viewings, building, planting, admin, legal, research, spreadsheets, phone calls.',
-        options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','More than 250'], compact:true },
+        help:'Separate from the meetings question. Hands and hours on the real thing: viewings, building, planting, admin, legal, research, spreadsheets, phone calls.',
+        options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','More than 250'],
+        low:'None', high:'A lot' },
 
-      { id:'work_kind', type:'multi', label:'What kind of work would you actually want to do?',
-        options:['Physical work: building, land, planting, repairs','Cooking and feeding people',
-                 'Admin, spreadsheets, coordination','Legal, finance and governance structures',
+      { id:'work_kind', type:'rate', label:'What kind of work would you actually want to do?',
+        help:'Rate how keen you are on each. Zero is a perfectly good answer.',
+        low:'Rather not', high:'Would love to',
+        options:['Building, land, planting, repairs','Cooking and feeding people',
+                 'Admin and coordination','Legal, finance, governance',
                  'Property search and viewings','Fundraising and grants',
-                 'Facilitation and holding space','Communications, writing, social media',
+                 'Facilitation and holding space','Communications and social media',
                  'Design, photography, film','Children and family support',
-                 'Conflict, care and repair','Teaching or running workshops'],
-        other:'Something else' },
+                 'Conflict, care and repair','Teaching and workshops'],
+        other:'Something else you would bring' },
     ],
   },
 
@@ -273,17 +310,13 @@ const STEPS = [
     title: "Helping us be louder",
     intro: "<div class='panel'><p>One of our own lessons from the weekend: our vision is clear to us, and we have been quiet about it. We have not put ourselves out there or spread the word. That changes now, and it starts with the people who were on the land.</p></div>",
     questions: [
-      { id:'louder', type:'multi', label:'Would you help us be more visible?',
-        help:'Only tick what you would genuinely be glad to do.',
-        options:['Share our posts when we make them',
-                 'Introduce us to people who should know about this',
-                 'Write something: a reflection, a post, a few words we can quote',
-                 'Take photos or video',
-                 'Help run our social media',
-                 'Help get us listed on ecovillage and intentional community directories',
-                 'Host a small evening to introduce people to this',
-                 'Speak to local press or media',
-                 'I would rather not, and that is completely fine'],
+      { id:'louder', type:'rate', label:'Would you help us be more visible?',
+        help:'Only rate up what you would genuinely be glad to do. All zeros is completely fine.',
+        low:'Rather not', high:'Happy to',
+        options:['Share our posts','Introduce us to people','Write something we can quote',
+                 'Take photos or video','Help run our social media',
+                 'Get us onto ecovillage directories','Host a small intro evening',
+                 'Speak to local press'],
         other:'Something else' },
 
       { id:'who_else', type:'long', label:'Who else should know about this?',
@@ -300,7 +333,7 @@ const STEPS = [
       { id:'name', type:'text', required:true, label:'Your name', placeholder:'so we know who we are listening to' },
       { id:'email', type:'email', required:true, label:'Your email', placeholder:'you@example.com' },
 
-      { id:'quote_ok', type:'single', label:'May we quote you?',
+      { id:'quote_ok', type:'choice', label:'May we quote you?',
         help:'Some of what you have written may be worth sharing more widely, and we will not do that without asking.',
         options:['Yes, with my name','Yes, but keep me anonymous','Please do not quote me'] },
     ],
@@ -308,23 +341,20 @@ const STEPS = [
 ];
 
 const JL_URL = 'https://journeyland.ca';
+const RATE_MAX = 5;
 
 // ---------------------------------------------------------------------------
 // State + autosave
 // ---------------------------------------------------------------------------
 const KEY_ID = 'tlv_reflect_id', KEY_ANS = 'tlv_reflect_answers';
-function mintId(){
-  return 'rf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,10);
-}
 let responseId = localStorage.getItem(KEY_ID);
 if(!responseId || !/^rf_[a-z0-9_]{8,}$/.test(responseId)){
-  responseId = mintId();
+  responseId = 'rf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,10);
   localStorage.setItem(KEY_ID, responseId);
 }
 let answers = {};
 try { answers = JSON.parse(localStorage.getItem(KEY_ANS) || '{}') || {}; } catch(_) { answers = {}; }
 
-// A personal mail merge can drop someone in with their details already known.
 const qs = new URLSearchParams(location.search);
 if(qs.get('name'))  answers.name  = qs.get('name');
 if(qs.get('email')) answers.email = qs.get('email');
@@ -336,29 +366,23 @@ function scheduleSave(){
   saveTimer = setTimeout(()=>save(false), 1100);
 }
 async function save(completed){
-  const payload = {
+  const body = JSON.stringify({
     id: responseId,
     name: (answers.name || '').trim(),
     email: (answers.email || '').trim(),
     answers,
     completed: !!completed,
     website: document.getElementById('hp').value,
-  };
-  const body = JSON.stringify(payload);
-  // Nothing has changed since the last successful write, so do not write again.
-  if(!completed && body === lastSent) return true;
+  });
+  if(!completed && body === lastSent) return true;   // nothing changed since the last write
   try{
     const r = await fetch('/api/reflect', {method:'POST',headers:{'Content-Type':'application/json'},body});
     if(!r.ok) return false;
     lastSent = body;
-    flashSaved();
+    const t = document.getElementById('savedTag');
+    t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400);
     return true;
   }catch(_){ return false; }
-}
-function flashSaved(){
-  const t = document.getElementById('savedTag');
-  t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'), 1400);
 }
 // A closing tab should not lose the last few seconds of typing.
 window.addEventListener('pagehide', ()=>{
@@ -380,7 +404,6 @@ STEPS.forEach((step, i) => {
   const n = i + 1;
   const el = document.createElement('div');
   el.className = 'step'; el.id = 'step-' + n;
-  const isLast = n === STEPS.length;
   el.innerHTML =
     '<div class="card">' +
       '<h2>' + esc(step.title) + '</h2>' +
@@ -389,14 +412,25 @@ STEPS.forEach((step, i) => {
       '<div class="err" id="err-' + n + '"></div>' +
       '<div class="nav">' +
         '<button class="btn btn-ghost" data-go="' + (n-1) + '">Back</button>' +
-        '<button class="btn" data-next="' + n + '">' + (isLast ? 'Send it' : 'Next') + '</button>' +
+        '<button class="btn" data-next="' + n + '">' + (n === STEPS.length ? 'Send it' : 'Next') + '</button>' +
       '</div>' +
     '</div>';
   stepsHost.appendChild(el);
-
   const host = el.querySelector('#qs-' + n);
   step.questions.forEach(q => host.appendChild(renderQuestion(q)));
 });
+
+function otherField(q, wrap){
+  if(!q.other) return;
+  const ow = document.createElement('div');
+  ow.className = 'other-wrap';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = q.other;
+  inp.value = answers[q.id + '_other'] || '';
+  inp.addEventListener('input', () => { answers[q.id + '_other'] = inp.value; scheduleSave(); });
+  ow.appendChild(inp); wrap.appendChild(ow);
+}
 
 function renderQuestion(q){
   const wrap = document.createElement('div');
@@ -415,16 +449,13 @@ function renderQuestion(q){
     return wrap;
   }
 
-  const optionalTag = (!q.required && (q.type === 'long' || q.type === 'multi' || q.type === 'single'))
-    ? ' <span class="opt-tag">optional</span>' : '';
   wrap.innerHTML =
-    '<div class="q-label">' + esc(q.label) + (q.required ? ' <span class="req">*</span>' : optionalTag) + '</div>' +
+    '<div class="q-label">' + esc(q.label) + (q.required ? ' <span class="req">*</span>' : '') + '</div>' +
     (q.help ? '<div class="q-help">' + esc(q.help) + '</div>' : '');
 
   if(q.type === 'long'){
     const ta = document.createElement('textarea');
     ta.value = answers[q.id] || '';
-    ta.placeholder = q.placeholder || '';
     ta.addEventListener('input', () => { answers[q.id] = ta.value; scheduleSave(); });
     wrap.appendChild(ta);
     return wrap;
@@ -441,66 +472,130 @@ function renderQuestion(q){
     return wrap;
   }
 
-  // single / multi
-  const box = document.createElement('div');
-  box.className = 'choices' + (q.compact ? ' compact' : '');
-  const multi = q.type === 'multi';
-  if(multi && !Array.isArray(answers[q.id])) answers[q.id] = answers[q.id] ? [answers[q.id]] : [];
+  // ---- scale: one slider across named positions -------------------------
+  if(q.type === 'scale'){
+    const holder = document.createElement('div');
+    const stored = answers[q.id];
+    const idx = q.options.indexOf(stored);
+    const touched = idx >= 0;
 
+    holder.className = touched ? '' : 'untouched';
+    const read = document.createElement('div');
+    read.className = 'scale-read';
+    read.textContent = touched ? stored : 'Slide to answer';
+
+    const inp = document.createElement('input');
+    inp.type = 'range'; inp.min = '0'; inp.max = String(q.options.length - 1);
+    inp.step = '1';
+    inp.value = String(touched ? idx : Math.floor((q.options.length - 1) / 2));
+    inp.setAttribute('aria-label', q.label);
+
+    const commit = () => {
+      const v = +inp.value;
+      answers[q.id] = q.options[v];
+      read.textContent = q.options[v];
+      holder.classList.remove('untouched');
+      inp.setAttribute('aria-valuetext', q.options[v]);
+      scheduleSave();
+    };
+    // `input` covers drag and keyboard; `click` catches a tap that lands on the
+    // value the thumb already sits at, which fires no input event at all.
+    inp.addEventListener('input', commit);
+    inp.addEventListener('click', commit);
+
+    const ends = document.createElement('div');
+    ends.className = 'scale-ends';
+    ends.innerHTML = '<span>' + esc(q.low || q.options[0]) + '</span><span>' +
+                     esc(q.high || q.options[q.options.length - 1]) + '</span>';
+
+    holder.appendChild(read); holder.appendChild(inp); holder.appendChild(ends);
+    wrap.appendChild(holder);
+    otherField(q, wrap);
+    return wrap;
+  }
+
+  // ---- rate: a slider per item ------------------------------------------
+  if(q.type === 'rate'){
+    if(typeof answers[q.id] !== 'object' || answers[q.id] === null || Array.isArray(answers[q.id])){
+      answers[q.id] = {};
+    }
+    const stored = answers[q.id];
+
+    const head = document.createElement('div');
+    head.className = 'rate-head';
+    head.innerHTML = '<span>' + esc(q.low || 'Not at all') + '</span><span>' + esc(q.high || 'A lot') + '</span>';
+    wrap.appendChild(head);
+
+    q.options.forEach(opt => {
+      const val = Number.isFinite(stored[opt]) ? stored[opt] : 0;
+      const row = document.createElement('div');
+      row.className = 'rate-row' + (val > 0 ? ' set' : ' zero');
+
+      const top = document.createElement('div');
+      top.className = 'rate-top';
+      const nm = document.createElement('span'); nm.className = 'rate-name'; nm.textContent = opt;
+      const vl = document.createElement('span'); vl.className = 'rate-val';
+      vl.textContent = val > 0 ? (val + ' / ' + RATE_MAX) : '';
+      top.appendChild(nm); top.appendChild(vl);
+
+      const inp = document.createElement('input');
+      inp.type = 'range'; inp.min = '0'; inp.max = String(RATE_MAX); inp.step = '1';
+      inp.value = String(val);
+      inp.setAttribute('aria-label', opt);
+
+      const commit = () => {
+        const v = +inp.value;
+        stored[opt] = v;
+        vl.textContent = v > 0 ? (v + ' / ' + RATE_MAX) : '';
+        row.classList.toggle('set', v > 0);
+        row.classList.toggle('zero', v === 0);
+        scheduleSave();
+      };
+      inp.addEventListener('input', commit);
+      inp.addEventListener('click', commit);
+
+      row.appendChild(top); row.appendChild(inp);
+      wrap.appendChild(row);
+    });
+    otherField(q, wrap);
+    return wrap;
+  }
+
+  // ---- choice: the few genuinely categorical questions -------------------
+  const box = document.createElement('div');
+  box.className = 'choices';
   q.options.forEach(opt => {
     const lab = document.createElement('label');
     lab.className = 'choice';
     const inp = document.createElement('input');
-    inp.type = multi ? 'checkbox' : 'radio';
-    inp.name = q.id;
-    inp.value = opt;
-    inp.checked = multi ? answers[q.id].includes(opt) : answers[q.id] === opt;
+    inp.type = 'radio'; inp.name = q.id; inp.value = opt;
+    inp.checked = answers[q.id] === opt;
     if(inp.checked) lab.classList.add('on');
-    const span = document.createElement('span');
-    span.textContent = opt;
+    const span = document.createElement('span'); span.textContent = opt;
     lab.appendChild(inp); lab.appendChild(span);
     inp.addEventListener('change', () => {
-      if(multi){
-        const set = new Set(answers[q.id]);
-        inp.checked ? set.add(opt) : set.delete(opt);
-        answers[q.id] = [...set];
-      } else {
-        answers[q.id] = opt;
-        box.querySelectorAll('.choice').forEach(c => c.classList.remove('on'));
-      }
-      lab.classList.toggle('on', inp.checked);
+      answers[q.id] = opt;
+      box.querySelectorAll('.choice').forEach(c => c.classList.remove('on'));
+      lab.classList.add('on');
       scheduleSave();
     });
     box.appendChild(lab);
   });
   wrap.appendChild(box);
-
-  if(q.other){
-    const ow = document.createElement('div');
-    ow.className = 'other-wrap';
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.placeholder = q.other;
-    inp.value = answers[q.id + '_other'] || '';
-    inp.addEventListener('input', () => { answers[q.id + '_other'] = inp.value; scheduleSave(); });
-    ow.appendChild(inp); wrap.appendChild(ow);
-  }
+  otherField(q, wrap);
   return wrap;
 }
 
 // ---------------------------------------------------------------------------
 // Navigation
 // ---------------------------------------------------------------------------
-let current = 0;
 function show(n){
   document.querySelectorAll('.step').forEach(s => s.classList.remove('on'));
-  const id = n === 'done' ? 'step-done' : 'step-' + n;
-  document.getElementById(id).classList.add('on');
+  document.getElementById(n === 'done' ? 'step-done' : 'step-' + n).classList.add('on');
   const inForm = n !== 0 && n !== 'done';
   document.getElementById('prog').style.display = inForm ? 'block' : 'none';
   document.getElementById('persistGive').style.display = inForm ? 'block' : 'none';
   if(inForm){
-    current = n;
     document.getElementById('progFill').style.width = ((n / STEPS.length) * 100) + '%';
     document.getElementById('progTxt').textContent = 'Part ' + n + ' of ' + STEPS.length;
   }
@@ -508,17 +603,15 @@ function show(n){
 }
 
 function validate(n){
-  const step = STEPS[n-1];
-  for(const q of step.questions){
+  for(const q of STEPS[n-1].questions){
     if(!q.required) continue;
     const v = answers[q.id];
-    const empty = Array.isArray(v) ? v.length === 0 : !String(v || '').trim();
-    if(empty){
+    if(!String(v || '').trim()){
       const el = document.querySelector('#step-' + n + ' [data-qid="' + q.id + '"]');
       if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
       return q.type === 'email' ? 'Please add your email so we can follow up.'
            : q.type === 'text'  ? 'Please add your name.'
-           : 'One thing is still blank above. It is the part we most want to hear.';
+           : 'One box above is still blank. It is the part we most want to hear.';
     }
     if(q.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(v).trim())){
       return 'That email does not look right. Please check it.';
@@ -551,19 +644,20 @@ document.addEventListener('click', async (e) => {
     err.textContent = 'That did not go through. Your answers are safe on this device, please try once more.';
     return;
   }
-  const name = encodeURIComponent((answers.name || '').trim());
-  const email = encodeURIComponent((answers.email || '').trim());
-  document.getElementById('giveBtn').href = '/give?name=' + name + '&email=' + email;
+  const q2 = new URLSearchParams();
+  if((answers.name || '').trim())  q2.set('name', answers.name.trim());
+  if((answers.email || '').trim()) q2.set('email', answers.email.trim());
+  document.getElementById('giveBtn').href = '/give' + (q2.toString() ? '?' + q2 : '');
   localStorage.removeItem(KEY_ANS);
   show('done');
 });
 
 // Carry what we know into the giving page so nobody retypes it.
 function syncGiveLink(){
-  const q = new URLSearchParams();
-  if((answers.name || '').trim())  q.set('name', answers.name.trim());
-  if((answers.email || '').trim()) q.set('email', answers.email.trim());
-  const s = q.toString();
+  const p = new URLSearchParams();
+  if((answers.name || '').trim())  p.set('name', answers.name.trim());
+  if((answers.email || '').trim()) p.set('email', answers.email.trim());
+  const s = p.toString();
   document.getElementById('persistGiveLink').href = '/give' + (s ? '?' + s : '');
 }
 setInterval(syncGiveLink, 2000);
