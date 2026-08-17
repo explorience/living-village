@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>How was it for you? · The Living Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --earth:#2A1D10; --bark:#4A3425; --moss:#3D5540; --sage:#7A9E7E; --fern:#A6C1A3;
+    --cream:#F6EDD9; --warm:#EFE3C8; --sand:#DCC9A3; --terracotta:#C4704B; --gold:#D9A441;
+    --ink:#1A1208; --muted-text:#9A8A73; --hairline:rgba(42,29,16,0.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--earth);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:620px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  .eyebrow{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--moss);font-weight:600;margin-bottom:1rem}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2rem,6.5vw,2.8rem);line-height:1.05;letter-spacing:-.01em;margin-bottom:1.2rem}
+  h2{font-family:'Fraunces',serif;font-weight:700;font-size:1.45rem;line-height:1.2;margin-bottom:.5rem}
+  p{margin-bottom:.9rem}
+  .lede p{font-size:1.05rem;color:var(--bark)}
+  a{color:var(--moss)}
+
+  /* progress */
+  .prog{position:sticky;top:0;z-index:5;background:var(--cream);padding:.7rem 0 .6rem;margin-bottom:.4rem}
+  .prog-bar{height:5px;border-radius:5px;background:var(--sand);overflow:hidden}
+  .prog-fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--sage),var(--gold));transition:width .35s ease}
+  .prog-txt{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted-text);margin-top:.4rem;letter-spacing:.04em}
+  .saved{color:var(--sage);opacity:0;transition:opacity .3s}
+  .saved.on{opacity:1}
+
+  .card{background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:1.7rem 1.4rem;margin-top:1.6rem;box-shadow:0 1px 0 rgba(42,29,16,.03),0 18px 40px -30px rgba(42,29,16,.4)}
+  .step{display:none}
+  .step.on{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .q{margin-top:1.9rem}
+  .q:first-child{margin-top:0}
+  .q-label{font-family:'Fraunces',serif;font-weight:700;font-size:1.12rem;line-height:1.3;color:var(--earth);margin-bottom:.3rem}
+  .q-help{font-size:.88rem;color:var(--muted-text);margin-bottom:.75rem;line-height:1.5}
+  .req{color:var(--terracotta);font-weight:400}
+  .opt-tag{font-size:.72rem;color:var(--muted-text);font-weight:400;letter-spacing:.04em;text-transform:uppercase}
+
+  /* choices */
+  .choices{display:flex;flex-direction:column;gap:.4rem}
+  .choice{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .8rem;border:1px solid var(--hairline);border-radius:10px;background:var(--warm);cursor:pointer;transition:border-color .12s,background .12s;font-size:.97rem}
+  .choice:hover{border-color:var(--sage);background:#fff}
+  .choice.on{border-color:var(--moss);background:#fff;box-shadow:inset 0 0 0 1px var(--moss)}
+  .choice input{margin:.32rem 0 0;accent-color:var(--moss);flex:none;width:16px;height:16px}
+  .choice span{flex:1}
+  .choices.compact{flex-direction:row;flex-wrap:wrap}
+  .choices.compact .choice{flex:0 0 auto;padding:.5rem .85rem}
+
+  textarea,input[type=text],input[type=email]{width:100%;padding:.75rem .85rem;border:1px solid var(--hairline);border-radius:9px;background:var(--warm);font-family:inherit;font-size:1rem;color:var(--earth);line-height:1.5}
+  textarea:focus,input:focus{outline:none;border-color:var(--sage);background:#fff}
+  textarea{resize:vertical;min-height:110px}
+  .other-wrap{margin-top:.5rem}
+  .other-wrap input{background:#fff}
+
+  .panel{background:var(--warm);border-left:3px solid var(--sage);border-radius:0 10px 10px 0;padding:1rem 1.1rem;margin:1.4rem 0 0;font-size:.95rem;color:var(--bark)}
+  .panel p:last-child{margin-bottom:0}
+  .panel.mapping{border-left-color:var(--gold)}
+  .vision{font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;color:var(--earth);line-height:1.45;margin:.2rem 0 .8rem}
+  .visit{display:inline-block;padding:.6rem 1.1rem;background:var(--moss);color:var(--cream);border-radius:9px;text-decoration:none;font-size:.95rem;font-weight:600}
+  .visit:hover{background:var(--earth);color:var(--cream)}
+
+  .nav{display:flex;gap:.7rem;margin-top:2rem}
+  .btn{flex:1;padding:.9rem 1rem;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;background:var(--earth);color:var(--cream);cursor:pointer;transition:background .15s,transform .1s}
+  .btn:hover{background:var(--bark);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:default;transform:none}
+  .btn-ghost{flex:0 0 auto;background:transparent;color:var(--moss);border:1px solid var(--hairline)}
+  .btn-ghost:hover{background:var(--warm);color:var(--earth);transform:none}
+  .err{color:var(--terracotta);font-size:.88rem;margin-top:.8rem;min-height:1em}
+
+  .hp{position:absolute;left:-9999px;opacity:0;pointer-events:none;height:0;width:0;overflow:hidden}
+  .foot{text-align:center;font-size:.8rem;color:var(--muted-text);margin-top:2.4rem;line-height:1.7}
+  .foot a{color:var(--muted-text)}
+
+  .thanks h2{font-size:1.9rem;margin-bottom:.8rem}
+  .mark{font-size:2.2rem;margin-bottom:.4rem}
+  .give-block{margin-top:1.6rem;padding:1.3rem 1.2rem;background:var(--warm);border-radius:12px}
+  .give-block h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;margin-bottom:.6rem}
+  .give-btn{display:block;text-align:center;margin-top:1rem;padding:.9rem 1rem;border-radius:10px;background:var(--terracotta);color:#fff;text-decoration:none;font-weight:600;font-size:1.02rem}
+  .give-btn:hover{background:#A85B3B;color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="prog" id="prog" style="display:none">
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-txt"><span id="progTxt">Part 1 of 6</span><span class="saved" id="savedTag">saved</span></div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="step on" id="step-0">
+    <div class="eyebrow">The Living Village</div>
+    <h1>How was it for you?</h1>
+    <div class="lede">
+      <p>The fire is out, the tents are down, and the land is quiet again. Before the weekend blurs into everything else, we would love to hear what it was actually like for you.</p>
+      <p>It takes about six minutes. Andre and Heenal read every word.</p>
+      <p>There are no wrong answers here, including the critical ones. Especially the critical ones.</p>
+    </div>
+    <div class="card">
+      <h2>First, the photos</h2>
+      <p style="color:var(--bark)">Shared in the group chat this morning. Go and find yourself.</p>
+      <a class="visit" id="photoLink" href="https://drive.google.com/drive/folders/1IgLbrygJRBxpQR8QdbAPqDrvIDvOrNzV" target="_blank" rel="noopener">Open the photo album</a>
+      <div class="nav"><button class="btn" data-go="1">Start</button></div>
+    </div>
+    <div class="foot">The Living Village &middot; August 15 and 16, 2026 &middot; The Living Centre</div>
+  </div>
+
+  <!-- Steps 1..6 render here -->
+  <div id="steps"></div>
+
+  <!-- DONE -->
+  <div class="step" id="step-done">
+    <div class="card thanks">
+      <div class="mark">&#127793;</div>
+      <h2>Thank you. That is exactly what we needed.</h2>
+      <p style="color:var(--bark)">Your answers are with Andre and Heenal. We will share back what we learn from all of them together, so you can see where the whole circle landed, not just your own corner of it.</p>
+
+      <div class="give-block">
+        <h3>The reciprocity pool</h3>
+        <p>If you did not get a chance to contribute to the reciprocity pool, there is still a chance to do so. It helps offset the cost of future activities, and it helps us grow the vision, the journey, and the land.</p>
+        <a class="give-btn" id="giveBtn" href="/give" target="_blank" rel="noopener">Add to the reciprocity pool</a>
+      </div>
+
+      <p style="margin-top:1.6rem;font-size:.92rem;color:var(--muted-text)">If there is something you would rather say without your name attached to it, there is an anonymous box at <a href="/feedback">livingvillage.ca/feedback</a>.</p>
+    </div>
+    <div class="foot">The journey continues.</div>
+  </div>
+
+  <input class="hp" type="text" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <div class="foot" id="persistGive" style="display:none">
+    <a href="/give" id="persistGiveLink" target="_blank" rel="noopener">Add to the reciprocity pool</a>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Question spec. Everything on the page is rendered from this, so a wording
+// change is a one-line edit and cannot desync the form from what gets stored.
+// Deliberately NOT naming individual Open Space sessions: the schedule was
+// co-created on index cards on the day and we do not have a reliable list, so
+// the tick boxes stay broad and the specifics come from the free text.
+// ---------------------------------------------------------------------------
+const STEPS = [
+  {
+    title: "The weekend",
+    questions: [
+      { id:'enjoyed', type:'multi', label:'What did you enjoy most?',
+        help:'Tick as many as are true.',
+        options:['The land itself','The people I met','The conversations','The open space sessions',
+                 'The fire','The food and the potlucks','The ceremonies','Staying overnight',
+                 'The music, the dance and the singing','The quiet and the rest',
+                 'Being outside for two whole days','Being there with children'],
+        other:'Something else' },
+
+      { id:'stayed', type:'long', required:true, label:'Of everything, what stayed with you most?',
+        help:'One moment, one conversation, one thing you saw. The specific things are what we learn from.' },
+
+      { id:'least', type:'long', required:true, label:'What did you enjoy least, or what would you change?',
+        help:'Please be honest. This is the most useful box on the page and nothing in it will offend us.' },
+
+      { id:'practical', type:'multi', label:'Did anything not work for you practically?',
+        options:['Getting there and back','Food','Sleeping and camping','Washrooms and water',
+                 'Knowing where to be and when','Accessibility or getting around the site',
+                 'Noise, or not enough quiet','Feeling included','Having my children looked after',
+                 'Nothing, it all worked'],
+        other:'Something else' },
+
+      { id:'again', type:'single', label:'If we do this again, would you come?',
+        options:['Yes, and I would bring people with me','Yes','Probably','Maybe','Probably not','No'] },
+    ],
+  },
+
+  {
+    title: "Journeyland",
+    intro: "<p>The Living Village grew out of a longer project called Journeyland. We have realised we were not loud enough about that, so this part is us checking rather than assuming.</p>",
+    questions: [
+      { id:'jl_knew', type:'single', label:'Before this weekend, how well did you know Journeyland?',
+        help:'Genuinely no wrong answer. If the honest answer is "not at all", that is our doing, not yours.',
+        options:['I had read the site and knew the vision',
+                 'I knew Journeyland existed but not what it stands for',
+                 'I heard the name for the first time over the weekend',
+                 'This is the first I am hearing of it'] },
+
+      { id:'jl_visit', type:'visit' },
+
+      { id:'jl_think', type:'long', required:true, label:'Now that you have looked, what do you think of the vision?',
+        help:'What lands, what does not, what is missing, what you would want to ask us.' },
+
+      { id:'jl_sits', type:'single', label:'How does it sit with you?',
+        options:['This is what I have been looking for',
+                 'I am drawn to it and want to know more',
+                 'Interested, with questions',
+                 'Not sure yet',
+                 'It is not for me, but I am glad it exists'] },
+    ],
+  },
+
+  {
+    title: "Where you are",
+    questions: [
+      { id:'ladder', type:'single', label:'Where are you right now on this journey?',
+        help:'Pick the one that is most true today. Nobody is held to it.',
+        options:['Curious, glad it exists, happy to watch for now',
+                 'I want to keep coming to gatherings like this one',
+                 'I want to help build this between the gatherings',
+                 'I want to help lead this',
+                 'I want to live on the land'] },
+
+      { id:'rhythm_all', type:'single', label:'How often would you want the whole group to gather?',
+        options:['Monthly','Every six to eight weeks','Quarterly','Twice a year','Once a year is enough'] },
+
+      { id:'rhythm_small', type:'single', label:'And smaller working sessions in between, online or in person?',
+        options:['Weekly','Every two weeks','Monthly','Now and then','Not for me'] },
+
+      { id:'membership', type:'single', label:'We are exploring an actual membership. Would that interest you?',
+        options:['Yes','Maybe, it depends what it includes','Probably not','No'] },
+
+      { id:'membership_what', type:'long', label:'If yes or maybe: what would you want a membership to give you, and what would feel fair to pay?',
+        help:'We have not decided any of this yet, which is why we are asking first.' },
+    ],
+  },
+
+  {
+    title: "What you could put in",
+    intro: "<div class='panel mapping'><p><strong>This part is mapping, not asking.</strong> Nothing here is a commitment and nothing here is a request for anything today.</p><p>Land costs money and takes work. We would much rather build on a real picture than a hopeful one, so every honest answer helps us, including the ones that are zero.</p></div>",
+    questions: [
+      { id:'hours_meet', type:'single',
+        label:'Meetings and building trust: how many hours a month?',
+        help:'Living alongside people takes a lot of time together first, on calls and in person. Separately from any actual project work, and honestly, given your life as it is now.',
+        options:['0','1','2','3 to 5','6 to 10','11 to 15','16 or more'], compact:true },
+
+      { id:'money', type:'single',
+        label:'Imagine the right property, with the right people, and we could move in within six months. What could you realistically contribute financially over those six months?',
+        help:'A hypothetical, to help us understand what is actually possible. Nobody will be held to their answer and nobody will be chased about it.',
+        options:['Nothing right now','Under $1,000','$1,000 to $5,000','$5,000 to $15,000',
+                 '$15,000 to $50,000','More than $50,000','It depends'] },
+
+      { id:'money_depends', type:'long', label:'What would it depend on?',
+        help:'Whatever the number above, this is the useful part. Selling something, a partner agreeing, the location, the legal structure, who else is in, timing.' },
+
+      { id:'money_other', type:'multi', label:'Any other way you could help on the money side?',
+        options:['I could lend money to the project','I could help someone else contribute',
+                 'I could help with grants and fundraising',
+                 'I know people who might invest or donate',
+                 'I know about co-ops, land trusts or shared mortgages',
+                 'None of these'] },
+
+      { id:'hours_work', type:'single',
+        label:'Over those same six months, how many hours of actual work could you give in total?',
+        help:'This is separate from the meetings question. Hands and hours on the real thing: viewings, building, planting, admin, legal, research, spreadsheets, phone calls.',
+        options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','More than 250'], compact:true },
+
+      { id:'work_kind', type:'multi', label:'What kind of work would you actually want to do?',
+        options:['Physical work: building, land, planting, repairs','Cooking and feeding people',
+                 'Admin, spreadsheets, coordination','Legal, finance and governance structures',
+                 'Property search and viewings','Fundraising and grants',
+                 'Facilitation and holding space','Communications, writing, social media',
+                 'Design, photography, film','Children and family support',
+                 'Conflict, care and repair','Teaching or running workshops'],
+        other:'Something else' },
+    ],
+  },
+
+  {
+    title: "Helping us be louder",
+    intro: "<div class='panel'><p>One of our own lessons from the weekend: our vision is clear to us, and we have been quiet about it. We have not put ourselves out there or spread the word. That changes now, and it starts with the people who were on the land.</p></div>",
+    questions: [
+      { id:'louder', type:'multi', label:'Would you help us be more visible?',
+        help:'Only tick what you would genuinely be glad to do.',
+        options:['Share our posts when we make them',
+                 'Introduce us to people who should know about this',
+                 'Write something: a reflection, a post, a few words we can quote',
+                 'Take photos or video',
+                 'Help run our social media',
+                 'Help get us listed on ecovillage and intentional community directories',
+                 'Host a small evening to introduce people to this',
+                 'Speak to local press or media',
+                 'I would rather not, and that is completely fine'],
+        other:'Something else' },
+
+      { id:'who_else', type:'long', label:'Who else should know about this?',
+        help:'A person, a group, a network, an event, a place. No pressure to make the introduction yourself, just tell us who comes to mind.' },
+    ],
+  },
+
+  {
+    title: "Last bit",
+    questions: [
+      { id:'anything', type:'long', label:'Anything else at all?',
+        help:'Something we did not ask about, something you have been chewing on, a question for us.' },
+
+      { id:'name', type:'text', required:true, label:'Your name', placeholder:'so we know who we are listening to' },
+      { id:'email', type:'email', required:true, label:'Your email', placeholder:'you@example.com' },
+
+      { id:'quote_ok', type:'single', label:'May we quote you?',
+        help:'Some of what you have written may be worth sharing more widely, and we will not do that without asking.',
+        options:['Yes, with my name','Yes, but keep me anonymous','Please do not quote me'] },
+    ],
+  },
+];
+
+const JL_URL = 'https://journeyland.ca';
+
+// ---------------------------------------------------------------------------
+// State + autosave
+// ---------------------------------------------------------------------------
+const KEY_ID = 'tlv_reflect_id', KEY_ANS = 'tlv_reflect_answers';
+function mintId(){
+  return 'rf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,10);
+}
+let responseId = localStorage.getItem(KEY_ID);
+if(!responseId || !/^rf_[a-z0-9_]{8,}$/.test(responseId)){
+  responseId = mintId();
+  localStorage.setItem(KEY_ID, responseId);
+}
+let answers = {};
+try { answers = JSON.parse(localStorage.getItem(KEY_ANS) || '{}') || {}; } catch(_) { answers = {}; }
+
+// A personal mail merge can drop someone in with their details already known.
+const qs = new URLSearchParams(location.search);
+if(qs.get('name'))  answers.name  = qs.get('name');
+if(qs.get('email')) answers.email = qs.get('email');
+
+let saveTimer = null, lastSent = '';
+function scheduleSave(){
+  localStorage.setItem(KEY_ANS, JSON.stringify(answers));
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>save(false), 1100);
+}
+async function save(completed){
+  const payload = {
+    id: responseId,
+    name: (answers.name || '').trim(),
+    email: (answers.email || '').trim(),
+    answers,
+    completed: !!completed,
+    website: document.getElementById('hp').value,
+  };
+  const body = JSON.stringify(payload);
+  // Nothing has changed since the last successful write, so do not write again.
+  if(!completed && body === lastSent) return true;
+  try{
+    const r = await fetch('/api/reflect', {method:'POST',headers:{'Content-Type':'application/json'},body});
+    if(!r.ok) return false;
+    lastSent = body;
+    flashSaved();
+    return true;
+  }catch(_){ return false; }
+}
+function flashSaved(){
+  const t = document.getElementById('savedTag');
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 1400);
+}
+// A closing tab should not lose the last few seconds of typing.
+window.addEventListener('pagehide', ()=>{
+  localStorage.setItem(KEY_ANS, JSON.stringify(answers));
+  const body = JSON.stringify({id:responseId, name:(answers.name||'').trim(),
+    email:(answers.email||'').trim(), answers, completed:false, website:''});
+  if(body !== lastSent && navigator.sendBeacon){
+    navigator.sendBeacon('/api/reflect', new Blob([body], {type:'application/json'}));
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const stepsHost = document.getElementById('steps');
+
+STEPS.forEach((step, i) => {
+  const n = i + 1;
+  const el = document.createElement('div');
+  el.className = 'step'; el.id = 'step-' + n;
+  const isLast = n === STEPS.length;
+  el.innerHTML =
+    '<div class="card">' +
+      '<h2>' + esc(step.title) + '</h2>' +
+      (step.intro || '') +
+      '<div class="qs" id="qs-' + n + '"></div>' +
+      '<div class="err" id="err-' + n + '"></div>' +
+      '<div class="nav">' +
+        '<button class="btn btn-ghost" data-go="' + (n-1) + '">Back</button>' +
+        '<button class="btn" data-next="' + n + '">' + (isLast ? 'Send it' : 'Next') + '</button>' +
+      '</div>' +
+    '</div>';
+  stepsHost.appendChild(el);
+
+  const host = el.querySelector('#qs-' + n);
+  step.questions.forEach(q => host.appendChild(renderQuestion(q)));
+});
+
+function renderQuestion(q){
+  const wrap = document.createElement('div');
+  wrap.className = 'q';
+  wrap.dataset.qid = q.id;
+
+  if(q.type === 'visit'){
+    wrap.innerHTML =
+      '<div class="panel">' +
+        '<p style="margin-bottom:.4rem"><strong>Take two minutes and look, even if you already know it.</strong></p>' +
+        '<p class="vision">"Holding space for transformational journeys in collaboration with the land, ' +
+        'Journeyland is a place where we can co-create flourishing and regenerative futures."</p>' +
+        '<p style="font-size:.85rem;color:var(--muted-text);margin-bottom:.9rem">journeyland.ca, in their own words</p>' +
+        '<a class="visit" href="' + JL_URL + '" target="_blank" rel="noopener">Open journeyland.ca</a>' +
+      '</div>';
+    return wrap;
+  }
+
+  const optionalTag = (!q.required && (q.type === 'long' || q.type === 'multi' || q.type === 'single'))
+    ? ' <span class="opt-tag">optional</span>' : '';
+  wrap.innerHTML =
+    '<div class="q-label">' + esc(q.label) + (q.required ? ' <span class="req">*</span>' : optionalTag) + '</div>' +
+    (q.help ? '<div class="q-help">' + esc(q.help) + '</div>' : '');
+
+  if(q.type === 'long'){
+    const ta = document.createElement('textarea');
+    ta.value = answers[q.id] || '';
+    ta.placeholder = q.placeholder || '';
+    ta.addEventListener('input', () => { answers[q.id] = ta.value; scheduleSave(); });
+    wrap.appendChild(ta);
+    return wrap;
+  }
+
+  if(q.type === 'text' || q.type === 'email'){
+    const inp = document.createElement('input');
+    inp.type = q.type === 'email' ? 'email' : 'text';
+    inp.autocomplete = q.type === 'email' ? 'email' : 'name';
+    inp.value = answers[q.id] || '';
+    inp.placeholder = q.placeholder || '';
+    inp.addEventListener('input', () => { answers[q.id] = inp.value; scheduleSave(); });
+    wrap.appendChild(inp);
+    return wrap;
+  }
+
+  // single / multi
+  const box = document.createElement('div');
+  box.className = 'choices' + (q.compact ? ' compact' : '');
+  const multi = q.type === 'multi';
+  if(multi && !Array.isArray(answers[q.id])) answers[q.id] = answers[q.id] ? [answers[q.id]] : [];
+
+  q.options.forEach(opt => {
+    const lab = document.createElement('label');
+    lab.className = 'choice';
+    const inp = document.createElement('input');
+    inp.type = multi ? 'checkbox' : 'radio';
+    inp.name = q.id;
+    inp.value = opt;
+    inp.checked = multi ? answers[q.id].includes(opt) : answers[q.id] === opt;
+    if(inp.checked) lab.classList.add('on');
+    const span = document.createElement('span');
+    span.textContent = opt;
+    lab.appendChild(inp); lab.appendChild(span);
+    inp.addEventListener('change', () => {
+      if(multi){
+        const set = new Set(answers[q.id]);
+        inp.checked ? set.add(opt) : set.delete(opt);
+        answers[q.id] = [...set];
+      } else {
+        answers[q.id] = opt;
+        box.querySelectorAll('.choice').forEach(c => c.classList.remove('on'));
+      }
+      lab.classList.toggle('on', inp.checked);
+      scheduleSave();
+    });
+    box.appendChild(lab);
+  });
+  wrap.appendChild(box);
+
+  if(q.other){
+    const ow = document.createElement('div');
+    ow.className = 'other-wrap';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = q.other;
+    inp.value = answers[q.id + '_other'] || '';
+    inp.addEventListener('input', () => { answers[q.id + '_other'] = inp.value; scheduleSave(); });
+    ow.appendChild(inp); wrap.appendChild(ow);
+  }
+  return wrap;
+}
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
+let current = 0;
+function show(n){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('on'));
+  const id = n === 'done' ? 'step-done' : 'step-' + n;
+  document.getElementById(id).classList.add('on');
+  const inForm = n !== 0 && n !== 'done';
+  document.getElementById('prog').style.display = inForm ? 'block' : 'none';
+  document.getElementById('persistGive').style.display = inForm ? 'block' : 'none';
+  if(inForm){
+    current = n;
+    document.getElementById('progFill').style.width = ((n / STEPS.length) * 100) + '%';
+    document.getElementById('progTxt').textContent = 'Part ' + n + ' of ' + STEPS.length;
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function validate(n){
+  const step = STEPS[n-1];
+  for(const q of step.questions){
+    if(!q.required) continue;
+    const v = answers[q.id];
+    const empty = Array.isArray(v) ? v.length === 0 : !String(v || '').trim();
+    if(empty){
+      const el = document.querySelector('#step-' + n + ' [data-qid="' + q.id + '"]');
+      if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      return q.type === 'email' ? 'Please add your email so we can follow up.'
+           : q.type === 'text'  ? 'Please add your name.'
+           : 'One thing is still blank above. It is the part we most want to hear.';
+    }
+    if(q.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(v).trim())){
+      return 'That email does not look right. Please check it.';
+    }
+  }
+  return '';
+}
+
+document.addEventListener('click', async (e) => {
+  const goBtn = e.target.closest('[data-go]');
+  if(goBtn){ show(+goBtn.dataset.go); return; }
+
+  const nextBtn = e.target.closest('[data-next]');
+  if(!nextBtn) return;
+
+  const n = +nextBtn.dataset.next;
+  const err = document.getElementById('err-' + n);
+  const problem = validate(n);
+  if(problem){ err.textContent = problem; return; }
+  err.textContent = '';
+
+  if(n < STEPS.length){ save(false); show(n + 1); return; }
+
+  // Final step: the response must actually land before we say thank you.
+  nextBtn.disabled = true; nextBtn.textContent = 'Sending...';
+  clearTimeout(saveTimer);
+  const ok = await save(true);
+  nextBtn.disabled = false; nextBtn.textContent = 'Send it';
+  if(!ok){
+    err.textContent = 'That did not go through. Your answers are safe on this device, please try once more.';
+    return;
+  }
+  const name = encodeURIComponent((answers.name || '').trim());
+  const email = encodeURIComponent((answers.email || '').trim());
+  document.getElementById('giveBtn').href = '/give?name=' + name + '&email=' + email;
+  localStorage.removeItem(KEY_ANS);
+  show('done');
+});
+
+// Carry what we know into the giving page so nobody retypes it.
+function syncGiveLink(){
+  const q = new URLSearchParams();
+  if((answers.name || '').trim())  q.set('name', answers.name.trim());
+  if((answers.email || '').trim()) q.set('email', answers.email.trim());
+  const s = q.toString();
+  document.getElementById('persistGiveLink').href = '/give' + (s ? '?' + s : '');
+}
+setInterval(syncGiveLink, 2000);
+syncGiveLink();
+</script>
+</body>
+</html>

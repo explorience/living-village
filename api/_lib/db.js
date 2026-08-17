@@ -99,6 +99,21 @@ export async function ensureSchema() {
     updated_at  timestamptz NOT NULL DEFAULT now(),
     updated_by  text NOT NULL DEFAULT ''
   )`;
+  // Post-gathering reflections. Rows are written on every autosave, long before anyone
+  // presses submit, because a half-finished answer from someone who wandered off is still
+  // the most honest thing we'll get from them. `completed` marks the ones that reached the
+  // end. Answers live in one jsonb blob so adding a question needs no migration.
+  await sql`CREATE TABLE IF NOT EXISTS reflections (
+    id          text PRIMARY KEY,
+    name        text NOT NULL DEFAULT '',
+    email       text NOT NULL DEFAULT '',
+    answers     jsonb NOT NULL DEFAULT '{}'::jsonb,
+    completed   boolean NOT NULL DEFAULT false,
+    user_agent  text NOT NULL DEFAULT '',
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    updated_at  timestamptz NOT NULL DEFAULT now()
+  )`;
+  await sql`CREATE INDEX IF NOT EXISTS reflections_email_idx ON reflections (lower(email))`;
   _schemaReady = true;
 }
 
@@ -226,6 +241,40 @@ export async function getAllWaivers() {
     medical: r.medical, minors: Array.isArray(r.minors) ? r.minors : [],
     photoConsent: r.photo_consent, signature: r.signature,
     waiverVersion: r.waiver_version, signedAt: r.signed_at,
+  }));
+}
+
+// --- Post-gathering reflections ---
+
+// Upsert one response. The id is minted by the browser and kept in localStorage, so a person
+// who closes the tab and comes back updates their own row instead of starting a second one.
+// `completed` only ever goes false -> true: a late autosave firing after submit must not
+// quietly demote a finished response back to a partial.
+export async function saveReflection(r) {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    INSERT INTO reflections (id, name, email, answers, completed, user_agent, updated_at)
+    VALUES (${r.id}, ${r.name}, ${r.email}, ${JSON.stringify(r.answers || {})}::jsonb,
+            ${!!r.completed}, ${r.userAgent}, now())
+    ON CONFLICT (id) DO UPDATE SET
+      name = EXCLUDED.name, email = EXCLUDED.email, answers = EXCLUDED.answers,
+      completed = reflections.completed OR EXCLUDED.completed,
+      user_agent = EXCLUDED.user_agent, updated_at = now()
+    RETURNING id, completed, updated_at`;
+  return rows[0];
+}
+
+export async function getAllReflections() {
+  await ensureSchema();
+  const sql = db();
+  const rows = await sql`
+    SELECT id, name, email, answers, completed, created_at, updated_at
+    FROM reflections ORDER BY updated_at DESC`;
+  return rows.map(r => ({
+    id: r.id, name: r.name, email: r.email,
+    answers: r.answers && typeof r.answers === 'object' ? r.answers : {},
+    completed: r.completed, createdAt: r.created_at, updatedAt: r.updated_at,
   }));
 }
 
