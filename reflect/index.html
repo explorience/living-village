@@ -101,6 +101,10 @@
   .vision{font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;color:var(--earth);line-height:1.45;margin:.2rem 0 .8rem}
   .visit{display:inline-block;padding:.6rem 1.1rem;background:var(--moss);color:var(--cream);border-radius:9px;text-decoration:none;font-size:.95rem;font-weight:600}
   .visit:hover{background:var(--earth);color:var(--cream)}
+  .visit-2{background:transparent;color:var(--moss);border:1px solid var(--moss)}
+  .visit-2:hover{background:var(--moss);color:var(--cream)}
+  .links{display:flex;flex-wrap:wrap;gap:.6rem}
+  .links .visit{flex:1 1 auto;text-align:center}
 
   .nav{display:flex;gap:.7rem;margin-top:2.2rem}
   .btn{flex:1;padding:.9rem 1rem;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;background:var(--earth);color:var(--cream);cursor:pointer;transition:background .15s,transform .1s}
@@ -140,9 +144,12 @@
       <p>There are no wrong answers here, including the critical ones. Especially the critical ones.</p>
     </div>
     <div class="card">
-      <h2>First, the photos</h2>
-      <p style="color:var(--bark)">Shared in the group chat this morning. Go and find yourself.</p>
-      <a class="visit" id="photoLink" href="https://drive.google.com/drive/folders/1IgLbrygJRBxpQR8QdbAPqDrvIDvOrNzV" target="_blank" rel="noopener">Open the photo album</a>
+      <h2>First, the photos and the poem</h2>
+      <p style="color:var(--bark)">Both shared since we came off the land. Go and find yourself in one, and hear the weekend back in the other.</p>
+      <div class="links">
+        <a class="visit" href="https://drive.google.com/drive/folders/1IgLbrygJRBxpQR8QdbAPqDrvIDvOrNzV" target="_blank" rel="noopener">The photo album</a>
+        <a class="visit visit-2" href="https://docs.google.com/document/d/1qOVGP0gLss8AZ4d32h2YxL1xku8I7C2uf-FVyoiXsp8/edit" target="_blank" rel="noopener">The Poetic Harvest</a>
+      </div>
       <div class="nav"><button class="btn" data-go="1">Start</button></div>
     </div>
     <div class="foot">The Living Village &middot; August 15 and 16, 2026 &middot; The Living Centre</div>
@@ -249,10 +256,10 @@ const STEPS = [
                  'I want to live on the land'] },
 
       { id:'rhythm_all', type:'scale', label:'How often would you want the whole group to gather?',
-        options:['Once a year','Twice a year','Quarterly','Every six to eight weeks','Monthly'] },
+        options:['Once a year','Twice a year','Quarterly','Every six to eight weeks','Monthly','Weekly'] },
 
       { id:'rhythm_small', type:'scale', label:'And smaller working sessions in between, online or in person?',
-        options:['Not for me','Now and then','Monthly','Every two weeks','Weekly'] },
+        options:['Not for me','Now and then','Monthly','Every two weeks','Weekly','More than once a week'] },
 
       { id:'membership', type:'scale', label:'We are exploring an actual membership. Would that interest you?',
         options:['No','Probably not','Maybe, depending what it includes','Yes'] },
@@ -290,7 +297,7 @@ const STEPS = [
       { id:'hours_work', type:'scale',
         label:'Over those same six months, how many hours of actual work could you give in total?',
         help:'Separate from the meetings question. Hands and hours on the real thing: viewings, building, planting, admin, legal, research, spreadsheets, phone calls.',
-        options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','More than 250'],
+        options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','250 to 500','More than 500'],
         low:'None', high:'A lot' },
 
       { id:'work_kind', type:'rate', label:'What kind of work would you actually want to do?',
@@ -445,10 +452,14 @@ function renderQuestion(q){
   if(q.type === 'visit'){
     wrap.innerHTML =
       '<div class="panel">' +
-        '<p style="margin-bottom:.4rem"><strong>Take two minutes and look, even if you already know it.</strong></p>' +
+        '<p><strong>Take two minutes and look, even if you already know it.</strong></p>' +
+        '<p>Heenal and Andre built this site a few years ago, to set out the vision we are ' +
+        'working towards and calling into being, and to invite other people to walk into it ' +
+        'with us. It looks its age. Read it for what it is reaching for rather than for how ' +
+        'it looks.</p>' +
         '<p class="vision">"Holding space for transformational journeys in collaboration with the land, ' +
         'Journeyland is a place where we can co-create flourishing and regenerative futures."</p>' +
-        '<p style="font-size:.85rem;color:var(--muted-text);margin-bottom:.9rem">journeyland.ca, in their own words</p>' +
+        '<p style="font-size:.85rem;color:var(--muted-text);margin-bottom:.9rem">journeyland.ca, in its own words</p>' +
         '<a class="visit" href="' + JL_URL + '" target="_blank" rel="noopener">Open journeyland.ca</a>' +
       '</div>';
     return wrap;
