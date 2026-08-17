@@ -1,7 +1,7 @@
 // One-off verification for the /reflect storage layer. Uses the app's own resolveDbUrl,
 // so it connects exactly the way the deployed functions do.
 //   node --env-file=.env.local notes/verify-reflections.mjs          # report
-//   node --env-file=.env.local notes/verify-reflections.mjs --purge  # delete zz test rows
+//   node --env-file=.env.local notes/verify-reflections.mjs --purge-before <ISO> --yes
 import { neon } from '@neondatabase/serverless';
 import { resolveDbUrl } from '../api/_lib/db.js';
 
@@ -33,9 +33,26 @@ console.log('answers took latest value:', test[0]?.answers?.stayed === 'final' ?
 console.log('honeypot row not created :', bot.length === 0 ? 'PASS' : 'FAIL');
 console.log('oversized row not created:', big.length === 0 ? 'PASS' : 'FAIL');
 
-if (process.argv.includes('--purge')) {
-  const del = await sql`DELETE FROM reflections WHERE id LIKE 'rf_zz%' RETURNING id`;
-  console.log('\npurged test rows:', del.length, del.map(d => d.id).join(', ') || '(none)');
-  const left = await sql`SELECT count(*)::int AS n FROM reflections`;
-  console.log('rows remaining:', left[0].n);
+// Purging by id prefix only catches the rows made with curl. The ones the browser created
+// during testing have ordinary minted ids (rf_msx...), so the reliable cut is by time:
+// everything written before the form was sent to anyone is a test row by definition.
+//   node --env-file=... notes/verify-reflections.mjs --purge-before 2026-08-18T00:00:00Z
+const i = process.argv.indexOf('--purge-before');
+if (i !== -1) {
+  const cutoff = process.argv[i + 1];
+  if (!cutoff || Number.isNaN(Date.parse(cutoff))) {
+    console.error('\n--purge-before needs an ISO timestamp, e.g. 2026-08-18T00:00:00Z');
+    process.exit(1);
+  }
+  const doomed = await sql`SELECT id, name, created_at FROM reflections WHERE created_at < ${cutoff}`;
+  console.log(`\nabout to delete ${doomed.length} row(s) created before ${cutoff}:`);
+  for (const d of doomed) console.log(`  ${d.id}  ${JSON.stringify(d.name)}  ${d.created_at.toISOString()}`);
+  if (!process.argv.includes('--yes')) {
+    console.log('\nDry run. Add --yes to actually delete.');
+  } else {
+    const del = await sql`DELETE FROM reflections WHERE created_at < ${cutoff} RETURNING id`;
+    console.log('\ndeleted:', del.length);
+    const left = await sql`SELECT count(*)::int AS n FROM reflections`;
+    console.log('rows remaining:', left[0].n);
+  }
 }
