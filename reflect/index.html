@@ -359,8 +359,9 @@ const qs = new URLSearchParams(location.search);
 if(qs.get('name'))  answers.name  = qs.get('name');
 if(qs.get('email')) answers.email = qs.get('email');
 
-let saveTimer = null, lastSent = '';
+let saveTimer = null, lastSent = '', submitted = false;
 function scheduleSave(){
+  if(submitted) return;
   localStorage.setItem(KEY_ANS, JSON.stringify(answers));
   clearTimeout(saveTimer);
   saveTimer = setTimeout(()=>save(false), 1100);
@@ -384,8 +385,12 @@ async function save(completed){
     return true;
   }catch(_){ return false; }
 }
-// A closing tab should not lose the last few seconds of typing.
+// A closing tab should not lose the last few seconds of typing. Once the form has been
+// sent this must stay quiet: otherwise it writes the in-memory answers straight back over
+// the localStorage we just cleared, and a finished response reappears, prefilled, the next
+// time anyone opens the page on this device.
 window.addEventListener('pagehide', ()=>{
+  if(submitted) return;
   localStorage.setItem(KEY_ANS, JSON.stringify(answers));
   const body = JSON.stringify({id:responseId, name:(answers.name||'').trim(),
     email:(answers.email||'').trim(), answers, completed:false, website:''});
@@ -648,7 +653,17 @@ document.addEventListener('click', async (e) => {
   if((answers.name || '').trim())  q2.set('name', answers.name.trim());
   if((answers.email || '').trim()) q2.set('email', answers.email.trim());
   document.getElementById('giveBtn').href = '/give' + (q2.toString() ? '?' + q2 : '');
+
+  // Done. Drop every trace of this response from the device: the answers so nothing is
+  // prefilled next time, and the id so that whoever opens the form next (a partner on a
+  // shared laptop, or this person filling it in again) starts a new row instead of
+  // overwriting a finished one.
+  submitted = true;
+  clearTimeout(saveTimer);
+  clearInterval(giveTimer);
+  answers = {};
   localStorage.removeItem(KEY_ANS);
+  localStorage.removeItem(KEY_ID);
   show('done');
 });
 
@@ -660,7 +675,7 @@ function syncGiveLink(){
   const s = p.toString();
   document.getElementById('persistGiveLink').href = '/give' + (s ? '?' + s : '');
 }
-setInterval(syncGiveLink, 2000);
+const giveTimer = setInterval(syncGiveLink, 2000);
 syncGiveLink();
 </script>
 </body>
