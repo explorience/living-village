@@ -140,7 +140,7 @@
     <h1>How was it for you?</h1>
     <div class="lede">
       <p>The fire is out, the tents are down, and the land is quiet again. Before the weekend blurs into everything else, we would love to hear what it was actually like for you.</p>
-      <p>Most of it is sliders, so it moves quickly. About six minutes. Andre and Heenal read every word.</p>
+      <p>Most of it is sliders, so it moves quickly. About four minutes. Andre and Heenal read every word.</p>
       <p>There are no wrong answers here, including the critical ones. Especially the critical ones.</p>
     </div>
     <div class="card">
@@ -216,14 +216,6 @@ const STEPS = [
       { id:'least', type:'long', required:true, label:'What did you enjoy least, or what would you change?',
         help:'Please be honest. This is the most useful box on the page and nothing in it will offend us.' },
 
-      { id:'practical', type:'rate', label:'Did any of this cause you trouble?',
-        help:'Zero means it was fine. If everything was fine, leave them all at zero.',
-        low:'No trouble', high:'A real problem',
-        options:['Getting there and back','Food','Sleeping and camping','Washrooms and water',
-                 'Knowing where to be and when','Getting around the site',
-                 'Noise, or not enough quiet','Feeling included','Childcare'],
-        other:'Something else that was hard' },
-
       { id:'again', type:'scale', label:'If we do this again, would you come?',
         options:['No','Probably not','Maybe','Probably','Yes','Yes, and I would bring people'] },
 
@@ -275,6 +267,13 @@ const STEPS = [
 
       { id:'membership_what', type:'long', label:'What would you want a membership to give you, and what would feel fair to pay?',
         help:'We have not decided any of this yet, which is exactly why we are asking first.' },
+
+      // Andre's question, and the reason it is here rather than in the "what you could put
+      // in" part: it asks what someone wants to get, not give. Deliberately open text, since
+      // a list of topics would put our guesses in people's mouths and re-add the bulk we
+      // just cut.
+      { id:'learn', type:'long', label:'What do you want to learn, so you can live more closely to the land?',
+        help:'Growing food, building, repair, water, energy, animals, herbal medicine, anything. We would rather find the right people to teach these things than pretend we can teach them all, so knowing what you want to learn tells us who to bring in.' },
     ],
   },
 
@@ -308,17 +307,6 @@ const STEPS = [
         help:'Separate from the meetings question. Hands and hours on the real thing: viewings, building, planting, admin, legal, research, spreadsheets, phone calls.',
         options:['0','Up to 10','10 to 25','25 to 50','50 to 100','100 to 250','250 to 500','More than 500'],
         low:'None', high:'A lot' },
-
-      { id:'work_kind', type:'rate', label:'What kind of work would you actually want to do?',
-        help:'Rate how keen you are on each. Zero is a perfectly good answer.',
-        low:'Rather not', high:'Would love to',
-        options:['Building, land, planting, repairs','Cooking and feeding people',
-                 'Admin and coordination','Legal, finance, governance',
-                 'Property search and viewings','Fundraising and grants',
-                 'Facilitation and holding space','Communications and social media',
-                 'Design, photography, film','Children and family support',
-                 'Conflict, care and repair','Teaching and workshops'],
-        other:'Something else you would bring' },
     ],
   },
 
@@ -326,15 +314,6 @@ const STEPS = [
     title: "Helping us be louder",
     intro: "<div class='panel'><p>One of our own lessons from the weekend: our vision is clear to us, and we have been quiet about it. We have not put ourselves out there or spread the word. That changes now, and it starts with the people who were on the land.</p></div>",
     questions: [
-      { id:'louder', type:'rate', label:'Would you help us be more visible?',
-        help:'Only rate up what you would genuinely be glad to do. All zeros is completely fine.',
-        low:'Rather not', high:'Happy to',
-        options:['Share our posts','Introduce us to people','Write something we can quote',
-                 'Take photos or video','Help run our social media',
-                 'Get us onto ecovillage directories','Host a small intro evening',
-                 'Speak to local press'],
-        other:'Something else' },
-
       { id:'who_else', type:'long', label:'Who else should know about this?',
         help:'A person, a group, a network, an event, a place. No pressure to make the introduction yourself, just tell us who comes to mind.' },
     ],
