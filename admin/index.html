@@ -113,6 +113,9 @@
     border-bottom:1px dashed var(--terracotta)}
   .dupe-pill{margin-left:7px;font-size:10.5px;font-weight:600;letter-spacing:.03em;
     padding:2px 7px;border-radius:999px;color:#fff;background:var(--terracotta);vertical-align:middle}
+  /* Left their name after the gathering rather than registering for it. */
+  .intr-pill{margin-left:7px;font-size:10.5px;font-weight:600;letter-spacing:.03em;
+    padding:2px 7px;border-radius:999px;color:var(--ink);background:var(--gold);vertical-align:middle}
 
   main{max-width:1180px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,40px) 120px}
   .loading,.feedback{text-align:center;color:var(--muted);padding:80px 0;font-family:'Fraunces',serif;font-size:18px}
@@ -433,7 +436,7 @@
     <p class="g-p"><b>Needs</b> — a roll-up of dietary needs, accessibility, who has a phone, and who we still can’t reach. The coordinators’ best friend.</p>
 
     <h3 class="g-h">The counts bar + filter</h3>
-    <p class="g-p">Along the top: how many are confirmed, maybe, waitlisted, undecided, plus the solstice crew. Tap any of them to filter every view to just those people. <b>⤓ CSV</b> downloads a spreadsheet of whatever you’re currently looking at, perfect for a printout with walkie-talkies in hand.</p>
+    <p class="g-p">Along the top: how many are confirmed, maybe, waitlisted, undecided, plus the solstice crew. <b>◇ interest</b> is different: those people left their name on the website <i>after</i> the gathering to hear what comes next, and never registered for August 15–16. Tap any of them to filter every view to just those people. <b>⤓ CSV</b> downloads a spreadsheet of whatever you’re currently looking at, perfect for a printout with walkie-talkies in hand.</p>
 
     <h3 class="g-h">Opening someone</h3>
     <p class="g-p">Click any card to see their full answers: why they’re here, what they’d love to offer, dietary and access needs, and more. Their <b>email and phone</b> sit right at the top, one tap to write or call.</p>
@@ -669,8 +672,8 @@ $('#gate-form').addEventListener('submit', async e=>{
 
 /* ── stat bar + filter ── */
 function statusCounts(){
-  const c={all:DATA.length,confirmed:0,maybe:0,waitlist:0,declined:0,unset:0,solstice:0};
-  for(const a of DATA){ c[a.status||'unset']=(c[a.status||'unset']||0)+1; if(a.solsticeRsvp) c.solstice++; }
+  const c={all:DATA.length,confirmed:0,maybe:0,waitlist:0,declined:0,unset:0,solstice:0,interest:0};
+  for(const a of DATA){ c[a.status||'unset']=(c[a.status||'unset']||0)+1; if(a.solsticeRsvp) c.solstice++; if(a.interestOnly) c.interest++; }
   return c;
 }
 function renderStatbar(){
@@ -686,12 +689,14 @@ function renderStatbar(){
     chip('unset','undecided','var(--muted)')+
     `<span class="stat-sep"></span>`+
     chip('solstice','◍ solstice','var(--sage)')+
+    chip('interest','◇ interest','var(--gold)')+
     `<button class="stat csv" onclick="exportCsv()" title="Download a spreadsheet of the current view">⤓ CSV</button>`;
 }
 function setFilter(f){ filter=(filter===f&&f!=='all')?'all':f; renderStatbar(); render(); }
 function applyFilter(list){
   if(filter==='all') return list;
   if(filter==='solstice') return list.filter(a=>a.solsticeRsvp);
+  if(filter==='interest') return list.filter(a=>a.interestOnly);
   if(filter==='unset') return list.filter(a=>!a.status);
   return list.filter(a=>a.status===filter);
 }
@@ -722,7 +727,7 @@ function renderTimeline(){
       <span class="when">${esc(fmtDay(a.applied))}</span>
       <div class="card${selected.has(a.id)?' picked':''}" onclick="openDetail('${esc(a.id)}')">
         <label class="selbox" onclick="event.stopPropagation()" title="Select for email"><input type="checkbox" ${selected.has(a.id)?'checked':''} onchange="toggleSelect('${esc(a.id)}',this.checked);this.closest('.card').classList.toggle('picked',this.checked)"></label>
-        <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}${dups.has(a.id)?'<span class="dupe-pill" title="Someone else in the roster has this name with a different email. Probably one person who signed up twice.">dupe?</span>':''}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
+        <div class="top"><span class="nm display">${esc(a.name||firstName(a))}${statusPill(a.status)}${dups.has(a.id)?'<span class="dupe-pill" title="Someone else in the roster has this name with a different email. Probably one person who signed up twice.">dupe?</span>':''}${a.interestOnly?'<span class="intr-pill" title="Left their name and email on the site after the gathering. Never registered for August 15-16.">interest</span>':''}</span><span class="dt">${esc(fmtDay(a.applied))}</span></div>
         ${ess?`<div class="essence">${esc(ess)}</div>`:''}
         <div class="chips">${a.roles.map(roleChip).join('')}${sol}</div>
       </div></div>`;
@@ -795,6 +800,7 @@ function exportCsv(){
     ['Phone',a=>a.phone||''],
     ['Status',a=>a.status||''],
     ['Solstice',a=>a.solsticeRsvp?'yes':''],
+    ['Interest (post-gathering)',a=>a.interestOnly?'yes':''],
     ['Chosen roles',a=>(a.roles||[]).join('; ')],
     ['Assigned roles',a=>(a.assignedRoles||[]).join('; ')],
     ['Activities',a=>(a.assignedActivities||[]).join('; ')],
@@ -972,6 +978,7 @@ function openDetail(id){
       <div class="d-meta">
         <span>Applied ${esc(fmtDay(a.applied))}</span>
         ${a.solsticeRsvp?'<span class="badge">◍ Solstice work-bee</span>':''}
+        ${a.interestOnly?'<span class="badge">◇ Interest, after the gathering</span>':''}
       </div>
       <div class="chips" style="margin-top:12px">${a.roles.map(roleChip).join('')}</div>
     </div>

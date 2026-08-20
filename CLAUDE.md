@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Static site for **The Living Village** (two-day gathering, Aug 15–16 2026), no framework / no build step. `index.html` is the landing page; **the active signup is the multi-step flow in `join/index.html`** — the inline form in `index.html` is disabled and just CTAs to `/join/`. Vercel serverless functions live under `api/`.
+Static site for **The Living Village** (two-day gathering, Aug 15–16 2026), no framework / no build step. `index.html` is the landing page. Vercel serverless functions live under `api/`.
+
+**The gathering has happened.** Registration is closed: the landing page now states that plainly and ends in a two-field "stay in touch" form, and `join/index.html` is served behind a notice band with the whole flow `inert` (see Architecture). Nothing on the site takes a registration any more.
 
 ## Commands
 
@@ -18,9 +20,9 @@ Node >= 18. `package.json` sets `"type": "module"`, so `api/*.js` files use ESM 
 
 ## Architecture
 
-**`index.html`** — landing page, single file (inline CSS + JS). Its old signup form is disabled; the JS at the bottom just routes to `/join/`.
+**`index.html`** — landing page, single file (inline CSS + JS). Post-gathering it carries a "this gathering has happened" pill in the hero and one CTA, `Stay in touch`, pointing at the `#stay` section at the foot of the page. That section is the **interest form**: name + email + honeypot, POSTing `{name, email, stage: 'interest'}` to `/api/signup`. On success the form element is removed and replaced by a thank-you. `#signup` is kept as an empty anchor above the section so older links still land. The June solstice work-bee section and the `event.ics` download were removed with the event.
 
-**`join/index.html`** — the real registration: a multi-moment progressive form (Threshold → Orientation → Why → Path → Topics → Bring → Practical → Welcome). POSTs to `/api/signup` with the full payload and a `stage`: `final`, `partial:why`, `partial:bring`, or unset for the post-Welcome "big question" follow-up. Partial saves fire mid-flow so abandoned signups are still captured.
+**`join/index.html`** — the registration flow, now **closed**. A `.past-band` notice sits above `<main class="page is-closed" inert>`: `inert` stops all interaction in current browsers, `pointer-events:none` covers the rest, and the flow is dimmed to 0.6. It is left in place as a record of what people were asked, so nothing below the band should be deleted. What it was: a multi-moment progressive form (Threshold → Orientation → Why → Path → Topics → Bring → Practical → Welcome). POSTs to `/api/signup` with the full payload and a `stage`: `final`, `partial:why`, `partial:bring`, or unset for the post-Welcome "big question" follow-up. Partial saves fire mid-flow so abandoned signups are still captured.
 
 **`api/signup.js`** — receives the POST and, in parallel:
 1. **Appends a row to the Google Sheet** (Sheets v4 REST, OAuth refresh-token). Sheet `16TL2Bqa4gl8H5R8nQe0JvhQa2IwajeuzLvlcka8l3dI`, tab `Signups`, **25-column schema `A:Y`** (timestamp, email, name, roles, comment, amount, micro, vow, dietary, accessibility, paymentIntentId, why, pathPosition, pathNote, topicsYes/Curious/Skip, topicCoCreator, topicOther, spectrums, bravePrompt, bigQuestion, solsticeRsvp, orientation, stage).
@@ -41,5 +43,6 @@ Node >= 18. `package.json` sets `"type": "module"`, so `api/*.js` files use ESM 
 
 ## Notes for changes
 
+- **Post-gathering interest signups reuse this same endpoint**, tagged `stage: 'interest'` in column Y. They are deliberately not partials (so they are kept) and not `final` (so no applicant confirmation goes out); the crew still gets the backup email, subject-tagged `interest`. `mergeGroup()` in `_lib/sheet.js` turns the tag into an `interestOnly` boolean — **`every` row, not `some`**, so an attendee who also fills the form in stays an attendee. Backstage surfaces it as the `◇ interest` counts-bar chip, a pill on the person's card, a drawer badge and a CSV column.
 - The `join/index.html` payload and `signup.js`'s `rowData` array share an implicit **25-column schema (A–Y)**. Keep them in sync when adding fields, and update the sheet header row + the 25-length `rowData` together. Keep the append anchor at `A1` + `INSERT_ROWS` (see Architecture).
 - Hero/role images in `images/` are large (1–5 MB). Be mindful when adding more — there's no image pipeline.

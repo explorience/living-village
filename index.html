@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Living Village · August 15–16, 2026</title>
-    <meta name="description" content="A Journeyland gathering for land-based living. Two days to convene, learn, and help seed a local ecovillage in the London region.">
+    <meta name="description" content="The Living Village gathered on August 15–16, 2026 at The Living Centre, London, Ontario. It has happened. Leave your name and email to hear what comes next.">
     <meta property="og:title" content="The Living Village · August 15–16, 2026">
-    <meta property="og:description" content="A two-day gathering for land-based living. August 15–16, 2026 · The Living Centre, London ON.">
+    <meta property="og:description" content="A two-day gathering for land-based living. It happened on August 15–16, 2026 at The Living Centre, London ON. Leave your email to hear what comes next.">
     <meta property="og:image" content="/images/og-social-preview.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="The Living Village">
-    <meta name="twitter:description" content="A two-day gathering for land-based living. August 15–16, 2026.">
+    <meta name="twitter:description" content="A two-day gathering for land-based living. It happened on August 15–16, 2026.">
     <meta name="twitter:image" content="/images/og-social-preview.jpg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,6 +143,18 @@
             align-items: center;
         }
         .hero-meta .dot { opacity: 0.5; }
+        .past-pill {
+            display: inline-flex; align-items: center;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid rgba(246, 237, 217, 0.35);
+            background: rgba(246, 237, 217, 0.08);
+            color: var(--cream);
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
         .hero-ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
         .btn {
             display: inline-flex; align-items: center; gap: 0.65rem;
@@ -570,6 +582,8 @@
         }
         .form-message.success { display: block; background: rgba(61, 85, 64, 0.1); color: var(--moss); border: 1px solid var(--sage); }
         .form-message.error { display: block; background: rgba(196, 112, 75, 0.1); color: var(--terracotta); border: 1px solid var(--terracotta); }
+        /* Honeypot: off-screen, never focusable, never announced. A filled value means a bot. */
+        .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
         /* ---------- FOOTER ---------- */
         footer {
@@ -634,6 +648,7 @@
             </h1>
             <p class="hero-sub">A two-day gathering for land-based living.</p>
             <div class="hero-meta">
+                <span class="past-pill">This gathering has happened</span>
                 <span>August 15–16, 2026</span>
                 <span class="dot" aria-hidden="true">·</span>
                 <span>The Living Centre</span>
@@ -641,16 +656,7 @@
                 <span>London, Ontario</span>
             </div>
             <div class="hero-ctas">
-                <a href="#signup" class="btn btn-primary">Walk the path with us</a>
-                <a href="/event.ics" class="btn btn-ghost" download="the-living-village.ics">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    Add to calendar
-                </a>
+                <a href="#stay" class="btn btn-primary">Stay in touch</a>
             </div>
         </div>
     </section>
@@ -921,27 +927,29 @@
         </div>
     </section>
 
-    <!-- ========== SOLSTICE WORK-BEE ========== -->
-    <section class="bg-deep" id="solstice" aria-label="June 20 solstice work-bee">
-        <div class="container" style="max-width: 820px; text-align: center;">
-            <span class="eyebrow" style="color: var(--gold); display: inline-block; margin-bottom: 1.25rem;">Before the village</span>
-            <h2 style="font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--cream); margin-bottom: 1.5rem;">A smaller invitation: <br>solstice on the land.</h2>
-            <p style="font-family: 'Fraunces', serif; font-style: italic; font-size: clamp(1.1rem, 1.7vw, 1.3rem); color: var(--sand); max-width: 620px; margin: 0 auto 2rem; line-height: 1.55;">Saturday, June 20, 2026.</p>
-            <p style="font-size: 1.02rem; line-height: 1.75; color: rgba(246, 237, 217, 0.88); max-width: 600px; margin: 0 auto 1.25rem;">A work-bee day at The Living Centre. We'll be on the land together: building, planting, getting things ready for August. Around the fire that evening, we'll join The Living Centre's solstice dance. Camp overnight if you want to stay.</p>
-            <p style="font-size: 1.02rem; line-height: 1.75; color: rgba(246, 237, 217, 0.88); max-width: 600px; margin: 0 auto 2.5rem;">The land won't be ready without hands. This is one of the ways the village is built.</p>
-            <p style="font-size: 0.9rem; font-style: italic; color: var(--fern); max-width: 540px; margin: 0 auto 2rem; opacity: 0.85;">Open to August 15–16 attendees. Walk the path with us to RSVP for both.</p>
-            <a href="/join/" class="btn btn-primary" style="background: var(--gold); color: var(--earth);">Walk the path with us →</a>
-        </div>
-    </section>
-
-    <!-- ========== SIGNUP ========== -->
-    <section class="bg-sand" id="signup">
+    <!-- ========== STAY IN TOUCH ========== -->
+    <!-- Kept as an anchor so older links and emails pointing at #signup still land here. -->
+    <span id="signup" aria-hidden="true"></span>
+    <section class="bg-sand" id="stay">
         <div class="container signup-inner">
-            <h2>Walk the path with us.</h2>
-            <p class="signup-lead">Saying yes to The Living Village is more than a ticket. Pick the role that calls to you, shape your contribution, sign your name to a small promise. Take it at the pace it asks of you.</p>
-            <div style="margin-top:2rem; display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
-                <a href="/join/" class="btn btn-dark">Walk the path with us →</a>
-            </div>
+            <h2>The gathering has happened.</h2>
+            <p class="signup-lead">The Living Village came together on August 15 and 16, 2026 at The Living Centre. What comes next is still taking shape. If you would like to hear about it, leave your name and email and we will keep you posted.</p>
+            <form id="stay-form" novalidate>
+                <div class="field">
+                    <label for="stay-name">Your name</label>
+                    <input type="text" id="stay-name" name="name" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label for="stay-email">Your email</label>
+                    <input type="email" id="stay-email" name="email" autocomplete="email" required>
+                </div>
+                <div class="hp" aria-hidden="true">
+                    <label for="stay-website">Website</label>
+                    <input type="text" id="stay-website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+                <button type="submit" class="submit-btn">Keep me posted</button>
+            </form>
+            <div id="stay-message" class="form-message" role="status" aria-live="polite"></div>
         </div>
     </section>
 
@@ -955,19 +963,23 @@
         <div class="links">
             <a href="https://journeyland.ca" target="_blank" rel="noopener">journeyland.ca</a>
             <a href="https://instagram.com/journeyland.ca" target="_blank" rel="noopener">@journeyland.ca</a>
-            <a href="#signup">Walk the path with us</a>
+            <a href="#stay">Stay in touch</a>
         </div>
         <div class="fine">© 2026 Journeyland</div>
     </footer>
 
     <script>
         (function () {
-            const form = document.getElementById('signup-form');
-            if (!form) return; // form replaced by /join/ CTA on this page
+            // Post-gathering interest form. Posts the lightest possible payload to the same
+            // /api/signup endpoint the join flow used, tagged `stage: 'interest'` so the row
+            // reads as "asked to hear what's next", never as an attendee of a finished event.
+            const form = document.getElementById('stay-form');
+            if (!form) return;
             const btn = form.querySelector('.submit-btn');
-            const msg = document.getElementById('form-message');
-            const emailField = document.getElementById('email');
-            const honeypot = document.getElementById('website');
+            const msg = document.getElementById('stay-message');
+            const nameField = document.getElementById('stay-name');
+            const emailField = document.getElementById('stay-email');
+            const honeypot = document.getElementById('stay-website');
 
             function setMessage(kind, text) {
                 msg.className = 'form-message ' + kind;
@@ -977,37 +989,41 @@
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 if (honeypot.value) return;
-                if (!emailField.checkValidity()) {
+
+                const name = nameField.value.trim();
+                const email = emailField.value.trim();
+                if (!name) {
+                    setMessage('error', 'Please add your name.');
+                    nameField.focus();
+                    return;
+                }
+                if (!email || !emailField.checkValidity()) {
                     setMessage('error', 'Please enter a valid email address.');
                     emailField.focus();
                     return;
                 }
+
                 btn.disabled = true;
                 const originalLabel = btn.textContent;
-                btn.textContent = 'Saving…';
+                btn.textContent = 'Saving\u2026';
                 setMessage('', '');
-
-                const roles = Array.from(form.querySelectorAll('input[name="roles"]:checked')).map(c => c.value);
-                const data = {
-                    email: emailField.value.trim(),
-                    name: (form.name.value || '').trim(),
-                    roles: roles,
-                    comment: (form.comment.value || '').trim(),
-                    timestamp: new Date().toISOString()
-                };
 
                 try {
                     const res = await fetch('/api/signup', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                        body: JSON.stringify({
+                            name: name,
+                            email: email,
+                            stage: 'interest',
+                            timestamp: new Date().toISOString()
+                        })
                     });
                     if (!res.ok) throw new Error('server');
-                    setMessage('success', 'You’re in. We’ll be in touch with next steps.');
-                    form.reset();
+                    form.remove();
+                    setMessage('success', 'Thank you. You are on the list, and we will be in touch.');
                 } catch (err) {
                     setMessage('error', 'Something went wrong. Please try again, or email hello@journeyland.ca.');
-                } finally {
                     btn.disabled = false;
                     btn.textContent = originalLabel;
                 }

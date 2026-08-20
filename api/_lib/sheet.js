@@ -155,6 +155,11 @@ function mergeGroup(rows) {
     dietary: longestScalar('dietary'),
     accessibility: longestScalar('accessibility'),
     solsticeRsvp: rows.some(r => /yes/i.test(r.solsticeRsvp)),
+    // Someone who left their name on the post-gathering "stay in touch" form rather than
+    // registering for the August weekend. `every`, not `some`, on purpose: if a real
+    // attendee also fills that form in, their attendee rows outrank it and they stay an
+    // attendee. Only a person whose every row is an interest row is interest-only.
+    interestOnly: rows.every(r => r.stage.trim().toLowerCase() === 'interest'),
     orientation: firstJson('orientation'),
     spectrums: firstJson('spectrums'),
   };
