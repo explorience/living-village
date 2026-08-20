@@ -55,6 +55,38 @@
         [tabindex="-1"]:focus { outline: none; }
         button { font-family: inherit; cursor: pointer; }
 
+        /* ---------- closed notice ---------- */
+        .past-band {
+            width: 100%;
+            background: var(--earth);
+            color: var(--cream);
+            padding: 1.5rem 1.5rem 1.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem 1.75rem;
+            text-align: center;
+        }
+        .past-band p { margin: 0; max-width: 640px; font-size: 0.97rem; line-height: 1.6; }
+        .past-band strong { font-weight: 600; }
+        .past-band-cta {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            background: var(--cream);
+            color: var(--earth);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .past-band-cta:hover { background: #fff; }
+        /* The flow below stays intact as a record of what people were asked, but nothing in it
+           can be typed, advanced or sent. `inert` does that in current browsers; pointer-events
+           covers the rest. */
+        .page.is-closed { opacity: 0.6; pointer-events: none; user-select: none; }
+
         .page {
             flex: 1;
             display: flex;
@@ -627,7 +659,12 @@
 </head>
 <body>
 
-    <main class="page">
+    <div class="past-band">
+        <p><strong>This gathering has happened.</strong> The Living Village came together on August 15 and 16, 2026 at The Living Centre. There is no registration to complete here.</p>
+        <a class="past-band-cta" href="/#stay">Hear what comes next</a>
+    </div>
+
+    <main class="page is-closed" inert>
 
     <!-- ============ MOMENT 1: THRESHOLD ============ -->
     <section class="moment is-visible" data-moment="threshold">
